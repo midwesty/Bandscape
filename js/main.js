@@ -154,11 +154,13 @@ function showCollapse() {
   stopClock();
   const el = $("collapse");
   el.classList.remove("hidden");
+  document.body.classList.add("modal-open");
   $("collapse-msg").textContent = "You collapsed from sheer poor decision-making.";
   $("collapse-btn").onclick = () => {
     const s = getState();
     s.stats.health = 50; s.stats.hunger = 40; s.stats.thirst = 40;
     el.classList.add("hidden");
+    document.body.classList.remove("modal-open");
     startClock();
     renderHUD();
   };

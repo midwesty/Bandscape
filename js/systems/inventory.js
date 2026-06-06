@@ -147,6 +147,7 @@ export function openContainerView(key) {
 export function closeInventory() {
   isOpen = false;
   overlay.classList.remove("open");
+  document.body.classList.remove("modal-open");
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 
@@ -154,6 +155,7 @@ function show() {
   isOpen = true;
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
+  document.body.classList.add("modal-open");
   render();
 }
 

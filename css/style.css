@@ -430,3 +430,40 @@ body::after {
   padding: 6px; border-top: 1px solid var(--line); }
 .inv-ghost { position: fixed; width: 44px; height: 44px; object-fit: contain; pointer-events: none;
   transform: translate(-50%,-50%); z-index: 9500; opacity: .85; filter: drop-shadow(2px 3px 2px #000); }
+
+/* hide the message log while any modal/popup is open (so it doesn't bleed through the backdrop) */
+body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12s; }
+
+/* ============================================================
+   STEP 4 — Music app (on the phone)
+   ============================================================ */
+.mus-bar { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; margin-bottom: 10px; }
+.mus-key { font-family: var(--cond); font-size: 10px; letter-spacing: 1px; color: var(--yellow); display: flex; flex-direction: column; gap: 3px; }
+.mus-key select, .mus-bpm input { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; font-family: var(--mono); padding: 4px 6px; }
+.mus-tabs { display: flex; gap: 4px; }
+.mus-tab { font-family: var(--cond); font-size: 10px; letter-spacing: 1px; padding: 5px 8px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); border-radius: 2px; cursor: pointer; }
+.mus-tab.active { color: var(--green); border-color: var(--green); }
+.mus-hint { font-size: 11px; margin: 2px 0 10px; }
+.pad-label { font-family: var(--cond); font-size: 10px; letter-spacing: 2px; color: var(--muted); margin: 10px 0 5px; }
+.pad-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.pad { flex: 1 1 18%; min-width: 34px; aspect-ratio: 1.1; border-radius: 3px; cursor: pointer; border: 2px solid var(--line);
+  display: grid; place-items: center; font-family: var(--display); font-size: 15px; touch-action: none; transition: transform .05s, background .05s; }
+.pad span { pointer-events: none; }
+.pad-chord { background: #2a1d33; color: var(--pink); border-color: #4a2d44; }
+.pad-note { background: #1d2a2a; color: var(--blue); border-color: #2d4a4a; }
+.pad.hit { transform: translateY(2px) scale(.96); background: var(--yellow); color: var(--bg); }
+.rec-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.mus-bpm { font-family: var(--cond); font-size: 10px; letter-spacing: 1px; color: var(--yellow); display: flex; flex-direction: column; gap: 3px; }
+.mus-bpm input { width: 70px; }
+.rec-btn { width: auto; margin: 0; border-color: var(--pink); color: var(--pink); padding: 9px 14px; }
+.rec-btn.recording { background: var(--pink); color: var(--bg); animation: recpulse 1s infinite; }
+@keyframes recpulse { 50% { box-shadow: 0 0 12px var(--pink); } }
+.step-strip { display: flex; gap: 2px; margin-bottom: 10px; }
+.step { flex: 1; height: 12px; background: #000; border: 1px solid var(--line); border-radius: 1px; }
+.step.on { background: var(--green); }
+.step.ph { outline: 2px solid var(--yellow); outline-offset: -1px; }
+.loop-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 10px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--green); border-radius: 2px; margin-bottom: 7px; }
+.loop-info strong { font-family: var(--cond); letter-spacing: .3px; }
+.loop-info small { display: block; color: var(--muted); font-size: 11px; }
+.loop-btns { display: flex; gap: 5px; }
+.loop-act { width: auto; margin: 0; padding: 7px 11px; font-size: 13px; }

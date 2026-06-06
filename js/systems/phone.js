@@ -8,6 +8,7 @@ import { DATA } from "../engine/data.js";
 import { getState } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { renderTasksApp } from "./objectives.js";
+import { renderMusicApp } from "./music.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -34,7 +35,7 @@ export function initPhone() {
   document.getElementById("phone-home-btn")?.addEventListener("click", () => openApp("home"));
   phoneEl?.addEventListener("click", (e) => { if (e.target === phoneEl) closePhone(); });
 
-  on("renderAll", () => { if (openState && currentApp !== "home") renderApp(currentApp); });
+  on("renderAll", () => { if (openState && currentApp !== "home" && currentApp !== "music") renderApp(currentApp); });
 }
 
 export function togglePhone() { openState ? closePhone() : openPhone(); }
@@ -43,6 +44,7 @@ export function openPhone() {
   openState = true;
   phoneEl.classList.remove("hidden");
   requestAnimationFrame(() => phoneEl.classList.add("open"));
+  document.body.classList.add("modal-open");
   openApp("home");
   emit("phone:opened");
 }
@@ -50,12 +52,15 @@ export function openPhone() {
 export function closePhone() {
   openState = false;
   phoneEl.classList.remove("open");
+  document.body.classList.remove("modal-open");
   setTimeout(() => phoneEl.classList.add("hidden"), 250);
+  emit("phone:closed");
 }
 
 function openApp(app) {
   currentApp = app;
   renderApp(app);
+  emit("phone:appChanged", { app });
   if (app !== "home") emit("phone:appOpened", { app });
 }
 
@@ -67,6 +72,7 @@ function renderApp(app) {
   if (app === "tasks") return renderTasksApp(screenEl);
   if (app === "status") return renderStatus();
   if (app === "settings") return renderSettings();
+  if (app === "music") return renderMusicApp(screenEl);
   return renderStub(app);
 }
 

@@ -112,6 +112,26 @@
       "active": false,
       "trigger": "item:moved",
       "reward": { "mood": 3 },
+      "unlocks": ["obj_play"]
+    },
+    {
+      "id": "obj_play",
+      "title": "Make some noise",
+      "desc": "Open the SOUND app on your phone and play a few notes. (Tap the pads, or use your keyboard.)",
+      "step": 4,
+      "active": false,
+      "trigger": "note:played",
+      "reward": { "mood": 4 },
+      "unlocks": ["obj_record"]
+    },
+    {
+      "id": "obj_record",
+      "title": "Record a loop",
+      "desc": "In the SOUND app, go to RECORD, hit record, play something, then stop and name it. It saves to your library.",
+      "step": 4,
+      "active": false,
+      "trigger": "pattern:recorded",
+      "reward": { "mood": 6 },
       "unlocks": ["obj_town_teaser"]
     },
     {
