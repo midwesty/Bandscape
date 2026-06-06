@@ -334,3 +334,24 @@ body::after {
    ============================================================ */
 #stage { background: #0c0810; }
 .iso-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+/* arrange-mode button (bottom-left) + banner */
+#arrange-button {
+  position: absolute; left: 18px; bottom: 18px; z-index: 30;
+  width: 64px; height: 64px; border-radius: 14px; cursor: pointer;
+  background: var(--panel); border: 3px solid var(--text);
+  display: grid; place-items: center; color: var(--text);
+  box-shadow: 4px 5px 0 rgba(0,0,0,.5); transition: transform .1s, box-shadow .1s, border-color .12s;
+}
+#arrange-button:hover { transform: translate(-1px,-1px); box-shadow: 6px 7px 0 var(--yellow); }
+#arrange-button:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.5); }
+#arrange-button.active { border-color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow), 4px 5px 0 rgba(0,0,0,.5); }
+#arrange-button.active .ab-glyph { color: var(--yellow); }
+.ab-glyph { font-size: 22px; line-height: 1; color: var(--blue); }
+.ab-text { font-family: var(--cond); font-size: 9px; letter-spacing: 1.5px; }
+#arrange-banner {
+  position: absolute; left: 50%; top: 60px; transform: translateX(-50%); z-index: 25;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .5px; color: var(--yellow);
+  background: rgba(0,0,0,.66); border: 1px solid var(--yellow); border-radius: 2px;
+  padding: 6px 12px; text-transform: uppercase; max-width: 90vw; text-align: center;
+}

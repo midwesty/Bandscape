@@ -1,23 +1,23 @@
 // ============================================================
-// stage.js — STEP 2: the isometric apartment renderer.
+// stage.js — isometric apartment renderer (Step 2.1).
 //
-// A 2:1 isometric room drawn on a canvas. Walk by tapping the
-// floor (pathfinds around furniture); tap an object to walk over
-// and use it. Objects + character are drawn in code (our palette)
-// and AUTO-OVERRIDDEN by a real PNG the moment you drop one into
-// the matching assets/ slot — zero code changes.
+// Furniture is now DATA THE PLAYER OWNS: it lives in the save as
+// state.placedObjects[location] and can be repositioned in Arrange
+// mode. This is the foundation buying-and-placing builds on later.
 //
-// Day/night light is tied to the clock. Tile coordinates come
-// straight from data/locations/<id>.json.
+// Walk by tapping the floor (pathfinds around furniture). Tap an
+// object to use it. Tap ARRANGE (bottom-left) to pick up & move
+// furniture. Objects + character are drawn in code and auto-
+// overridden by any PNG dropped into the matching assets/ slot.
 // ============================================================
 
 import { DATA } from "../engine/data.js";
 import { getState } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
+import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 
-// ---- palette ----
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
   wallL: "#241d30", wallR: "#1a1422", wallTop: "#4a3d5e",
@@ -27,16 +27,17 @@ const C = {
   ink: "#0b0b0f", line: "#0b0b0f"
 };
 
-const TILE_W = 64, TILE_H = 32, WALL_H = 46, SPEED = 3.6; // tiles/sec
+const TILE_W = 64, TILE_H = 32, WALL_H = 46, SPEED = 3.6;
 
 let initialized = false, running = false;
 let stageEl, canvas, ctx, dpr = 1;
 let cssW = 0, cssH = 0, originX = 0, originY = 0;
 
-let room = null, objects = [], blocked = null;
+let room = null, furniture = [], exits = [], blocked = null;
 let player = { x: 4, y: 3, fx: 4, fy: 3, facing: 1 };
-let path = [], pendingInteract = null, movedOnce = false;
+let path = [], pendingInteract = null;
 let hovered = null;
+let arranging = false, held = null;
 let imgCache = new Map();
 let rafId = null, lastTs = 0;
 
@@ -63,11 +64,12 @@ function initOnce() {
   canvas.addEventListener("pointermove", onHover);
   canvas.addEventListener("pointerleave", () => { hovered = null; requestRender(); });
   window.addEventListener("keydown", onKey);
+  document.getElementById("arrange-button")?.addEventListener("click", () => setArrange(!arranging));
 
   const ro = new ResizeObserver(() => { resize(); requestRender(); });
   ro.observe(stageEl);
 
-  on("time:tick", () => requestRender()); // day/night drifts with the clock
+  on("time:tick", () => requestRender());
   resize();
 }
 
@@ -75,23 +77,31 @@ function syncToState() {
   const s = getState();
   running = true;
   room = DATA.locations[s.location] || DATA.locations.apartment;
-  objects = [...(room.objects || []), ...(room.exits || [])];
 
-  const w = room.size?.w || 8, h = room.size?.h || 6;
-  blocked = Array.from({ length: h }, () => Array(w).fill(false));
-  for (const o of (room.objects || [])) {
-    if (o.tile && o.interact !== "exit") blocked[o.tile.y][o.tile.x] = true;
+  // seed / migrate movable furniture into the save (per location)
+  s.placedObjects = s.placedObjects || {};
+  if (!s.placedObjects[s.location]) {
+    s.placedObjects[s.location] = JSON.parse(JSON.stringify(room.objects || []));
   }
+  furniture = s.placedObjects[s.location];
+  exits = room.exits || [];
+  rebuildBlocked();
 
-  // restore / default the player tile (kept on the save when possible)
-  const start = s.player?.tile && isFree(s.player.tile.x, s.player.tile.y)
-    ? s.player.tile : firstFreeTile();
+  const saved = s.player?.tile;
+  const start = saved && isFree(saved.x, saved.y) ? saved : firstFreeTile();
   player.x = player.fx = start.x;
   player.y = player.fy = start.y;
-  path = []; pendingInteract = null;
+  path = []; pendingInteract = null; held = null; arranging = false;
+  document.getElementById("arrange-button")?.classList.remove("active");
+  document.getElementById("arrange-banner")?.classList.add("hidden");
   resize();
 }
 
+function rebuildBlocked(except) {
+  const w = room.size?.w || 8, h = room.size?.h || 6;
+  blocked = Array.from({ length: h }, () => Array(w).fill(false));
+  for (const o of furniture) { if (o !== except && o.tile) blocked[o.tile.y][o.tile.x] = true; }
+}
 function firstFreeTile() {
   const w = room.size?.w || 8, h = room.size?.h || 6;
   const c = { x: Math.floor(w / 2), y: Math.floor(h / 2) };
@@ -131,18 +141,24 @@ function inBounds(x, y) {
   return x >= 0 && y >= 0 && x < w && y < h;
 }
 function isFree(x, y) { return inBounds(x, y) && !blocked[y][x]; }
+function objectAt(x, y) {
+  return furniture.find((o) => o.tile && o.tile.x === x && o.tile.y === y)
+      || exits.find((o) => o.tile && o.tile.x === x && o.tile.y === y) || null;
+}
 
 // ---- input ----
 function onClick(e) {
   const p = ptr(e);
   const t = toTile(p.x, p.y);
   if (!inBounds(t.x, t.y)) return;
+  if (arranging) { handleArrangeClick(t); return; }
 
   const obj = objectAt(t.x, t.y);
   if (obj) { approachAndInteract(obj); return; }
   if (isFree(t.x, t.y)) walkTo(t.x, t.y, null);
 }
 function onHover(e) {
+  if (arranging) return;
   const p = ptr(e);
   const t = toTile(p.x, p.y);
   const obj = objectAt(t.x, t.y);
@@ -151,7 +167,8 @@ function onHover(e) {
 }
 function onKey(e) {
   if (document.getElementById("game").classList.contains("hidden")) return;
-  if (!document.getElementById("phone").classList.contains("hidden")) return; // phone open: ignore
+  if (!document.getElementById("phone").classList.contains("hidden")) return;
+  if (arranging) return;
   const map = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
                 w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] };
   const mv = map[e.key];
@@ -164,14 +181,50 @@ function ptr(e) {
   const r = canvas.getBoundingClientRect();
   return { x: e.clientX - r.left, y: e.clientY - r.top };
 }
-function objectAt(x, y) { return objects.find((o) => o.tile && o.tile.x === x && o.tile.y === y) || null; }
+
+// ---- arrange mode ----
+function setArrange(on) {
+  arranging = on;
+  held = null;
+  rebuildBlocked();
+  path = []; pendingInteract = null;
+  document.getElementById("arrange-button")?.classList.toggle("active", on);
+  document.getElementById("arrange-banner")?.classList.toggle("hidden", !on);
+  canvas.style.cursor = "default";
+  if (on) toast("Arrange mode: tap furniture, then tap an empty tile.", "info");
+  requestRender();
+}
+function handleArrangeClick(t) {
+  if (held) {
+    const onPlayer = Math.round(player.x) === t.x && Math.round(player.y) === t.y;
+    if (isFree(t.x, t.y) && !onPlayer) {
+      held.tile = { x: t.x, y: t.y };
+      held = null;
+      rebuildBlocked();
+      persist();
+      toast("Placed.", "good");
+    } else {
+      toast("Can't put it there.", "warn");
+    }
+    requestRender();
+    return;
+  }
+  const f = furniture.find((o) => o.tile.x === t.x && o.tile.y === t.y);
+  if (f) {
+    held = f;
+    rebuildBlocked(held); // free its current tile so it can move/return
+    toast("Lifted " + f.name + ". Tap where it goes.", "info");
+    requestRender();
+  }
+}
+function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 
 // ---- movement / pathfinding ----
 function walkTo(tx, ty, interact) {
   const start = { x: Math.round(player.x), y: Math.round(player.y) };
   const p = bfs(start, { x: tx, y: ty });
   if (!p) return;
-  path = p.slice(1); // drop current tile
+  path = p.slice(1);
   pendingInteract = interact;
   requestRender();
 }
@@ -182,11 +235,10 @@ function approachAndInteract(obj) {
   walkTo(spot.x, spot.y, obj);
 }
 function nearestFreeNeighbor(x, y) {
-  const cand = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]
+  return [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]
     .filter(([nx, ny]) => isFree(nx, ny))
     .map(([nx, ny]) => ({ x: nx, y: ny, d: Math.hypot(nx - player.x, ny - player.y) }))
-    .sort((a, b) => a.d - b.d);
-  return cand[0] || null;
+    .sort((a, b) => a.d - b.d)[0] || null;
 }
 function bfs(start, goal) {
   if (start.x === goal.x && start.y === goal.y) return [start];
@@ -207,7 +259,6 @@ function bfs(start, goal) {
   while (c) { out.unshift(c); c = came.get(key(c.x, c.y)); }
   return out;
 }
-
 function update(dt) {
   if (!path.length) return;
   const target = path[0];
@@ -278,16 +329,17 @@ function draw() {
 
   drawWalls(w, h);
   drawFloor(w, h);
-  if (hovered) drawTileHighlight();
+  drawArrangeOverlay(w, h);
 
-  // depth-sorted entities (objects + player)
-  const ents = objects.map((o) => ({ kind: "obj", o, depth: o.tile.x + o.tile.y + ((o.interact === "exit" || o.to) ? -0.5 : 0) }));
+  const ents = [];
+  for (const o of furniture) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y });
+  for (const o of exits) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y - 0.5 });
   ents.push({ kind: "player", depth: player.x + player.y + 0.4 });
   ents.sort((a, b) => a.depth - b.depth);
   for (const e of ents) e.kind === "player" ? drawPlayer() : drawObject(e.o);
 
   drawDayNight();
-  if (hovered) drawLabel();
+  if (hovered && !arranging) drawLabel();
 }
 
 function drawFloor(w, h) {
@@ -298,24 +350,31 @@ function drawFloor(w, h) {
 }
 function diamond(cx, cy, fill, stroke) {
   ctx.beginPath();
-  ctx.moveTo(cx, cy - TILE_H / 2);
-  ctx.lineTo(cx + TILE_W / 2, cy);
-  ctx.lineTo(cx, cy + TILE_H / 2);
-  ctx.lineTo(cx - TILE_W / 2, cy);
+  ctx.moveTo(cx, cy - TILE_H / 2); ctx.lineTo(cx + TILE_W / 2, cy);
+  ctx.lineTo(cx, cy + TILE_H / 2); ctx.lineTo(cx - TILE_W / 2, cy);
   ctx.closePath();
-  ctx.fillStyle = fill; ctx.fill();
-  ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+function drawArrangeOverlay(w, h) {
+  if (!arranging) return;
+  if (held) {
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const onPlayer = Math.round(player.x) === x && Math.round(player.y) === y;
+      if (isFree(x, y) && !onPlayer) { const c = toScreen(x, y); diamond(c.x, c.y, "rgba(124,252,155,0.16)", "rgba(124,252,155,0.5)"); }
+    }
+    const hc = toScreen(held.tile.x, held.tile.y);
+    diamond(hc.x, hc.y, "rgba(255,210,63,0.22)", C.yellow);
+  } else {
+    for (const o of furniture) { const c = toScreen(o.tile.x, o.tile.y); diamond(c.x, c.y, null, "rgba(255,210,63,0.55)"); }
+  }
 }
 function drawWalls(w, h) {
-  const top = toScreen(0, 0); top.y -= TILE_H / 2;          // back corner (top vertex of 0,0)
-  const right = toScreen(w - 1, 0); right.x += TILE_W / 2;  // right vertex of (w-1,0)
-  const left = toScreen(0, h - 1); left.x -= TILE_W / 2;    // left vertex of (0,h-1)
-
-  // right-hand wall
+  const top = toScreen(0, 0); top.y -= TILE_H / 2;
+  const right = toScreen(w - 1, 0); right.x += TILE_W / 2;
+  const left = toScreen(0, h - 1); left.x -= TILE_W / 2;
   wallQuad(top, right, C.wallR);
-  // left-hand wall
   wallQuad(top, left, C.wallL);
-  // top capping highlight
   ctx.strokeStyle = C.wallTop; ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(left.x, left.y - WALL_H); ctx.lineTo(top.x, top.y - WALL_H); ctx.lineTo(right.x, right.y - WALL_H);
@@ -328,7 +387,6 @@ function wallQuad(a, b, fill) {
   ctx.closePath();
   ctx.fillStyle = fill; ctx.fill();
 }
-function drawTileHighlight() { /* reserved: object hover handled by label */ }
 
 // ---- entities ----
 function shadow(cx, cy, rw = TILE_W * 0.34, rh = TILE_H * 0.34) {
@@ -337,20 +395,24 @@ function shadow(cx, cy, rw = TILE_W * 0.34, rh = TILE_H * 0.34) {
 }
 function drawObject(o) {
   const c = toScreen(o.tile.x, o.tile.y);
+  const lifted = held === o;
   const img = getImage(o.sprite);
   shadow(c.x, c.y);
+  ctx.save();
+  if (lifted) ctx.translate(0, -8);
   if (img && img._ok) {
     const dw = TILE_W * 1.1, dh = dw * (img.naturalHeight / img.naturalWidth || 1);
     ctx.drawImage(img, c.x - dw / 2, c.y - dh + TILE_H * 0.35, dw, dh);
   } else {
     drawProc(o, c.x, c.y);
   }
-  if (hovered === o.id) outlineObject(o, c.x, c.y);
+  ctx.restore();
+  if (hovered === o.id && !arranging) outlineObject(c.x, c.y);
 }
 function drawProc(o, cx, cy) {
   switch (o.id) {
     case "bed":    cuboid(cx, cy, 26, 13, 14, "#3a2740", "#2a1c30", "#241828");
-                   ctx.fillStyle = C.yellow; pad(cx - 10, cy - 14, 14, 7); break;
+                   ctx.fillStyle = C.yellow; ctx.fillRect(cx - 10, cy - 14, 14, 7); break;
     case "fridge": cuboid(cx, cy, 14, 7, 40, "#cfd6dd", "#9aa3ad", "#7c858f");
                    ctx.fillStyle = "#5a626b"; ctx.fillRect(cx + 6, cy - 34, 2, 18); break;
     case "crate":  cuboid(cx, cy, 13, 7, 16, "#7a5a36", "#5e4528", "#4a361f");
@@ -365,68 +427,55 @@ function drawProc(o, cx, cy) {
   }
 }
 function cuboid(cx, cy, fw, fh, hgt, top, lft, rgt) {
-  // left face
   ctx.beginPath(); ctx.moveTo(cx - fw, cy); ctx.lineTo(cx, cy + fh);
   ctx.lineTo(cx, cy + fh - hgt); ctx.lineTo(cx - fw, cy - hgt); ctx.closePath();
   ctx.fillStyle = lft; ctx.fill();
-  // right face
   ctx.beginPath(); ctx.moveTo(cx + fw, cy); ctx.lineTo(cx, cy + fh);
   ctx.lineTo(cx, cy + fh - hgt); ctx.lineTo(cx + fw, cy - hgt); ctx.closePath();
   ctx.fillStyle = rgt; ctx.fill();
-  // top face
   ctx.beginPath(); ctx.moveTo(cx, cy - fh - hgt); ctx.lineTo(cx + fw, cy - hgt);
   ctx.lineTo(cx, cy + fh - hgt); ctx.lineTo(cx - fw, cy - hgt); ctx.closePath();
   ctx.fillStyle = top; ctx.fill();
   ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.stroke();
 }
-function pad(x, y, w, h) { ctx.fillRect(x, y, w, h); }
 function billboardGuitar(cx, cy) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(-0.32);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.32);
   ctx.fillStyle = C.orange; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.ellipse(0, -8, 11, 15, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, -8, 4, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#caa56b"; ctx.fillRect(-2.5, -40, 5, 26); ctx.strokeRect(-2.5, -40, 5, 26);
   ctx.restore();
 }
+// short, floor-level threshold — never occludes furniture behind it
 function doorway(cx, cy) {
-  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - 14, cy - 44, 28, 46);
-  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(cx - 14, cy - 44, 28, 46);
-  ctx.fillStyle = C.yellow; ctx.beginPath(); ctx.arc(cx + 8, cy - 20, 1.8, 0, Math.PI * 2); ctx.fill();
+  diamond(cx, cy, "#191324", C.yellow);
+  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - 11, cy - 15, 22, 15);
+  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(cx - 11, cy - 15, 22, 15);
+  ctx.fillStyle = C.yellow; ctx.font = "700 8px 'Arial Narrow', sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("OUT", cx, cy - 5); ctx.textAlign = "left";
 }
-function outlineObject(o, cx, cy) {
+function outlineObject(cx, cy) {
   ctx.strokeStyle = C.green; ctx.lineWidth = 2;
   ctx.strokeRect(cx - TILE_W * 0.5, cy - 48, TILE_W, 60);
 }
-
 function drawPlayer() {
   const c = toScreen(player.x, player.y);
   shadow(c.x, c.y, 13, 7);
   const img = getImage("assets/img/chars/player.png");
-  if (img && img._ok) {
-    const dw = 40, dh = dw * (img.naturalHeight / img.naturalWidth || 1.6);
-    ctx.save();
-    if (player.facing < 0) { ctx.translate(c.x, 0); ctx.scale(-1, 1); ctx.translate(-c.x, 0); }
-    ctx.drawImage(img, c.x - dw / 2, c.y - dh + 6, dw, dh);
-    ctx.restore();
-    return;
-  }
-  // procedural billboard figure in avatar color
-  const col = getState().player?.avatar?.color || C.pink;
   ctx.save();
   if (player.facing < 0) { ctx.translate(c.x, 0); ctx.scale(-1, 1); ctx.translate(-c.x, 0); }
-  // legs
-  ctx.fillStyle = "#1b1622"; ctx.fillRect(c.x - 5, c.y - 12, 4, 12); ctx.fillRect(c.x + 1, c.y - 12, 4, 12);
-  // torso
-  ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
-  roundRect(c.x - 7, c.y - 26, 14, 16, 3); ctx.fill(); ctx.stroke();
-  // head
-  ctx.fillStyle = "#e9c9a0"; ctx.beginPath(); ctx.arc(c.x, c.y - 31, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // hair tuft
-  ctx.fillStyle = col; ctx.fillRect(c.x - 6, c.y - 37, 12, 4);
-  // facing nub
-  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(c.x + 3, c.y - 31, 1.3, 0, Math.PI * 2); ctx.fill();
+  if (img && img._ok) {
+    const dw = 40, dh = dw * (img.naturalHeight / img.naturalWidth || 1.6);
+    ctx.drawImage(img, c.x - dw / 2, c.y - dh + 6, dw, dh);
+  } else {
+    const col = getState().player?.avatar?.color || C.pink;
+    ctx.fillStyle = "#1b1622"; ctx.fillRect(c.x - 5, c.y - 12, 4, 12); ctx.fillRect(c.x + 1, c.y - 12, 4, 12);
+    ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+    roundRect(c.x - 7, c.y - 26, 14, 16, 3); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#e9c9a0"; ctx.beginPath(); ctx.arc(c.x, c.y - 31, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = col; ctx.fillRect(c.x - 6, c.y - 37, 12, 4);
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(c.x + 3, c.y - 31, 1.3, 0, Math.PI * 2); ctx.fill();
+  }
   ctx.restore();
 }
 function roundRect(x, y, w, h, r) {
@@ -435,22 +484,19 @@ function roundRect(x, y, w, h, r) {
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
 
-// ---- day/night ----
 function drawDayNight() {
   const hour = getState().time.hour;
   let col = null;
-  if (hour >= 6 && hour < 9) col = "rgba(255,150,90,0.10)";      // dawn
-  else if (hour >= 9 && hour < 17) col = null;                    // day (brightest)
-  else if (hour >= 17 && hour < 20) col = "rgba(255,120,40,0.16)";// golden hour
-  else if (hour >= 20 && hour < 23) col = "rgba(40,40,110,0.30)"; // evening
-  else col = "rgba(15,18,55,0.46)";                               // deep night
+  if (hour >= 6 && hour < 9) col = "rgba(255,150,90,0.10)";
+  else if (hour >= 9 && hour < 17) col = null;
+  else if (hour >= 17 && hour < 20) col = "rgba(255,120,40,0.16)";
+  else if (hour >= 20 && hour < 23) col = "rgba(40,40,110,0.30)";
+  else col = "rgba(15,18,55,0.46)";
   if (!col) return;
   ctx.fillStyle = col; ctx.fillRect(0, 0, cssW, cssH);
 }
-
-// ---- hover label ----
 function drawLabel() {
-  const o = objects.find((x) => x.id === hovered);
+  const o = objectAt2(hovered);
   if (!o) return;
   const c = toScreen(o.tile.x, o.tile.y);
   const txt = o.name.toUpperCase();
@@ -461,9 +507,10 @@ function drawLabel() {
   ctx.strokeStyle = C.green; ctx.lineWidth = 1; ctx.strokeRect(lx, ly, tw, 18);
   ctx.fillStyle = C.green; ctx.textBaseline = "middle";
   ctx.fillText(txt, lx + 7, ly + 10);
+  ctx.textBaseline = "alphabetic";
 }
+function objectAt2(id) { return furniture.find((x) => x.id === id) || exits.find((x) => x.id === id) || null; }
 
-// ---- asset loading w/ fallback ----
 function getImage(path) {
   if (!path) return null;
   if (imgCache.has(path)) return imgCache.get(path);

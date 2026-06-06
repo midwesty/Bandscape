@@ -47,6 +47,7 @@ export function newGameState(slot, char) {
     debt: { pawn: cfg.economy.startingDebtPawn },
     flags: {},
     location: "apartment",
+    placedObjects: { apartment: JSON.parse(JSON.stringify(DATA.locations.apartment?.objects || [])) },
     objectives: { active: [], completed: [] },
     _step1Complete: false
   };
