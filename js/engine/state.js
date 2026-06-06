@@ -40,6 +40,7 @@ export function newGameState(slot, char) {
     conditions: [],          // [{ id, untilHourAbs }]
     inventory: [],           // Step 3
     containers: { fridge: [], storage: [] }, // Step 3
+    equipped: { instrumentId: null },        // what you're holding (guitar, etc.)
     patterns: [],            // Step 4 (loop format ported from old build)
     songs: [],               // Step 5
     band: { name: null, members: [] }, // Step 7

@@ -11,7 +11,7 @@ import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock } from "./systems/time.js";
 import { renderHUD } from "./systems/hud.js";
-import { renderStage } from "./systems/stage.js";
+import { renderStage, pauseStage } from "./systems/stage.js";
 import { initPhone } from "./systems/phone.js";
 import { initObjectives } from "./systems/objectives.js";
 import { startCharCreate } from "./systems/charcreate.js";
@@ -129,6 +129,7 @@ function enterGame(isNew) {
 
     on("game:requestNew", () => {
       stopClock();
+      pauseStage();
       $("game").classList.add("hidden");
       $("boot").classList.remove("hidden");
       renderTitle();

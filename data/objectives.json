@@ -62,16 +62,36 @@
       "active": false,
       "trigger": "day:advanced",
       "reward": {},
+      "unlocks": ["obj_walk"]
+    },
+    {
+      "id": "obj_walk",
+      "title": "Stretch your legs",
+      "desc": "Tap anywhere on the floor to walk there. (Arrow keys / WASD work too, on a keyboard.)",
+      "step": 2,
+      "active": false,
+      "trigger": "player:moved",
+      "reward": { "mood": 2 },
       "unlocks": ["obj_step2_teaser"]
     },
     {
       "id": "obj_step2_teaser",
-      "title": "Your gear is collecting dust",
-      "desc": "There's a guitar in the corner begging to be played. (Picking up and playing instruments arrives in the next build.)",
+      "title": "Pick up your guitar",
+      "desc": "There's a beat-up guitar in the corner. Walk over and tap it to pick it up.",
       "step": 2,
       "active": false,
-      "locked": true,
       "trigger": "instrument:equipped",
+      "reward": { "mood": 4 },
+      "unlocks": ["obj_town_teaser"]
+    },
+    {
+      "id": "obj_town_teaser",
+      "title": "There's a world out there",
+      "desc": "That front door leads to town — venues, the pawn shop, the corner store. It opens up in a later build.",
+      "step": 6,
+      "active": false,
+      "locked": true,
+      "trigger": "location:changed",
       "reward": {},
       "unlocks": []
     }
