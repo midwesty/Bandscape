@@ -93,7 +93,6 @@ function syncToState() {
   player.y = player.fy = start.y;
   path = []; pendingInteract = null; held = null; arranging = false;
   document.getElementById("arrange-button")?.classList.remove("active");
-  document.getElementById("arrange-banner")?.classList.add("hidden");
   resize();
 }
 
@@ -189,9 +188,9 @@ function setArrange(on) {
   rebuildBlocked();
   path = []; pendingInteract = null;
   document.getElementById("arrange-button")?.classList.toggle("active", on);
-  document.getElementById("arrange-banner")?.classList.toggle("hidden", !on);
   canvas.style.cursor = "default";
-  if (on) toast("Arrange mode: tap furniture, then tap an empty tile.", "info");
+  if (on) toast("Arrange: tap furniture, then an empty tile. Tap ARRANGE to finish.", "info");
+  else toast("Arrange mode off.", "info");
   requestRender();
 }
 function handleArrangeClick(t) {

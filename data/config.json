@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.2.1 (Step 2.1: Movable apartment)",
+  "version": "0.2.2 (Step 2.2: Message log)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
 

@@ -355,3 +355,23 @@ body::after {
   background: rgba(0,0,0,.66); border: 1px solid var(--yellow); border-radius: 2px;
   padding: 6px 12px; text-transform: uppercase; max-width: 90vw; text-align: center;
 }
+
+/* ============================================================
+   MESSAGE LOG (top-right feed) — replaces center toasts
+   ============================================================ */
+#log {
+  position: absolute; top: 58px; right: 14px; z-index: 25;
+  width: min(240px, 38vw); display: flex; flex-direction: column; gap: 6px;
+  pointer-events: none;
+}
+.log-entry {
+  font-family: var(--mono); font-size: 11px; line-height: 1.35; color: var(--text);
+  background: rgba(8,6,12,.74); border-left: 3px solid var(--muted); border-radius: 2px;
+  padding: 6px 9px; transform: translateX(10px); opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.4);
+}
+.log-entry.show { transform: translateX(0); }
+.log-good { border-left-color: var(--green); color: var(--green); }
+.log-warn { border-left-color: var(--pink); color: var(--pink); }
+.log-info { border-left-color: var(--yellow); }
