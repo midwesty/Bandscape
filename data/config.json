@@ -1,0 +1,38 @@
+{
+  "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
+  "version": "0.1.0 (Step 1: Shell)",
+  "title": "BANDSCAPE",
+  "tagline": "broke, in debt, and weirdly optimistic",
+
+  "time": {
+    "_comment": "realMsPerGameMinute: how many real milliseconds = 1 in-game minute. dayStartHour: what time you wake up. curfewHour: if you push past this you pass out and lose the rest of the night.",
+    "realMsPerGameMinute": 700,
+    "dayStartHour": 8,
+    "curfewHour": 4,
+    "startDay": 1,
+    "startHour": 9,
+    "startMinute": 0
+  },
+
+  "save": {
+    "slots": 3,
+    "autosaveOnSleep": true
+  },
+
+  "economy": {
+    "startingMoney": 12,
+    "startingDebtPawn": 350
+  },
+
+  "apps": {
+    "_comment": "true = working app, false = shows a 'coming soon' teaser. Later steps flip these on.",
+    "tasks": true,
+    "status": true,
+    "settings": true,
+    "music": false,
+    "maps": false,
+    "bank": false,
+    "contacts": false,
+    "streamr": false
+  }
+}

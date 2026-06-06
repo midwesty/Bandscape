@@ -1,0 +1,55 @@
+{
+  "_comment": "Items. 'icon' points at assets/img/items/<file>; if the file is missing the engine draws a labeled placeholder automatically, so you can add art later by just dropping files in. onUse runs effects: statAdd, conditionAdd, flagSet. Consumed in the inventory step.",
+  "items": {
+    "pizza_slice": {
+      "name": "Pizza Slice",
+      "icon": "assets/img/items/pizza.png",
+      "type": "consumable",
+      "tags": ["food", "drummer_fav"],
+      "stackMax": 10,
+      "value": 3,
+      "onUse": [
+        { "type": "statAdd", "stat": "hunger", "value": 40 },
+        { "type": "statAdd", "stat": "thirst", "value": 10 },
+        { "type": "conditionAdd", "conditionId": "carb_load" }
+      ]
+    },
+    "beer": {
+      "name": "Beer",
+      "icon": "assets/img/items/beer.png",
+      "type": "consumable",
+      "tags": ["drink", "bassist_fav", "vice"],
+      "stackMax": 10,
+      "value": 4,
+      "onUse": [
+        { "type": "statAdd", "stat": "thirst", "value": 30 },
+        { "type": "statAdd", "stat": "inebriation", "value": 25 },
+        { "type": "statAdd", "stat": "hunger", "value": 10 },
+        { "type": "conditionAdd", "conditionId": "liquid_confidence" }
+      ]
+    },
+    "water": {
+      "name": "Water",
+      "icon": "assets/img/items/water.png",
+      "type": "consumable",
+      "tags": ["drink"],
+      "stackMax": 10,
+      "value": 1,
+      "onUse": [
+        { "type": "statAdd", "stat": "thirst", "value": 50 }
+      ]
+    },
+    "smokes": {
+      "name": "Cigarettes",
+      "icon": "assets/img/items/smokes.png",
+      "type": "consumable",
+      "tags": ["vice"],
+      "stackMax": 10,
+      "value": 8,
+      "onUse": [
+        { "type": "statAdd", "stat": "health", "value": -2 },
+        { "type": "statAdd", "stat": "mood", "value": 4 }
+      ]
+    }
+  }
+}

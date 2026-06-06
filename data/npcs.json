@@ -1,0 +1,53 @@
+{
+  "_comment": "Recruitable musicians. 'requires' lists item TAGS they expect for practices/gigs to go well (e.g. drummer wants food). 'vices' flavor + later mechanics. Consumed in the recruit/practice steps. reliability/skill are 0..1.",
+  "npcs": [
+    {
+      "id": "npc_brian",
+      "name": "Brian",
+      "archetype": "Drummer",
+      "reliability": 0.8,
+      "skill": 0.6,
+      "genre": "punk",
+      "requires": { "practice": ["food"], "gig": ["food", "drink"] },
+      "vices": ["snacks"],
+      "recruitConditions": { "flag": "met_brian" },
+      "portrait": "assets/img/chars/brian.png"
+    },
+    {
+      "id": "npc_lex",
+      "name": "Lex",
+      "archetype": "Bassist",
+      "reliability": 0.7,
+      "skill": 0.55,
+      "genre": "punk",
+      "requires": { "practice": ["drink"], "gig": ["drink"] },
+      "vices": ["beer"],
+      "recruitConditions": {},
+      "portrait": "assets/img/chars/lex.png"
+    },
+    {
+      "id": "npc_ruby",
+      "name": "Ruby",
+      "archetype": "Singer",
+      "reliability": 0.65,
+      "skill": 0.5,
+      "genre": "indie",
+      "requires": { "practice": [], "gig": ["drink"] },
+      "vices": [],
+      "recruitConditions": {},
+      "portrait": "assets/img/chars/ruby.png"
+    },
+    {
+      "id": "npc_jo",
+      "name": "Jo",
+      "archetype": "Keys",
+      "reliability": 0.6,
+      "skill": 0.5,
+      "genre": "indie",
+      "requires": { "practice": [], "gig": [] },
+      "vices": ["smokes"],
+      "recruitConditions": {},
+      "portrait": "assets/img/chars/jo.png"
+    }
+  ]
+}

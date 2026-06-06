@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0f">
+<title>BANDSCAPE</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ROTATE PROMPT (mobile portrait) -->
+  <div id="rotate"><div class="rotate-inner">↻<br>turn your phone sideways<br><small>bandscape plays in landscape</small></div></div>
+
+  <!-- BOOT / TITLE -->
+  <section id="boot" class="screen loading">
+    <div class="boot-wrap">
+      <h1 id="boot-title" class="logo">BANDSCAPE</h1>
+      <p id="boot-tagline" class="tagline">loading…</p>
+      <div id="boot-menu" class="boot-menu"></div>
+      <div id="boot-status" class="boot-status"></div>
+      <div class="grain"></div>
+    </div>
+  </section>
+
+  <!-- CHARACTER CREATION (filled by JS) -->
+  <section id="charcreate" class="screen hidden"></section>
+
+  <!-- GAME -->
+  <section id="game" class="screen hidden">
+    <div id="stage"></div>
+
+    <div id="hud">
+      <div id="hud-clock"></div>
+      <div id="hud-pips"></div>
+      <div id="hud-cash" class="hud-cash">$0</div>
+    </div>
+
+    <button id="phone-button" aria-label="Open phone">
+      <span class="pb-glyph">▢</span>
+      <span class="pb-text">PHONE</span>
+    </button>
+
+    <!-- PHONE -->
+    <div id="phone" class="hidden">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div id="phone-screen"></div>
+        <div class="phone-bar">
+          <button id="phone-home-btn" class="phone-nav">▢</button>
+          <button id="phone-close" class="phone-nav">✕</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLAPSE -->
+  <div id="collapse" class="overlay hidden">
+    <div class="overlay-card">
+      <h2>BLACKOUT</h2>
+      <p id="collapse-msg"></p>
+      <button id="collapse-btn" class="btn btn-big">Wake up</button>
+    </div>
+  </div>
+
+  <div id="toast-host"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

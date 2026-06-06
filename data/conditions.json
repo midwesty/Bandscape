@@ -1,0 +1,55 @@
+{
+  "_comment": "Buffs, debuffs and statuses. Applied by items, sleep, events, etc. 'perHour' effects tick each game hour while active. 'onApply' fires once. Duration is in game hours. Add your own freely.",
+  "conditions": {
+    "well_rested": {
+      "name": "Well Rested",
+      "kind": "buff",
+      "desc": "A full night's sleep. Rare and precious.",
+      "icon": "moon",
+      "durationHours": 6,
+      "perHour": { "mood": 1 },
+      "onApply": {},
+      "toast": "You actually slept. Wild."
+    },
+    "exhausted": {
+      "name": "Exhausted",
+      "kind": "debuff",
+      "desc": "You're running on fumes.",
+      "icon": "skull",
+      "durationHours": 4,
+      "perHour": { "mood": -2 },
+      "onApply": {},
+      "toast": "You can barely keep your eyes open."
+    },
+    "hungover": {
+      "name": "Hungover",
+      "kind": "debuff",
+      "desc": "Last night had consequences.",
+      "icon": "skull",
+      "durationHours": 5,
+      "perHour": { "mood": -1, "thirst": -2 },
+      "onApply": { "health": -5 },
+      "toast": "Everything is too loud and too bright."
+    },
+    "carb_load": {
+      "name": "Carb Loaded",
+      "kind": "buff",
+      "desc": "Cheap food, real comfort.",
+      "icon": "star",
+      "durationHours": 2,
+      "perHour": { "mood": 1 },
+      "onApply": {},
+      "toast": "Cold pizza: the breakfast of degenerates."
+    },
+    "liquid_confidence": {
+      "name": "Liquid Confidence",
+      "kind": "buff",
+      "desc": "You feel like a rockstar. Results may vary.",
+      "icon": "star",
+      "durationHours": 2,
+      "perHour": {},
+      "onApply": { "mood": 8 },
+      "toast": "Warm, flat, and somehow perfect."
+    }
+  }
+}

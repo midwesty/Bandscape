@@ -1,0 +1,39 @@
+{
+  "_comment": "All spoken/written text lives here so you can rewrite the whole game's voice without touching code. Two shapes: 'lines' = simple text banks (random or sequential), 'trees' = branching NPC conversations used later when you talk to people in town.",
+
+  "lines": {
+    "phone_boot": [
+      "NEW PHONE WHO DIS. (it's the same cracked phone, you just turned it on)",
+      "3 missed calls. all from the pawn shop. cool cool cool."
+    ],
+    "landlord_text": [
+      "rent's due in 12 days. the radiator is 'a feature' now. - mgmt"
+    ],
+    "pawnshop_text": [
+      "your gear's safe with me. for now. $350 buys it back. tick tock. - Sal"
+    ]
+  },
+
+  "trees": {
+    "_comment": "Example branching conversation. Used in a later step when you walk up to an NPC. Each node has text + choices; a choice can goto another node, run effects, or end.",
+    "example_recruit": {
+      "speaker": "Brian",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "You the one putting up flyers? I hit things for a living. Drums, mostly.",
+          "choices": [
+            { "text": "Want in on a band?", "goto": "n1" },
+            { "text": "Never mind.", "end": true }
+          ]
+        },
+        "n1": {
+          "text": "Maybe. I don't play hungry, though. Bring snacks to practice and we'll talk.",
+          "choices": [
+            { "text": "Deal.", "effects": [{ "type": "flagSet", "flag": "met_brian", "value": true }], "end": true }
+          ]
+        }
+      }
+    }
+  }
+}

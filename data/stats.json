@@ -1,0 +1,101 @@
+{
+  "_comment": "Every player stat lives here. 'need' = drains over time. 'meter' = general 0-100 gauge. 'resource' = a counter (money, fame). decayPerHour drains the stat each game hour. Add/remove stats freely; the HUD and decay loop read this file.",
+  "stats": [
+    {
+      "id": "health",
+      "label": "Health",
+      "kind": "meter",
+      "start": 80, "min": 0, "max": 100,
+      "decayPerHour": 0,
+      "hud": true, "hudOrder": 1,
+      "color": "#ff3b6b",
+      "lowWarn": 20
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "kind": "need",
+      "start": 70, "min": 0, "max": 100,
+      "decayPerHour": 4,
+      "hud": true, "hudOrder": 2,
+      "color": "#ffd23f",
+      "lowWarn": 15
+    },
+    {
+      "id": "hunger",
+      "label": "Fed",
+      "kind": "need",
+      "start": 60, "min": 0, "max": 100,
+      "decayPerHour": 6,
+      "hud": true, "hudOrder": 3,
+      "color": "#ff8a3d",
+      "lowWarn": 15
+    },
+    {
+      "id": "thirst",
+      "label": "Hydrated",
+      "kind": "need",
+      "start": 60, "min": 0, "max": 100,
+      "decayPerHour": 8,
+      "hud": true, "hudOrder": 4,
+      "color": "#4fc3f7",
+      "lowWarn": 15
+    },
+    {
+      "id": "mood",
+      "label": "Mood",
+      "kind": "meter",
+      "start": 55, "min": 0, "max": 100,
+      "decayPerHour": 1,
+      "hud": false,
+      "color": "#b388ff",
+      "lowWarn": 15
+    },
+    {
+      "id": "inebriation",
+      "label": "Buzz",
+      "kind": "meter",
+      "start": 0, "min": 0, "max": 100,
+      "decayPerHour": 8,
+      "hud": false,
+      "color": "#7CFC9B",
+      "lowWarn": -1
+    },
+    {
+      "id": "money",
+      "label": "Cash",
+      "kind": "resource",
+      "start": 12, "min": 0, "max": 9999999,
+      "decayPerHour": 0,
+      "hud": true, "hudOrder": 0,
+      "color": "#7CFC9B",
+      "prefix": "$"
+    },
+    {
+      "id": "fame",
+      "label": "Fame",
+      "kind": "resource",
+      "start": 0, "min": 0, "max": 9999999,
+      "decayPerHour": 0,
+      "hud": false,
+      "color": "#ff3b6b"
+    },
+    {
+      "id": "fans",
+      "label": "Fans",
+      "kind": "resource",
+      "start": 0, "min": 0, "max": 9999999,
+      "decayPerHour": 0,
+      "hud": false,
+      "color": "#ffd23f"
+    }
+  ],
+
+  "_healthRules_comment": "How starving/dehydration hurts you, and how resting/being fed heals. Edit the thresholds and amounts here.",
+  "healthRules": {
+    "starvingHungerAt": 0,
+    "starvingThirstAt": 0,
+    "healthLossPerHourWhenStarving": 6,
+    "healthGainPerHourWhenOk": 1
+  }
+}

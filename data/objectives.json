@@ -1,0 +1,79 @@
+{
+  "_comment": "Objectives & tutorials. Each completes when its 'trigger' event fires (optionally matching 'match'). 'reward' applies stat changes. 'unlocks' activates other objective ids. 'step' is just a label for which build introduced it. The Tasks app on the phone shows active ones.",
+  "objectives": [
+    {
+      "id": "obj_name",
+      "title": "Figure out who you are",
+      "desc": "You woke up in a apartment that smells like ambition and mildew. At least name yourself.",
+      "step": 1,
+      "active": true,
+      "trigger": "game:started",
+      "reward": {},
+      "unlocks": ["obj_openphone"]
+    },
+    {
+      "id": "obj_openphone",
+      "title": "Check your phone",
+      "desc": "It's cracked, it's a hub for everything. Tap the phone button (bottom-right).",
+      "step": 1,
+      "active": false,
+      "trigger": "phone:opened",
+      "reward": {},
+      "unlocks": ["obj_tasks", "obj_status"]
+    },
+    {
+      "id": "obj_tasks",
+      "title": "Open your to-do list",
+      "desc": "Open the TASKS app. (You're looking at it. Meta.)",
+      "step": 1,
+      "active": false,
+      "trigger": "phone:appOpened",
+      "match": { "app": "tasks" },
+      "reward": {},
+      "unlocks": []
+    },
+    {
+      "id": "obj_status",
+      "title": "Know your vitals",
+      "desc": "Open the STATUS app to see your needs. Stay fed, watered, and not dead.",
+      "step": 1,
+      "active": false,
+      "trigger": "phone:appOpened",
+      "match": { "app": "status" },
+      "reward": {},
+      "unlocks": ["obj_backup", "obj_sleep"]
+    },
+    {
+      "id": "obj_backup",
+      "title": "Back up your life",
+      "desc": "Optional but smart: Settings app, EXPORT SAVE. Drops a file you can re-import on another device.",
+      "step": 1,
+      "active": false,
+      "optional": true,
+      "trigger": "save:exported",
+      "reward": { "mood": 3 },
+      "unlocks": []
+    },
+    {
+      "id": "obj_sleep",
+      "title": "Crash for the night",
+      "desc": "Click the bed to sleep. Sleeping is the only way the day moves forward (and it saves your game).",
+      "step": 1,
+      "active": false,
+      "trigger": "day:advanced",
+      "reward": {},
+      "unlocks": ["obj_step2_teaser"]
+    },
+    {
+      "id": "obj_step2_teaser",
+      "title": "Your gear is collecting dust",
+      "desc": "There's a guitar in the corner begging to be played. (Picking up and playing instruments arrives in the next build.)",
+      "step": 2,
+      "active": false,
+      "locked": true,
+      "trigger": "instrument:equipped",
+      "reward": {},
+      "unlocks": []
+    }
+  ]
+}
