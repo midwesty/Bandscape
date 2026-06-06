@@ -59,6 +59,7 @@ export function closePhone() {
 
 function openApp(app) {
   currentApp = app;
+  phoneEl.classList.toggle("landscape", app === "music");
   renderApp(app);
   emit("phone:appChanged", { app });
   if (app !== "home") emit("phone:appOpened", { app });

@@ -50,6 +50,7 @@ export function newGameState(slot, char) {
     equipped: { instrumentId: null },        // what you're holding (guitar, etc.)
     addictions: {},                          // substance -> accumulated use (light hook for later)
     patterns: [],            // Step 4 (loop format ported from old build)
+    musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },
     songs: [],               // Step 5
     band: { name: null, members: [] }, // Step 7
     debt: { pawn: cfg.economy.startingDebtPawn },

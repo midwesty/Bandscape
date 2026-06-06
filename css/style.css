@@ -467,3 +467,21 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .loop-info small { display: block; color: var(--muted); font-size: 11px; }
 .loop-btns { display: flex; gap: 5px; }
 .loop-act { width: auto; margin: 0; padding: 7px 11px; font-size: 13px; }
+
+/* ============================================================
+   STEP 4.1 — Music: landscape phone, metronome, octave controls
+   ============================================================ */
+#phone.landscape .phone-frame { width: min(680px, 95vw); height: min(400px, 88vh); border-radius: 22px; }
+#phone.landscape .phone-notch { display: none; }
+#phone.landscape .pad-row { flex-wrap: nowrap; }
+#phone.landscape .pad { flex: 1 1 0; min-width: 0; aspect-ratio: 1.7; }
+
+.mus-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.mus-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.mus-sel { font-family: var(--cond); font-size: 9px; letter-spacing: 1px; color: var(--yellow); display: flex; flex-direction: column; gap: 2px; }
+.mus-sel select, .mus-sel input { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; font-family: var(--mono); padding: 3px 5px; font-size: 12px; }
+.mus-sel input[type=number] { width: 56px; }
+.mus-check { font-family: var(--cond); font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 5px; align-self: flex-end; }
+.rec-opts { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 8px; }
+.rec-status { font-family: var(--mono); font-size: 11px; margin-left: 4px; }
+.loop-list { display: flex; flex-direction: column; gap: 7px; }
