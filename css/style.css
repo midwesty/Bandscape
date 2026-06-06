@@ -375,3 +375,58 @@ body::after {
 .log-good { border-left-color: var(--green); color: var(--green); }
 .log-warn { border-left-color: var(--pink); color: var(--pink); }
 .log-info { border-left-color: var(--yellow); }
+
+/* ============================================================
+   STEP 3 — Bag button + inventory
+   ============================================================ */
+#bag-button {
+  position: absolute; right: 92px; bottom: 18px; z-index: 30;
+  width: 64px; height: 64px; border-radius: 14px; cursor: pointer;
+  background: var(--panel); border: 3px solid var(--text);
+  display: grid; place-items: center; color: var(--text);
+  box-shadow: 4px 5px 0 rgba(0,0,0,.5); transition: transform .1s, box-shadow .1s;
+}
+#bag-button:hover { transform: translate(-1px,-1px); box-shadow: 6px 7px 0 var(--green); }
+#bag-button:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.5); }
+.bg-glyph { font-size: 22px; line-height: 1; color: var(--green); }
+.bg-text { font-family: var(--cond); font-size: 9px; letter-spacing: 2px; }
+
+#inventory { position: absolute; inset: 0; z-index: 45; display: grid; place-items: center;
+  background: rgba(0,0,0,.55); opacity: 0; transition: opacity .2s; padding: 12px; }
+#inventory.open { opacity: 1; }
+.inv-modal { width: min(580px, 96vw); max-height: 92vh; display: flex; flex-direction: column;
+  background: var(--panel); border: 3px solid var(--text); border-radius: 4px;
+  box-shadow: 10px 12px 0 rgba(0,0,0,.55); overflow: hidden; transform: translateY(10px) scale(.99);
+  transition: transform .2s; }
+#inventory.open .inv-modal { transform: translateY(0) scale(1); }
+.inv-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px;
+  background: #000; border-bottom: 2px solid var(--line); }
+.inv-title { font-family: var(--display); font-size: 22px; letter-spacing: 1px; color: var(--text);
+  text-shadow: 2px 2px 0 var(--green); }
+.inv-body { display: flex; gap: 12px; padding: 12px; overflow-y: auto; }
+.inv-pane { flex: 1; min-width: 0; }
+.inv-pane-title { font-family: var(--cond); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  font-size: 12px; color: var(--yellow); margin-bottom: 8px; }
+.inv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.inv-slot { position: relative; aspect-ratio: 1; background: var(--bg); border: 2px solid var(--line);
+  border-radius: 3px; display: grid; place-items: center; cursor: pointer; padding: 2px;
+  touch-action: none; transition: border-color .1s, transform .08s; }
+.inv-slot:not(.inv-empty):hover { border-color: var(--green); }
+.inv-slot.sel { border-color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow); }
+.inv-empty { cursor: default; opacity: .5; border-style: dashed; }
+.inv-icon { width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
+.inv-qty { position: absolute; right: 3px; bottom: 2px; font-family: var(--display); font-size: 13px;
+  color: var(--green); text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.inv-name { position: absolute; top: 2px; left: 3px; right: 3px; font-family: var(--mono); font-size: 8px;
+  color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.inv-actions { border-top: 2px solid var(--line); padding: 10px 12px; background: #000;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 56px; }
+.inv-sel-info { flex: 1; min-width: 120px; }
+.inv-sel-info strong { font-family: var(--cond); letter-spacing: .5px; display: block; }
+.inv-sel-info small { color: var(--muted); font-size: 11px; }
+.inv-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.inv-act { width: auto; margin: 0; padding: 8px 12px; font-size: 12px; }
+.inv-hint { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center;
+  padding: 6px; border-top: 1px solid var(--line); }
+.inv-ghost { position: fixed; width: 44px; height: 44px; object-fit: contain; pointer-events: none;
+  transform: translate(-50%,-50%); z-index: 9500; opacity: .85; filter: drop-shadow(2px 3px 2px #000); }

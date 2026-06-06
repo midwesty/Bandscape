@@ -13,6 +13,7 @@ import { startClock, stopClock } from "./systems/time.js";
 import { renderHUD } from "./systems/hud.js";
 import { renderStage, pauseStage } from "./systems/stage.js";
 import { initPhone } from "./systems/phone.js";
+import { initInventory } from "./systems/inventory.js";
 import { initObjectives } from "./systems/objectives.js";
 import { startCharCreate } from "./systems/charcreate.js";
 import { toast } from "./ui/toast.js";
@@ -105,6 +106,7 @@ function enterGame(isNew) {
 
   initObjectives();
   initPhone();
+  initInventory();
   renderHUD();
   renderStage();
 

@@ -82,6 +82,36 @@
       "active": false,
       "trigger": "instrument:equipped",
       "reward": { "mood": 4 },
+      "unlocks": ["obj_open_bag"]
+    },
+    {
+      "id": "obj_open_bag",
+      "title": "Check your pockets",
+      "desc": "Tap BAG (bottom-right) to see what you're carrying.",
+      "step": 3,
+      "active": false,
+      "trigger": "inventory:opened",
+      "reward": {},
+      "unlocks": ["obj_use_item"]
+    },
+    {
+      "id": "obj_use_item",
+      "title": "Use something",
+      "desc": "Tap an item to select it, then hit Use. Eat, drink, whatever — watch your needs in Status.",
+      "step": 3,
+      "active": false,
+      "trigger": "item:used",
+      "reward": {},
+      "unlocks": ["obj_stash"]
+    },
+    {
+      "id": "obj_stash",
+      "title": "Raid the fridge",
+      "desc": "Walk to the fridge and open it, then move an item between it and your pockets (drag it, or select it and tap the move button).",
+      "step": 3,
+      "active": false,
+      "trigger": "item:moved",
+      "reward": { "mood": 3 },
       "unlocks": ["obj_town_teaser"]
     },
     {

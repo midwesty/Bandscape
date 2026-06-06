@@ -38,9 +38,17 @@ export function newGameState(slot, char) {
     },
     stats,
     conditions: [],          // [{ id, untilHourAbs }]
-    inventory: [],           // Step 3
-    containers: { fridge: [], storage: [] }, // Step 3
+    inventory: [                                   // pockets (stacks: {item, qty})
+      { item: "water", qty: 2 },
+      { item: "pizza_slice", qty: 1 },
+      { item: "smokes", qty: 1 }
+    ],
+    containers: {
+      fridge:  [ { item: "beer", qty: 4 }, { item: "water", qty: 3 }, { item: "cold_fries", qty: 2 }, { item: "energy_drink", qty: 2 } ],
+      storage: [ { item: "ramen_cup", qty: 3 }, { item: "candy_bar", qty: 2 }, { item: "guitar_picks", qty: 8 } ]
+    },
     equipped: { instrumentId: null },        // what you're holding (guitar, etc.)
+    addictions: {},                          // substance -> accumulated use (light hook for later)
     patterns: [],            // Step 4 (loop format ported from old build)
     songs: [],               // Step 5
     band: { name: null, members: [] }, // Step 7

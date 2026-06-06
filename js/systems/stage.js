@@ -17,6 +17,7 @@ import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
+import { openContainerView, giveItem } from "./inventory.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -70,6 +71,7 @@ function initOnce() {
   ro.observe(stageEl);
 
   on("time:tick", () => requestRender());
+  on("room:dropItem", (d) => placeFloorItem(d));
   resize();
 }
 
@@ -99,7 +101,7 @@ function syncToState() {
 function rebuildBlocked(except) {
   const w = room.size?.w || 8, h = room.size?.h || 6;
   blocked = Array.from({ length: h }, () => Array(w).fill(false));
-  for (const o of furniture) { if (o !== except && o.tile) blocked[o.tile.y][o.tile.x] = true; }
+  for (const o of furniture) { if (o !== except && o.tile && o.kind !== "item") blocked[o.tile.y][o.tile.x] = true; }
 }
 function firstFreeTile() {
   const w = room.size?.w || 8, h = room.size?.h || 6;
@@ -295,7 +297,10 @@ function interact(obj) {
       break;
     }
     case "container":
-      toast("Empty for now — storage opens up with the inventory (next build).", "info");
+      openContainerView(obj.containerId || "storage");
+      break;
+    case "pickup":
+      pickUpFloorItem(obj);
       break;
     case "daw":
       toast("The laptop's your studio. It boots up in a later build.", "info");
@@ -306,6 +311,43 @@ function interact(obj) {
     default:
       toast(obj.name, "info");
   }
+}
+
+// ---- dropped items on the floor ----
+function placeFloorItem(d) {
+  const tile = { x: Math.round(player.x), y: Math.round(player.y) };
+  furniture.push({
+    id: "floor_" + Math.random().toString(36).slice(2, 8),
+    kind: "item", item: d.item, qty: d.qty, name: d.name, icon: d.icon,
+    interact: "pickup", tile
+  });
+  rebuildBlocked();
+  persist();
+  requestRender();
+}
+function pickUpFloorItem(o) {
+  const want = o.qty || 1;
+  const leftover = giveItem("inventory", o.item, want);
+  const took = want - leftover;
+  if (took <= 0) { toast("Your pockets are full.", "warn"); return; }
+  if (leftover > 0) { o.qty = leftover; toast("Grabbed some " + (o.name || o.item) + " — pockets full.", "warn"); }
+  else {
+    const idx = furniture.indexOf(o);
+    if (idx >= 0) furniture.splice(idx, 1);
+    toast("Picked up " + (o.name || o.item) + ".", "good");
+  }
+  rebuildBlocked();
+  persist();
+  emit("renderAll");
+  requestRender();
+}
+function drawFloorItem(o, cx, cy) {
+  ctx.fillStyle = "#2a2233"; ctx.strokeStyle = C.yellow; ctx.lineWidth = 1.5;
+  roundRect(cx - 9, cy - 17, 18, 16, 3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.yellow; ctx.font = "700 11px 'Arial Narrow', sans-serif"; ctx.textAlign = "center";
+  ctx.fillText((o.name || "?").slice(0, 1).toUpperCase(), cx, cy - 6);
+  if (o.qty > 1) { ctx.fillStyle = C.green; ctx.font = "700 9px 'Arial Narrow', sans-serif"; ctx.fillText("x" + o.qty, cx, cy + 8); }
+  ctx.textAlign = "left";
 }
 
 // ---- render loop ----
@@ -400,8 +442,10 @@ function drawObject(o) {
   ctx.save();
   if (lifted) ctx.translate(0, -8);
   if (img && img._ok) {
-    const dw = TILE_W * 1.1, dh = dw * (img.naturalHeight / img.naturalWidth || 1);
+    const dw = (o.kind === "item" ? TILE_W * 0.6 : TILE_W * 1.1), dh = dw * (img.naturalHeight / img.naturalWidth || 1);
     ctx.drawImage(img, c.x - dw / 2, c.y - dh + TILE_H * 0.35, dw, dh);
+  } else if (o.kind === "item") {
+    drawFloorItem(o, c.x, c.y);
   } else {
     drawProc(o, c.x, c.y);
   }
