@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.9.1 (Step 9.1: time controls)",
+  "version": "0.10.0 (Step 10: Band Management 2.0)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -55,7 +55,20 @@
       "chemistryBonus": 4,
       "moodGain": 2
     },
-    "maxChemistry": 100
+    "maxChemistry": 100,
+    "happiness": {
+      "start": 70,
+      "rehearse": 6,
+      "rehearseBonus": 4,
+      "show": 4,
+      "showQualityDiv": 20,
+      "missShow": 18,
+      "missReh": 12,
+      "idleDecay": 2,
+      "idleDecayLoyal": 1,
+      "quitThreshold": 15,
+      "quitChance": 0.5
+    }
   },
   "gear": {
     "device": "SoundPound 400",

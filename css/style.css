@@ -672,3 +672,18 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .ts-opt { width: 100%; margin: 0; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 2px solid var(--line); color: var(--text); border-radius: 2px; cursor: pointer; font-family: var(--body); }
 .ts-opt:hover { border-color: var(--blue); color: var(--blue); }
 .ts-opt small { font-family: var(--mono); color: var(--muted); }
+
+/* ============================================================
+   STEP 10 — Band Management 2.0 (multi-band, roles, happiness)
+   ============================================================ */
+.band-switch { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.band-switch select { flex: 1; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; padding: 6px; font-family: var(--body); }
+.band-member.you { border-color: var(--yellow); }
+.bm-info { flex: 1; min-width: 0; }
+.bm-info strong { display: block; }
+.bm-hap { margin-top: 4px; }
+.bm-hap-bar { height: 5px; background: #0c0810; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.bm-hap-bar > div { height: 100%; }
+.bm-role { background: #000; color: var(--text); border: 1px solid var(--line); border-radius: 2px; font-family: var(--cond); font-size: 11px; padding: 3px 4px; flex: none; }
+.bm-kick { background: none; border: 1px solid var(--line); color: var(--pink); border-radius: 2px; cursor: pointer; width: 26px; height: 26px; flex: none; font-size: 12px; }
+.bm-kick:hover { border-color: var(--pink); }

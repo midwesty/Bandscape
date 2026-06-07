@@ -14,7 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat } from "../engine/state.js";
+import { getState, addStat, activeBand } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -41,20 +41,20 @@ function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 function bookedAt(day, slot) { return list().some((c) => c.status === "booked" && c.day === day && c.slot === slot); }
 function venueOpen(day) { return (((day * 2654435761) >>> 0) % 3) !== 0; }
 function bandAvailableCount(slot) {
-  const npcs = DATA.npcs.npcs || []; const mem = getState().band?.members || [];
+  const npcs = DATA.npcs.npcs || []; const mem = activeBand()?.members || [];
   return mem.filter((m) => { const n = npcs.find((x) => x.id === m.id); return n && (n.availability || []).includes(slot); }).length;
 }
 
-export function findReady(type) { return list().find((c) => c.status === "booked" && c.type === type && c.day === today() && c.slot === currentSlot()) || null; }
-export function nextCommitment(type) {
+export function findReady(type, bandId) { return list().find((c) => c.status === "booked" && c.type === type && (!bandId || c.bandId === bandId) && c.day === today() && c.slot === currentSlot()) || null; }
+export function nextCommitment(type, bandId) {
   const ni = nowIndex();
-  return list().filter((c) => c.status === "booked" && (!type || c.type === type) && cmtIndex(c) >= ni).sort((a, b) => cmtIndex(a) - cmtIndex(b))[0] || null;
+  return list().filter((c) => c.status === "booked" && (!type || c.type === type) && (!bandId || c.bandId === bandId) && cmtIndex(c) >= ni).sort((a, b) => cmtIndex(a) - cmtIndex(b))[0] || null;
 }
 export function complete(id) { const c = list().find((x) => x.id === id); if (c) { c.status = "done"; persist(); emit("calendar:updated"); } }
 
 function availableSlots(type) {
   const out = []; const horizon = cfg().horizonDays || 7; const ni = nowIndex();
-  const mem = (getState().band?.members || []).length;
+  const mem = (activeBand()?.members || []).length;
   for (let d = today(); d <= today() + horizon; d++) {
     for (const sl of slots()) {
       const idx = d * nUnits() + slotIndex(sl.id);
@@ -99,9 +99,9 @@ function closeScheduler() {
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 function book(type, day, slot) {
-  const band = getState().band || {};
+  const band = activeBand() || {};
   const title = type === "show" ? `Show · ${band.name || "your band"} @ The Dive` : `Rehearsal · ${band.name || "your band"}`;
-  list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, venue: type === "show" ? "venue" : null });
+  list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, bandId: band.id, venue: type === "show" ? "venue" : null });
   persist();
   emit("calendar:booked", { type, day, slot });
   emit("renderAll");
@@ -138,6 +138,7 @@ function sweepMissed() {
     if (c.status === "booked" && cmtIndex(c) < ni) {
       c.status = "missed";
       if (c.type === "show") missedShow++; else missedReh++;
+      emit("commitment:missed", { bandId: c.bandId, type: c.type });
     }
   }
   if (missedShow) { addStat("fans", -Math.min(getState().stats.fans || 0, 2 * missedShow)); toast("You blew off a booked gig at The Dive. Word gets around.", "warn"); }

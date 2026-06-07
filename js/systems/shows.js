@@ -10,30 +10,30 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 
-let overlay = null, pendingShowCmt = null;
+let overlay = null, pendingShowCmt = null, perfBand = null;
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 const songById = (id) => (getState().songs || []).find((s) => s.id === id) || null;
 
 // ---- quality ----
-export function songQuality(song) {
+export function songQuality(song, band) {
   if (!song) return 0;
+  band = band || activeBand() || {};
   const tracks = song.tracks || [];
   const used = tracks.filter((t) => t && t.length).length;
   const clips = tracks.reduce((n, t) => n + (t ? t.length : 0), 0);
   const content = Math.min(1, (used / 4) * 0.6 + Math.min(1, clips / 8) * 0.4);
-  const s = getState();
   const maxChem = DATA.config.band?.maxChemistry || 100;
-  const chem = (s.band?.chemistry || 0) / maxChem;
-  const members = s.band?.members || [];
+  const chem = (band.chemistry || 0) / maxChem;
+  const members = band.members || [];
   const skill = members.length ? members.reduce((a, m) => a + (m.skill || 0), 0) / members.length : 0;
   const fid = DATA.config.gear?.fidelity ?? 0.5;
   const q = 100 * (0.30 * content + 0.25 * chem + 0.20 * skill + 0.25 * fid);
@@ -48,21 +48,22 @@ function tierFlavor(q) {
 
 // ---- booking ----
 export function openPerform() {
-  const s = getState(); const band = s.band || {};
+  const s = getState();
   const ready = findReady("show");
   if (!ready) {
     const nx = nextCommitment("show");
     toast(nx ? `No show tonight. Next: Day ${nx.day}, ${slotLabel(nx.slot)} — be here then.` : "No show booked. Book one in the BAND app.", "info");
     return;
   }
-  if (!band.members || !band.members.length) { toast("You booked a show with no band?!", "warn"); return; }
+  perfBand = bandById(ready.bandId) || activeBand() || {};
+  if (!perfBand.members || !perfBand.members.length) { toast("You booked a show with no band?!", "warn"); return; }
   if (!(s.songs || []).length) { toast("A gig and no songs. Awkward.", "warn"); return; }
   pendingShowCmt = ready.id;
   overlay = overlay || document.getElementById("show");
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
   document.body.classList.add("modal-open");
-  renderBooking(new Set([band.pressKit?.songId].filter(Boolean)));
+  renderBooking(new Set([perfBand.pressKit?.songId].filter(Boolean)));
 }
 export function closeShow() {
   overlay.classList.remove("open");
@@ -70,12 +71,13 @@ export function closeShow() {
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 
-function estimate(setIds) {
+function estimate(setIds, band) {
+  band = band || perfBand || activeBand() || {};
   const s = getState(); const cfg = DATA.config.shows;
   const fame = s.stats.fame || 0;
-  const chem = s.band?.chemistry || 0;
+  const chem = band.chemistry || 0;
   const draw = Math.round((cfg.baseAudience || 8) + fame * (cfg.fameDrawFactor || 0.5) + chem / (cfg.chemDrawDiv || 20));
-  const qs = [...setIds].map((id) => songQuality(songById(id))).filter((n) => n >= 0);
+  const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
@@ -87,7 +89,7 @@ function estimate(setIds) {
 
 function renderBooking(selected) {
   const s = getState(); const songs = s.songs || [];
-  const est = estimate(selected);
+  const est = estimate(selected, perfBand);
   overlay.innerHTML = `
     <div class="show-modal">
       <div class="shop-head"><span class="shop-title">BOOK A SHOW</span><button class="phone-nav" id="show-close">✕</button></div>
@@ -98,7 +100,7 @@ function renderBooking(selected) {
           ${songs.map((sg) => {
             const on = selected.has(sg.id);
             return `<label class="set-row ${on ? "on" : ""}"><input type="checkbox" data-song="${sg.id}" ${on ? "checked" : ""}>
-              <span class="set-name">${esc(sg.name)}</span><span class="set-q">Q ${songQuality(sg)}</span></label>`;
+              <span class="set-name">${esc(sg.name)}</span><span class="set-q">Q ${songQuality(sg, perfBand)}</span></label>`;
           }).join("")}
         </div>
         <div class="show-est">
@@ -123,7 +125,8 @@ function renderBooking(selected) {
 function playShow(setIds) {
   if (!setIds.length) return;
   const s = getState(); const cfg = DATA.config.shows;
-  const est = estimate(new Set(setIds));
+  const band = perfBand || activeBand() || {};
+  const est = estimate(new Set(setIds), band);
   const energy = (cfg.energyCost || 25) + (setIds.length - 1) * 5;
   const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
 
@@ -133,12 +136,12 @@ function playShow(setIds) {
   addStat("mood", cfg.moodGain || 8);
   addStat("energy", -energy);
   const maxChem = DATA.config.band?.maxChemistry || 100;
-  s.band.chemistry = Math.min(maxChem, (s.band.chemistry || 0) + (cfg.chemistryGain || 5));
-  s.band.showsPlayed = (s.band.showsPlayed || 0) + 1;
+  band.chemistry = Math.min(maxChem, (band.chemistry || 0) + (cfg.chemistryGain || 5));
+  band.showsPlayed = (band.showsPlayed || 0) + 1;
   advanceMinutes(minutes);
   persist();
   if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }
-  emit("show:played", { pay: est.pay, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
+  emit("show:played", { bandId: band.id, pay: est.pay, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
   emit("renderAll");
 
   const [head, sub] = tierFlavor(est.avgQ);

@@ -54,7 +54,8 @@ export function newGameState(slot, char) {
     musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },
     songs: [],               // Step 5
     songDraft: null,         // current studio arrangement in progress
-    band: { name: null, members: [], chemistry: 0 }, // Step 7
+    bands: [{ id: "band_1", name: null, members: [], chemistry: 0, pressKit: null, showsPlayed: 0, playerIn: true }], // Step 10
+    activeBandId: "band_1",
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
     flags: {},
@@ -66,6 +67,21 @@ export function newGameState(slot, char) {
 }
 
 // ---- stat helpers (data-driven clamping) ----
+const ROLE_BY_ARCH = { drummer: "drums", bassist: "bass", singer: "vocals", vocalist: "vocals", keyboardist: "piano", keys: "piano", guitarist: "guitar" };
+export function roleFromArchetype(a) { return ROLE_BY_ARCH[(a || "").toLowerCase()] || "guitar"; }
+export function bandById(id) { const s = getState(); return (s && s.bands || []).find((b) => b.id === id) || null; }
+export function activeBand() {
+  const s = getState(); if (!s) return null;
+  if (!s.bands) {
+    const legacy = s.band || { name: null, members: [], chemistry: 0 };
+    legacy.id = legacy.id || "band_1"; legacy.playerIn = true;
+    legacy.pressKit = legacy.pressKit || null; legacy.showsPlayed = legacy.showsPlayed || 0;
+    legacy.members = (legacy.members || []).map((m) => ({ ...m, role: m.role || roleFromArchetype(m.archetype), happiness: m.happiness == null ? 70 : m.happiness }));
+    s.bands = [legacy]; s.activeBandId = legacy.id; delete s.band;
+  }
+  return s.bands.find((b) => b.id === s.activeBandId) || s.bands[0] || null;
+}
+
 export function statDef(id) {
   return DATA.stats.stats.find((s) => s.id === id) || null;
 }
