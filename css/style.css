@@ -705,3 +705,9 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .ms-btn { width: 28px; height: 17px; font-size: 10px; font-family: var(--mono); background: #000; border: 1px solid var(--line); color: var(--muted); border-radius: 2px; cursor: pointer; line-height: 1; }
 .ms-btn.on-m { background: var(--pink); color: #000; border-color: var(--pink); }
 .ms-btn.on-s { background: var(--yellow); color: #000; border-color: var(--yellow); }
+
+/* Band-manager fix — discoverable band tabs (replaces dropdown) */
+.band-tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.band-tab { flex: 0 0 auto; background: var(--bg); color: var(--muted); border: 2px solid var(--line); border-radius: 2px; padding: 7px 12px; font-family: var(--cond); font-size: 13px; letter-spacing: 0.5px; cursor: pointer; white-space: nowrap; }
+.band-tab.active { border-color: var(--pink); color: var(--text); background: #2a1620; }
+.band-tab.band-new { color: var(--green); border-style: dashed; }

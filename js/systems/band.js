@@ -70,8 +70,12 @@ function renderRecruit() {
   const ab = activeBand();
   const ok = !existing && hasDemo() && conditionsMet(npc);
   let actionHTML, note = "";
-  if (existing) actionHTML = `<button class="btn" disabled>✓ In ${esc(existing.name || "your band")}</button>`;
-  else {
+  if (existing && ab && existing.id === ab.id) {
+    actionHTML = `<button class="btn" disabled>✓ Already in ${esc(ab.name || "this band")}</button>`;
+  } else if (existing) {
+    actionHTML = `<button class="btn bd-recruit" id="bd-move">Move to ${esc(ab?.name || "this band")}</button>`;
+    note = `Currently in ${esc(existing.name || "another band")}. Moving them frees up their old spot.`;
+  } else {
     actionHTML = `<button class="btn bd-recruit" id="bd-invite" ${ok ? "" : "disabled"}>Invite to ${esc(ab?.name || "your band")}</button>`;
     if (!hasDemo()) note = "They want to hear something first. Record &amp; save a song, then come back.";
     else if (!conditionsMet(npc)) note = "They're not interested yet.";
@@ -94,6 +98,19 @@ function renderRecruit() {
   overlay.querySelector("#bd-close").addEventListener("click", closeRecruit);
   const inv = overlay.querySelector("#bd-invite");
   if (inv) inv.addEventListener("click", () => recruit(viewing));
+  const mv = overlay.querySelector("#bd-move");
+  if (mv) mv.addEventListener("click", () => moveMember(viewing, activeBand()?.id));
+}
+function moveMember(npcId, toBandId) {
+  const from = bandOf(npcId), to = bandById(toBandId);
+  if (!from || !to || from.id === to.id) return;
+  const m = from.members.find((x) => x.id === npcId); if (!m) return;
+  if (!to.name) { const nm = (prompt("Name this band first:", BAND_NAMES[Math.floor(Math.random() * BAND_NAMES.length)]) || "").trim(); if (!nm) return; to.name = nm; }
+  from.members = from.members.filter((x) => x.id !== npcId);
+  to.members.push(m);                          // keeps their instrument + happiness
+  persist(); emit("renderAll");
+  toast(`${m.name} moved from ${from.name || "their old band"} to ${to.name}.`, "good");
+  renderRecruit();
 }
 function recruit(npcId) {
   const npc = npcDef(npcId); const b = activeBand();
@@ -115,9 +132,9 @@ export function renderBandApp(container) {
   const b = activeBand();
   const list = bands();
   const switcher = `
-    <div class="band-switch">
-      ${list.length > 1 ? `<select id="band-pick">${list.map((x) => `<option value="${x.id}" ${x.id === b.id ? "selected" : ""}>${esc(x.name || "Unnamed")}${x.playerIn ? " ★" : ""}</option>`).join("")}</select>` : ""}
-      <button class="btn band-mini" id="band-new">+ New Band</button>
+    <div class="band-tabs">
+      ${list.map((x) => `<button class="band-tab ${x.id === b.id ? "active" : ""}" data-band="${x.id}">${esc(x.name || "Unnamed")}${x.playerIn ? " ★" : ""}</button>`).join("")}
+      <button class="band-tab band-new" id="band-new">+ New</button>
     </div>`;
 
   if (!b.members.length && !b.name) {
@@ -184,9 +201,10 @@ export function renderBandApp(container) {
 }
 
 function bindSwitcher(container) {
-  const pick = container.querySelector("#band-pick");
-  if (pick) pick.addEventListener("change", () => { getState().activeBandId = pick.value; persist(); emit("renderAll"); });
-  container.querySelector("#band-new").addEventListener("click", formBand);
+  container.querySelectorAll(".band-tab[data-band]").forEach((t) => t.addEventListener("click", () => {
+    getState().activeBandId = t.dataset.band; persist(); emit("renderAll");
+  }));
+  const nb = container.querySelector("#band-new"); if (nb) nb.addEventListener("click", formBand);
 }
 function formBand() {
   const nm = (prompt("Name your new band:", BAND_NAMES[Math.floor(Math.random() * BAND_NAMES.length)]) || "").trim();
