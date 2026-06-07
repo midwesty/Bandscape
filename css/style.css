@@ -690,3 +690,18 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 
 /* Step 11.0 — device label in DAW header */
 .daw-dev { font-family: var(--cond); font-size: 11px; letter-spacing: 1px; color: var(--blue); margin-left: 8px; }
+
+/* ============================================================
+   STEP 11.1 — mixer channel strips (volume/pan knobs, mute/solo)
+   ============================================================ */
+.mix-strip { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.knob-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.knob { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, #3a3346, #16111f); border: 2px solid var(--line); position: relative; cursor: ns-resize; touch-action: none; }
+.knob:hover { border-color: var(--yellow); }
+.knob-ind { position: absolute; left: 50%; top: 3px; width: 2px; height: 12px; background: var(--yellow); transform-origin: 50% 14px; margin-left: -1px; }
+.knob-lbl { font-family: var(--cond); font-size: 8px; letter-spacing: 1px; color: var(--muted); }
+.knob-val { font-family: var(--mono); font-size: 9px; color: var(--text); }
+.mix-ms { display: flex; flex-direction: column; gap: 4px; }
+.ms-btn { width: 28px; height: 17px; font-size: 10px; font-family: var(--mono); background: #000; border: 1px solid var(--line); color: var(--muted); border-radius: 2px; cursor: pointer; line-height: 1; }
+.ms-btn.on-m { background: var(--pink); color: #000; border-color: var(--pink); }
+.ms-btn.on-s { background: var(--yellow); color: #000; border-color: var(--yellow); }

@@ -132,7 +132,7 @@ function getImpulse() {
   return impulseBuf;
 }
 // Build an effect chain; returns the INPUT node (connect sources here). Output goes to destination.
-export function buildFXChain(fx) {
+export function buildFXChain(fx, silenced = false) {
   ensureAudio();
   fx = fx || {};
   const input = ctx.createGain();
@@ -147,7 +147,16 @@ export function buildFXChain(fx) {
   conv.buffer = getImpulse();
   dry.gain.value = 1 - rv * 0.55; wet.gain.value = rv;
   node.connect(dry); node.connect(conv); conv.connect(wet);
-  dry.connect(outg); wet.connect(outg); outg.connect(ctx.destination);
+  dry.connect(outg); wet.connect(outg);
+  // volume + pan (post-FX); mute/solo silences
+  const vol = ctx.createGain();
+  vol.gain.value = (silenced || fx.mute) ? 0 : (fx.volume == null ? 1 : fx.volume);
+  outg.connect(vol);
+  if (ctx.createStereoPanner) {
+    const pan = ctx.createStereoPanner();
+    pan.pan.value = Math.max(-1, Math.min(1, fx.pan || 0));
+    vol.connect(pan); pan.connect(ctx.destination);
+  } else { vol.connect(ctx.destination); }
   return input;
 }
 

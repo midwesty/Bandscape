@@ -29,7 +29,7 @@ let browseFilter = "all", browseQuery = "";
 function ensurePatternIds() { (getState().patterns || []).forEach((p, i) => { if (!p.id) p.id = "pat_" + (p.createdAt || Date.now()) + "_" + i; }); }
 function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || null; }
 function clipBars(pat) { if (pat && pat.type === "audio") return Math.max(1, pat.bars || 2); return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
-function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000 }; }
+function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000, volume: 1, pan: 0, mute: false, solo: false }; }
 function newDraft() { const nt = deviceTracks(); return { name: "Untitled Song", bpm: 110, lengthBars: deviceBars(), metroOn: false, tracks: Array.from({ length: nt }, () => []), fx: Array.from({ length: nt }, blankFX) }; }
 function ensureFx() { const nt = deviceTracks(); draft.fx = draft.fx || []; for (let i = 0; i < nt; i++) draft.fx[i] = Object.assign(blankFX(), draft.fx[i] || {}); }
 function padDraft() { const nt = deviceTracks(); draft.tracks = draft.tracks || []; while (draft.tracks.length < nt) draft.tracks.push([]); ensureFx(); }
@@ -186,6 +186,9 @@ function openMixer() {
     const lab = el.parentElement.querySelector(".mix-val"); if (lab) lab.textContent = el.dataset.fx === "eq" ? (el.value + "dB") : el.dataset.fx === "lowpass" ? (el.value + "Hz") : (el.value + "%");
     persist();
   }));
+  sub.querySelectorAll(".knob").forEach(bindKnob);
+  sub.querySelectorAll("[data-m]").forEach((b) => b.addEventListener("click", () => { const ti = +b.dataset.m; draft.fx[ti].mute = !draft.fx[ti].mute; persist(); openMixer(); }));
+  sub.querySelectorAll("[data-s]").forEach((b) => b.addEventListener("click", () => { const ti = +b.dataset.s; draft.fx[ti].solo = !draft.fx[ti].solo; persist(); openMixer(); }));
 }
 function mixTrackHTML(fx, ti) {
   const eff = deviceEffects();
@@ -194,12 +197,49 @@ function mixTrackHTML(fx, ti) {
   const eqHTML = eff.includes("eq") ? `<div class="mix-eq-label">10-BAND EQ</div><div class="mix-eq">${EQ_FREQS.map((f, i) => `
     <label class="eq-band"><span>${f >= 1000 ? (f / 1000) + "k" : f}</span>
       <input type="range" min="-12" max="12" step="1" value="${fx.eq[i] || 0}" data-fx="eq" data-track="${ti}" data-band="${i}" class="eq-slider" orient="vertical"></label>`).join("")}</div>` : "";
+  const vol = fx.volume == null ? 1 : fx.volume;
+  const stripHTML = `
+    <div class="mix-strip">
+      <div class="knob-wrap">
+        <div class="knob" data-fx="volume" data-track="${ti}" data-val="${vol}" data-min="0" data-max="1"><div class="knob-ind" style="transform:rotate(${knobAngle(vol, 0, 1)}deg)"></div></div>
+        <span class="knob-lbl">VOL</span><span class="knob-val">${Math.round(vol * 100)}%</span>
+      </div>
+      <div class="knob-wrap">
+        <div class="knob" data-fx="pan" data-track="${ti}" data-val="${fx.pan || 0}" data-min="-1" data-max="1"><div class="knob-ind" style="transform:rotate(${knobAngle(fx.pan || 0, -1, 1)}deg)"></div></div>
+        <span class="knob-lbl">PAN</span><span class="knob-val">${panLabel(fx.pan || 0)}</span>
+      </div>
+      <div class="mix-ms">
+        <button class="ms-btn ${fx.mute ? "on-m" : ""}" data-m="${ti}">M</button>
+        <button class="ms-btn ${fx.solo ? "on-s" : ""}" data-s="${ti}">S</button>
+      </div>
+    </div>`;
   return `
     <div class="mix-track" style="border-color:${trackColor(ti)}">
       <div class="mix-th" style="color:${trackColor(ti)}">TRACK ${ti + 1}</div>
+      ${stripHTML}
       ${revHTML}${lpHTML}${eqHTML}
-      ${!revHTML && !lpHTML && !eqHTML ? `<p class="muted" style="font-size:10px">No effects on this device.</p>` : ""}
     </div>`;
+}
+function knobAngle(v, min, max) { return -135 + ((v - min) / (max - min)) * 270; }
+function panLabel(v) { return v < -0.05 ? "L" + Math.round(-v * 100) : v > 0.05 ? "R" + Math.round(v * 100) : "C"; }
+function bindKnob(el) {
+  let startY = 0, startVal = 0;
+  const min = +el.dataset.min, max = +el.dataset.max;
+  const onMove = (e) => {
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    let v = startVal + ((startY - y) / 130) * (max - min);
+    v = Math.max(min, Math.min(max, v));
+    setKnob(el, v);
+  };
+  const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); persist(); };
+  el.addEventListener("pointerdown", (e) => { e.preventDefault(); startY = e.clientY; startVal = +el.dataset.val; window.addEventListener("pointermove", onMove); window.addEventListener("pointerup", onUp); });
+}
+function setKnob(el, v) {
+  el.dataset.val = v;
+  const ti = +el.dataset.track, kind = el.dataset.fx, min = +el.dataset.min, max = +el.dataset.max;
+  if (kind === "volume") draft.fx[ti].volume = v; else if (kind === "pan") draft.fx[ti].pan = v;
+  const ind = el.querySelector(".knob-ind"); if (ind) ind.style.transform = `rotate(${knobAngle(v, min, max)}deg)`;
+  const lab = el.parentElement.querySelector(".knob-val"); if (lab) lab.textContent = kind === "pan" ? panLabel(v) : Math.round(v * 100) + "%";
 }
 
 // ---- save / load ----
@@ -240,7 +280,8 @@ async function play() {
   const built = buildEvents();
   events = built.evs; songDur = built.dur; secPerBarCache = built.secPerBar;
   if (!events.length) { toast("Nothing to play — place some loops.", "info"); return; }
-  chains = draft.fx.map((fx) => buildFXChain(fx));
+  const anySolo = draft.fx.some((f) => f.solo);
+  chains = draft.fx.map((fx) => buildFXChain(fx, fx.mute || (anySolo && !fx.solo)));
   playing = true; schedIdx = 0; startTime = audioNow() + 0.12;
   schedTimer = setInterval(scheduler, 25);
   rafPlayhead();
