@@ -18,6 +18,7 @@ import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
+import { openDAW } from "./daw.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -303,7 +304,7 @@ function interact(obj) {
       pickUpFloorItem(obj);
       break;
     case "daw":
-      toast("The laptop's your studio. It boots up in a later build.", "info");
+      openDAW();
       break;
     case "exit":
       toast("The town's out there. That map opens up in a later build.", "info");

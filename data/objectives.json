@@ -132,6 +132,36 @@
       "active": false,
       "trigger": "pattern:recorded",
       "reward": { "mood": 6 },
+      "unlocks": ["obj_open_daw"]
+    },
+    {
+      "id": "obj_open_daw",
+      "title": "Boot up the studio",
+      "desc": "Walk to your laptop and open it. That's your DAW — where loops become songs.",
+      "step": 5,
+      "active": false,
+      "trigger": "daw:opened",
+      "reward": {},
+      "unlocks": ["obj_arrange"]
+    },
+    {
+      "id": "obj_arrange",
+      "title": "Lay down a track",
+      "desc": "Tap a loop in the LOOPS palette, then tap a track to drop it in. Hit PLAY to hear it.",
+      "step": 5,
+      "active": false,
+      "trigger": "clip:placed",
+      "reward": { "mood": 4 },
+      "unlocks": ["obj_save_song"]
+    },
+    {
+      "id": "obj_save_song",
+      "title": "Save your first song",
+      "desc": "Arrange a few loops, then hit SAVE to keep the song. Congrats — you made a thing.",
+      "step": 5,
+      "active": false,
+      "trigger": "song:saved",
+      "reward": { "mood": 8, "fame": 1 },
       "unlocks": ["obj_town_teaser"]
     },
     {

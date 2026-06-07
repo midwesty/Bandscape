@@ -22,6 +22,7 @@ export function ensureAudio() {
   if (ctx.state === "suspended") ctx.resume();
   return ctx;
 }
+export function audioNow() { return ensureAudio().currentTime; }
 let armed = false;
 export function armAudio() {
   if (armed) return; armed = true;

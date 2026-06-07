@@ -485,3 +485,32 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .rec-opts { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 8px; }
 .rec-status { font-family: var(--mono); font-size: 11px; margin-left: 4px; }
 .loop-list { display: flex; flex-direction: column; gap: 7px; }
+
+/* ============================================================
+   STEP 5 — Laptop DAW (studio)
+   ============================================================ */
+#daw { position: absolute; inset: 0; z-index: 46; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 10px; }
+#daw.open { opacity: 1; }
+.daw-modal { width: min(940px, 98vw); height: min(580px, 94vh); display: flex; flex-direction: column; background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 10px 12px 0 rgba(0,0,0,.55); overflow: hidden; }
+.daw-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 12px; background: #000; border-bottom: 2px solid var(--line); flex-wrap: wrap; }
+.daw-title { font-family: var(--display); font-size: 22px; letter-spacing: 1px; text-shadow: 2px 2px 0 var(--blue); }
+.daw-transport { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; }
+.daw-t { width: auto; margin: 0; padding: 7px 10px; font-size: 11px; }
+.daw-load { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; font-family: var(--mono); padding: 5px; font-size: 12px; }
+.daw-palette { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line); overflow-x: auto; flex-wrap: nowrap; }
+.daw-pal-label { font-family: var(--cond); font-size: 10px; letter-spacing: 2px; color: var(--yellow); flex: none; }
+.daw-chip { flex: none; background: var(--bg); border: 2px solid var(--line); border-radius: 3px; color: var(--text); font-family: var(--cond); font-size: 12px; padding: 6px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+.daw-chip small { color: var(--muted); font-size: 9px; }
+.daw-chip.armed { border-color: var(--green); color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+.daw-timeline-wrap { flex: 1; overflow: auto; background: var(--bg); padding: 0 4px 4px; }
+.daw-timeline { position: relative; }
+.daw-ruler { display: flex; position: sticky; top: 0; background: var(--bg); z-index: 2; }
+.daw-bar { flex: none; font-family: var(--mono); font-size: 10px; color: var(--muted); border-left: 1px solid var(--line); padding: 3px 0 3px 4px; box-sizing: border-box; }
+.daw-tracks { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+.daw-lane { position: relative; height: 54px; background: repeating-linear-gradient(90deg, #15111c 0 53px, #1d1726 53px 54px); border: 1px solid var(--line); border-radius: 2px; cursor: copy; }
+.daw-clip { position: absolute; top: 4px; bottom: 4px; border: 2px solid; border-radius: 3px; display: flex; align-items: center; padding: 0 6px; cursor: pointer; overflow: hidden; }
+.daw-clip span { font-family: var(--cond); font-size: 11px; white-space: nowrap; pointer-events: none; }
+.daw-clip.sel { outline: 2px solid var(--yellow); outline-offset: -2px; }
+.daw-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--yellow); box-shadow: 0 0 8px var(--yellow); pointer-events: none; z-index: 3; }
+.daw-foot { padding: 8px 12px; background: #000; border-top: 2px solid var(--line); min-height: 44px; display: flex; align-items: center; }
+.daw-del { width: auto; margin: 0; padding: 7px 12px; font-size: 12px; border-color: var(--pink); color: var(--pink); }
