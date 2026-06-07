@@ -604,3 +604,28 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .band-member small { display: block; color: var(--muted); font-size: 11px; }
 .band-rehearse { border-color: var(--yellow); color: var(--yellow); margin-top: 4px; }
 .band-foot { font-size: 11px; margin-top: 10px; line-height: 1.45; }
+
+/* ============================================================
+   STEP 8 — booking & playing a show
+   ============================================================ */
+#show { position: absolute; inset: 0; z-index: 47; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 14px; }
+#show.open { opacity: 1; }
+#show.hidden { display: none; }
+.show-modal { width: min(480px, 96vw); max-height: 92%; overflow: auto; background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); }
+.show-body { padding: 14px; }
+.show-section { font-family: var(--cond); letter-spacing: 2px; color: var(--yellow); font-size: 11px; margin: 12px 0 6px; }
+.set-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; max-height: 34vh; overflow: auto; }
+.set-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 8px 10px; cursor: pointer; }
+.set-row.on { border-color: var(--green); }
+.set-name { flex: 1; }
+.set-q { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+.show-est { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; margin-bottom: 12px; }
+.show-est > div { display: flex; justify-content: space-between; gap: 8px; font-family: var(--cond); font-size: 12px; color: var(--muted); }
+.show-est strong { color: var(--text); font-family: var(--mono); }
+.show-est strong.good { color: var(--green); }
+.show-go { border-color: var(--pink); color: var(--pink); }
+.show-report { text-align: center; }
+.report-head { font-family: var(--display); font-size: 26px; color: var(--yellow); margin-bottom: 4px; text-shadow: 2px 2px 0 var(--pink); }
+.band-pk { font-family: var(--cond); font-size: 12px; color: var(--muted); margin: 8px 0; }
+.band-pk strong { color: var(--green); }
+.band-actions { margin-bottom: 6px; }

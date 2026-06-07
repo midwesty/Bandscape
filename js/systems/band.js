@@ -16,6 +16,7 @@ import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
+import { songQuality } from "./shows.js";
 
 const NPC_COLOR = { npc_brian: "#ff8a3d", npc_lex: "#4fc3f7", npc_ruby: "#ff3b6b", npc_jo: "#b388ff" };
 const BAND_NAMES = ["The Damp Sells", "Parking Lot Gods", "Wet Sprocket Jr.", "The Landlords", "Crab Rangoon", "Future Tenants", "The Damage Deposit", "Couch Surfers"];
@@ -121,13 +122,26 @@ export function renderBandApp(container) {
       ${b.members.map((m) => `<div class="band-member"><div class="bd-portrait sm" style="background:${color(m.id)}">${esc(m.name[0])}</div>
         <div><strong>${esc(m.name)}</strong><small>${esc(m.archetype)} · skill ${Math.round((m.skill || 0) * 100)}</small></div></div>`).join("")}
     </div>
+    ${b.pressKit ? `<div class="band-pk">Press kit · lead single: <strong>${esc(b.pressKit.songName)}</strong></div>` : ""}
+    <div class="band-actions"><button class="btn band-mini" id="band-pk">${b.pressKit ? "Reassemble" : "Assemble Press Kit"}</button></div>
     <button class="btn band-rehearse" id="band-rehearse">REHEARSE</button>
-    <p class="muted band-foot">Rehearsing builds chemistry — costs energy and a couple hours. Bring food/drink your bandmates like for a bigger boost.</p>`;
+    <p class="muted band-foot">Rehearsing builds chemistry — costs energy and a couple hours. A <em>press kit</em> (your best song as a lead single) lets you book shows at The Dive.</p>`;
   container.querySelector("#band-rehearse").addEventListener("click", rehearse);
   container.querySelector("#band-rename").addEventListener("click", () => {
     const nm = (prompt("Rename your band:", b.name || "") || "").trim();
     if (nm) { b.name = nm; persist(); emit("renderAll"); }
   });
+  container.querySelector("#band-pk").addEventListener("click", assemblePressKit);
+}
+function assemblePressKit() {
+  const s = getState(); const songs = s.songs || [];
+  if (!songs.length) { toast("Record and save a song first — that's your demo.", "warn"); return; }
+  const best = songs.slice().sort((a, b) => songQuality(b) - songQuality(a))[0];
+  band().pressKit = { songId: best.id, songName: best.name, quality: songQuality(best), madeAt: Date.now() };
+  persist();
+  emit("presskit:assembled", { song: best.name });
+  emit("renderAll");
+  toast(`Press kit ready. Lead single: "${best.name}".`, "good");
 }
 
 function neededCategories(b) {

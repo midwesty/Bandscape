@@ -326,6 +326,35 @@
       "reward": {
         "mood": 6
       },
+      "unlocks": [
+        "obj_presskit"
+      ]
+    },
+    {
+      "id": "obj_presskit",
+      "title": "Put together a press kit",
+      "desc": "In the BAND app, assemble a press kit \u2014 your best song becomes the lead single. The Dive's booker wants one before she'll give you the stage.",
+      "step": 8,
+      "active": false,
+      "trigger": "presskit:assembled",
+      "reward": {
+        "mood": 4
+      },
+      "unlocks": [
+        "obj_show"
+      ]
+    },
+    {
+      "id": "obj_show",
+      "title": "Play your first show",
+      "desc": "Tap the stage in The Dive, pick a setlist, and play. Gigs pay real money \u2014 enough to clear that pawn debt.",
+      "step": 8,
+      "active": false,
+      "trigger": "show:played",
+      "reward": {
+        "mood": 10,
+        "fame": 2
+      },
       "unlocks": []
     }
   ]

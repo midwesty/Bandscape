@@ -21,6 +21,7 @@ import { openContainerView, giveItem } from "./inventory.js";
 import { openDAW } from "./daw.js";
 import { openShop, busk } from "./shop.js";
 import { openRecruit } from "./band.js";
+import { openBooking } from "./shows.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -341,7 +342,7 @@ function interact(obj) {
       openRecruit(obj.npcId);
       break;
     case "stage":
-      toast("The stage. Get your band tight, then book a show here.", "info");
+      openBooking();
       break;
     case "exit":
       travel(obj.to, obj.spawn);

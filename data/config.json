@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.7.0 (Step 7: Band)",
+  "version": "0.8.0 (Step 8: The show)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -55,5 +55,20 @@
       "moodGain": 2
     },
     "maxChemistry": 100
+  },
+  "gear": {
+    "device": "SoundPound 400",
+    "maxTracks": 4,
+    "fidelity": 0.5
+  },
+  "shows": {
+    "baseAudience": 8,
+    "payPerHead": 2,
+    "energyCost": 25,
+    "minutes": 180,
+    "chemistryGain": 5,
+    "moodGain": 8,
+    "fameDrawFactor": 0.5,
+    "chemDrawDiv": 20
   }
 }
