@@ -13,8 +13,9 @@ import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { DATA } from "../engine/data.js";
-import { playCode, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { playCode, playNote, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS, decodeDataURL, playAudioBuffer } from "./audio.js";
 import { deviceTracks, deviceBars, deviceEffects, currentDevice } from "./gear.js";
+import { patternNotes } from "./notes.js";
 
 const BARW = 54, BEATS_PER_BAR = 4;
 const TRACK_COLORS = ["#ff3b6b", "#4fc3f7", "#7CFC9B", "#b388ff", "#ffd23f", "#ff8a3d", "#4fe0c0", "#e060ff"];
@@ -22,7 +23,7 @@ function trackColor(ti) { return TRACK_COLORS[ti % TRACK_COLORS.length]; }
 const PALETTE_RECENT = 6;
 
 let overlay = null, draft = null, armed = null, selected = null;
-let playing = false, schedTimer = null, rafId = null, startTime = 0, events = [], songDur = 0, schedIdx = 0, secPerBarCache = 1, chains = [];
+let playing = false, schedTimer = null, rafId = null, startTime = 0, events = [], songDur = 0, schedIdx = 0, secPerBarCache = 1, secPerStepCache = 0.13, chains = [];
 const dawAudioBuf = new Map();
 let browseFilter = "all", browseQuery = "";
 
@@ -267,7 +268,7 @@ function buildEvents() {
       const pat = patternById(clip.patternId); if (!pat) continue;
       const base = clip.startBar * secPerBar;
       if (pat.type === "audio") { evs.push({ t: base, audio: pat.id, track: ti }); maxEnd = Math.max(maxEnd, base + (pat.duration || clipBars(pat) * secPerBar)); continue; }
-      for (const e of (pat.events || [])) evs.push({ t: base + e.step * secPerStep, inst: pat.instrument || "guitar", code: e.code, oct: e.oct, track: ti });
+      for (const n of patternNotes(pat)) evs.push({ t: base + n.start * secPerStep, inst: pat.instrument || "guitar", note: n, track: ti });
     }
   });
   if (draft.metroOn) { const tb = draft.lengthBars * BEATS_PER_BAR; for (let b = 0; b < tb; b++) evs.push({ t: b * secPerBeat, click: b % BEATS_PER_BAR === 0 }); }
@@ -278,7 +279,7 @@ async function play() {
   stop(); ensureAudio(); ensureFx();
   await prepareAudio();
   const built = buildEvents();
-  events = built.evs; songDur = built.dur; secPerBarCache = built.secPerBar;
+  events = built.evs; songDur = built.dur; secPerBarCache = built.secPerBar; secPerStepCache = (60 / draft.bpm) / 4;
   if (!events.length) { toast("Nothing to play — place some loops.", "info"); return; }
   const anySolo = draft.fx.some((f) => f.solo);
   chains = draft.fx.map((fx) => buildFXChain(fx, fx.mute || (anySolo && !fx.solo)));
@@ -298,7 +299,7 @@ function scheduler() {
     const e = events[schedIdx++]; const when = Math.max(0, startTime + e.t - now);
     if (e.click !== undefined) click(e.click, when);
     else if (e.audio !== undefined) playAudioBuffer(dawAudioBuf.get(e.audio), when, chains[e.track]);
-    else playCode(e.inst, e.code, when, { octave: e.oct, out: chains[e.track] });
+    else if (e.note) playNote(e.inst, e.note, when, secPerStepCache, { out: chains[e.track] });
   }
   if ((now - startTime) > songDur + 0.5) stop();
 }

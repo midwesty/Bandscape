@@ -247,7 +247,7 @@ function renderLibrary(body) {
   body.innerHTML = `<div class="loop-list">` + pats.map((p, i) => `
     <div class="loop-row">
       <div class="loop-info"><strong>${escapeHTML(p.name || "Untitled")}</strong>
-        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : ((p.events || []).length + " notes")}</small></div>
+        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : (patternNotes(p).length + " notes")}</small></div>
       <div class="loop-btns"><button class="btn loop-act" data-act="play" data-i="${i}">▶</button><button class="btn loop-act" data-act="del" data-i="${i}">✕</button></div>
     </div>`).join("") + `</div>`;
   body.querySelectorAll(".loop-act").forEach((b) => b.addEventListener("click", () => {
@@ -268,9 +268,19 @@ function hit(pad, el) {
   emit("note:played", { code: pad.code });
   if (el) { el.classList.add("hit"); setTimeout(() => el.classList.remove("hit"), 120); }
   if (isRecording && tickCount >= 0) {
-    const ev = { step: currentStep, row: pad.type === "chord" ? 0 : 1, code: pad.code };
-    if (oct !== undefined) ev.oct = oct;
-    currentPattern.events.push(ev); markStep(currentStep);
+    const start = currentStep, bpm = currentPattern.bpm, spb = currentPattern.stepsPerBeat;
+    if (pad.type === "drum") {
+      currentPattern.notes.push({ start, length: 1, piece: pad.code });
+    } else {
+      const letter = pad.code.split("_")[1];
+      if (pad.type === "chord") {
+        const root = midiOf(letter, oct), L = noteLength("chord", bpm, spb);
+        [0, 4, 7, 12].forEach((iv, i) => currentPattern.notes.push({ start, length: L, pitch: root + iv, vel: i === 0 ? 0.8 : 0.55 }));
+      } else {
+        currentPattern.notes.push({ start, length: noteLength("note", bpm, spb), pitch: midiOf(letter, oct), vel: 1 });
+      }
+    }
+    markStep(currentStep);
   }
 }
 function startRecording() {
@@ -278,7 +288,7 @@ function startRecording() {
   ensureAudio();
   const ms = MS(); const ts = TIME_SIGS[ms.timeSig];
   curBeatsPerBar = ts.bpb; curStepsPerBeat = ts.spb; curLength = ms.bars * ts.bpb * ts.spb;
-  currentPattern = { name: "Untitled", instrument: activeId(), length: curLength, bpm: ms.bpm, stepsPerBeat: curStepsPerBeat, timeSig: ms.timeSig, events: [], createdAt: Date.now() };
+  currentPattern = { name: "Untitled", instrument: activeId(), length: curLength, bpm: ms.bpm, stepsPerBeat: curStepsPerBeat, timeSig: ms.timeSig, notes: [], createdAt: Date.now() };
   const countInSteps = ms.metroOn ? ms.countInBars * curBeatsPerBar * curStepsPerBeat : 0;
   tickCount = -countInSteps; currentStep = 0; isRecording = true;
   clearInterval(stepTimer);
@@ -294,8 +304,8 @@ function tickFn() {
 }
 function stopRecording() {
   isRecording = false; clearInterval(stepTimer); stepTimer = null;
-  const events = currentPattern?.events || [];
-  if (events.length) {
+  const recorded = currentPattern?.notes || [];
+  if (recorded.length) {
     const name = (prompt("Name this loop:", "Loop " + ((getState().patterns?.length || 0) + 1)) || "Untitled").trim();
     currentPattern.name = name;
     currentPattern.id = "pat_" + currentPattern.createdAt + "_" + Math.random().toString(36).slice(2, 6);
@@ -314,7 +324,7 @@ function playLoop(pattern) {
 }
 
 function markStep(s) { screenEl?.querySelector(`.step[data-s="${s}"]`)?.classList.add("on"); }
-function paintEvents() { if (currentPattern) for (const ev of currentPattern.events) markStep(ev.step); }
+function paintEvents() { if (currentPattern) for (const n of currentPattern.notes) markStep(n.start); }
 function playhead() { if (!screenEl) return; screenEl.querySelectorAll(".step.ph").forEach((s) => s.classList.remove("ph")); screenEl.querySelector(`.step[data-s="${currentStep}"]`)?.classList.add("ph"); }
 function setStatus(t) { const el = screenEl?.querySelector("#rec-status"); if (el) el.textContent = t; }
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }

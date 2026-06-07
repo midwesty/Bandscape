@@ -9,6 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
+import { patternNotes } from "./notes.js";
 
 let ctx = null;
 const buffers = new Map();
@@ -111,6 +112,21 @@ export function playCode(instId, code, when = 0, opts = {}) {
   if (b === undefined) { buffers.set(key, "loading"); loadSample(instId, code, key); }
 }
 
+// play a canonical NOTE (absolute pitch + length in steps) through opts.out.
+// Melodic notes synth at note.pitch (+ instrument octaveOffset); drum notes
+// (note.piece, or any percussion instrument) trigger the drum synth.
+export function playNote(instId, note, when = 0, secPerStep = 0.13, opts = {}) {
+  ensureAudio();
+  const out = opts.out || ctx.destination;
+  const inst = DATA.instruments[instId] || {};
+  if (note.piece || inst.kind === "percussion") { drumSynth(note.piece || "kick", when, out); return; }
+  const syn = inst.synth || {};
+  const wave = syn.wave || "triangle", offset = syn.octaveOffset || 0;
+  const dur = Math.max(0.08, (note.length || 2) * secPerStep);
+  const peak = 0.2 * (note.vel == null ? 1 : note.vel);
+  tone((note.pitch || 60) + offset * 12, ctx.currentTime + Math.max(0, when), dur, peak, out, wave);
+}
+
 // ---- metronome ----
 export function click(accent = false, when = 0) {
   ensureAudio();
@@ -164,8 +180,10 @@ export function buildFXChain(fx, silenced = false) {
 let stopTimer = null;
 export function schedulePattern(pattern, onDone) {
   ensureAudio(); stopPattern();
+  if (pattern.type === "audio") return;
   const bpm = pattern.bpm || 120, spb = pattern.stepsPerBeat || 4, secPerStep = (60 / bpm) / spb, lead = 0.08;
-  for (const ev of (pattern.events || [])) playCode(pattern.instrument || "guitar", ev.code, lead + ev.step * secPerStep, { octave: ev.oct });
+  const inst = pattern.instrument || "guitar";
+  for (const n of patternNotes(pattern)) playNote(inst, n, lead + n.start * secPerStep, secPerStep);
   const dur = ((pattern.length || 32) * secPerStep + lead) * 1000;
   stopTimer = setTimeout(() => { stopTimer = null; onDone && onDone(); }, dur + 150);
 }
