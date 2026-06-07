@@ -656,3 +656,19 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .cal-cell.show { border-color: var(--pink); background: #2a0f1a; }
 .cal-cell.now { outline: 2px solid var(--green); outline-offset: -2px; }
 .cal-legend { font-size: 10px; margin-top: 10px; line-height: 1.4; }
+
+/* ============================================================
+   STEP 9.1 — time controls (pause / advance)
+   ============================================================ */
+#hud-timectl { display: flex; gap: 6px; margin-top: 5px; }
+.tc-btn { width: auto; margin: 0; padding: 4px 11px; font-size: 13px; line-height: 1; background: #000; border: 2px solid var(--line); color: var(--text); border-radius: 3px; cursor: pointer; font-family: var(--mono); }
+.tc-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow); }
+#timeskip { position: absolute; inset: 0; z-index: 49; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 14px; }
+#timeskip.open { opacity: 1; }
+#timeskip.hidden { display: none; }
+.ts-modal { width: min(360px, 92vw); background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); }
+.ts-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.ts-opt { width: 100%; margin: 0; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 2px solid var(--line); color: var(--text); border-radius: 2px; cursor: pointer; font-family: var(--body); }
+.ts-opt:hover { border-color: var(--blue); color: var(--blue); }
+.ts-opt small { font-family: var(--mono); color: var(--muted); }

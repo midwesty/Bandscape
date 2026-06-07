@@ -9,7 +9,7 @@ import { newGameState, setState, getState } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { on, emit } from "./engine/bus.js";
 
-import { startClock, stopClock } from "./systems/time.js";
+import { startClock, stopClock, initTimeControls } from "./systems/time.js";
 import { renderHUD } from "./systems/hud.js";
 import { renderStage, pauseStage } from "./systems/stage.js";
 import { initPhone } from "./systems/phone.js";
@@ -148,6 +148,7 @@ function enterGame(isNew) {
   }
 
   startClock();
+  initTimeControls();
   if (isNew) emit("game:started", { name: getState().player.name });
 
   // first-time nudge
@@ -166,6 +167,7 @@ function showCollapse() {
     el.classList.add("hidden");
     document.body.classList.remove("modal-open");
     startClock();
+  initTimeControls();
     renderHUD();
   };
 }
