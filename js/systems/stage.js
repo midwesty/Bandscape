@@ -20,6 +20,7 @@ import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
 import { openDAW } from "./daw.js";
 import { openShop, busk } from "./shop.js";
+import { openRecruit } from "./band.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -333,6 +334,15 @@ function interact(obj) {
     case "busk":
       busk();
       break;
+    case "enter":
+      travel(obj.to, obj.spawn);
+      break;
+    case "talk":
+      openRecruit(obj.npcId);
+      break;
+    case "stage":
+      toast("The stage. Get your band tight, then book a show here.", "info");
+      break;
     case "exit":
       travel(obj.to, obj.spawn);
       break;
@@ -481,6 +491,8 @@ function drawObject(o) {
   if (hovered === o.id && !arranging) outlineObject(c.x, c.y);
 }
 function drawProc(o, cx, cy) {
+  if (o.interact === "talk") return npcFigure(cx, cy, o);
+  if (o.interact === "stage") return stageShape(cx, cy);
   switch (o.id) {
     case "bed":    cuboid(cx, cy, 26, 13, 14, "#3a2740", "#2a1c30", "#241828");
                    ctx.fillStyle = C.yellow; ctx.fillRect(cx - 10, cy - 14, 14, 7); break;
@@ -573,6 +585,23 @@ function homeDoor(cx, cy) {
   ctx.beginPath(); ctx.moveTo(cx - 18, cy - 34); ctx.lineTo(cx, cy - 47); ctx.lineTo(cx + 18, cy - 34); ctx.closePath(); ctx.fill(); ctx.stroke();
   ctx.fillStyle = "#0c0810"; ctx.fillRect(cx - 5, cy - 17, 10, 17);
   ctx.strokeStyle = C.yellow; ctx.strokeRect(cx - 5, cy - 17, 10, 17);
+}
+function npcFigure(cx, cy, o) {
+  const cols = { npc_brian: C.orange, npc_lex: C.blue, npc_ruby: C.pink, npc_jo: C.purple };
+  const col = cols[o.npcId] || C.green;
+  ctx.fillStyle = "#1b1622"; ctx.fillRect(cx - 5, cy - 12, 4, 12); ctx.fillRect(cx + 1, cy - 12, 4, 12);
+  ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  roundRect(cx - 7, cy - 26, 14, 16, 3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#e9c9a0"; ctx.beginPath(); ctx.arc(cx, cy - 31, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = col; ctx.fillRect(cx - 6, cy - 37, 12, 4);
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 2, cy - 31, 1.2, 0, Math.PI * 2); ctx.fill();
+}
+function stageShape(cx, cy) {
+  cuboid(cx, cy, 26, 13, 8, "#2a2233", "#1f1828", "#160f1f");
+  ctx.strokeStyle = "#9aa3ad"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy - 8); ctx.lineTo(cx, cy - 34); ctx.stroke();
+  ctx.fillStyle = C.pink; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 37, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#1a1422"; ctx.fillRect(cx + 10, cy - 22, 12, 14); ctx.strokeRect(cx + 10, cy - 22, 12, 14);
+  ctx.fillStyle = C.yellow; ctx.fillRect(cx + 13, cy - 19, 6, 6);
 }
 // short, floor-level threshold — never occludes furniture behind it
 function doorway(cx, cy) {

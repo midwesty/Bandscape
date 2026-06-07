@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.6.0 (Step 6: The town)",
+  "version": "0.7.0 (Step 7: Band)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -43,6 +43,17 @@
     "maps": false,
     "bank": false,
     "contacts": false,
-    "streamr": false
+    "streamr": false,
+    "band": true
+  },
+  "band": {
+    "rehearse": {
+      "minutes": 120,
+      "energyCost": 15,
+      "chemistryGain": 8,
+      "chemistryBonus": 4,
+      "moodGain": 2
+    },
+    "maxChemistry": 100
   }
 }

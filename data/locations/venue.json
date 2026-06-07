@@ -1,0 +1,16 @@
+{
+  "_comment": "The Dive — venue interior. Recruit musicians (interact 'talk' + npcId) hanging around the bar; the 'stage' is where shows happen (Step 8). 'out' exits back to the street. NPC data lives in npcs.json.",
+  "id": "venue",
+  "name": "The Dive",
+  "size": { "w": 10, "h": 7 },
+  "ambient": "dive_bar",
+  "objects": [],
+  "exits": [
+    { "id": "stage",     "name": "The Stage",  "tile": { "x": 5, "y": 1 }, "interact": "stage", "solid": true },
+    { "id": "npc_brian", "name": "Brian",      "tile": { "x": 2, "y": 2 }, "interact": "talk", "npcId": "npc_brian", "solid": true },
+    { "id": "npc_lex",   "name": "Lex",        "tile": { "x": 7, "y": 2 }, "interact": "talk", "npcId": "npc_lex",   "solid": true },
+    { "id": "npc_ruby",  "name": "Ruby",       "tile": { "x": 2, "y": 4 }, "interact": "talk", "npcId": "npc_ruby",  "solid": true },
+    { "id": "npc_jo",    "name": "Jo",         "tile": { "x": 7, "y": 4 }, "interact": "talk", "npcId": "npc_jo",    "solid": true },
+    { "id": "out",       "name": "Exit to Street", "tile": { "x": 5, "y": 6 }, "to": "town", "spawn": { "x": 8, "y": 2 } }
+  ]
+}

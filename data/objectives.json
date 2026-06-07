@@ -239,7 +239,8 @@
       "trigger": "shop:opened",
       "reward": {},
       "unlocks": [
-        "obj_busk"
+        "obj_busk",
+        "obj_enter_venue"
       ]
     },
     {
@@ -280,6 +281,50 @@
       "reward": {
         "mood": 20,
         "fame": 3
+      },
+      "unlocks": []
+    },
+    {
+      "id": "obj_enter_venue",
+      "title": "Walk into The Dive",
+      "desc": "That venue on your block \u2014 head inside and see who's hanging around.",
+      "step": 7,
+      "active": false,
+      "trigger": "location:changed",
+      "match": {
+        "to": "venue"
+      },
+      "reward": {
+        "mood": 3
+      },
+      "unlocks": [
+        "obj_recruit"
+      ]
+    },
+    {
+      "id": "obj_recruit",
+      "title": "Recruit a bandmate",
+      "desc": "Talk to a musician in The Dive and invite them in. You'll need a saved song to prove you're worth their time.",
+      "step": 7,
+      "active": false,
+      "trigger": "band:recruited",
+      "reward": {
+        "mood": 8,
+        "fame": 1
+      },
+      "unlocks": [
+        "obj_practice"
+      ]
+    },
+    {
+      "id": "obj_practice",
+      "title": "Rehearse with your band",
+      "desc": "Open the BAND app on your phone and REHEARSE to build chemistry. Tight bands play better shows.",
+      "step": 7,
+      "active": false,
+      "trigger": "band:rehearsed",
+      "reward": {
+        "mood": 6
       },
       "unlocks": []
     }

@@ -9,6 +9,7 @@ import { getState } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { renderTasksApp } from "./objectives.js";
 import { renderMusicApp } from "./music.js";
+import { renderBandApp } from "./band.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -18,6 +19,7 @@ const APP_META = {
   status:   { label: "Status",  glyph: "♥",  accent: "#ff3b6b" },
   settings: { label: "Settings",glyph: "⚙",  accent: "#aaa" },
   music:    { label: "Sound",   glyph: "♪",  accent: "#7CFC9B" },
+  band:     { label: "Band",    glyph: "♬",  accent: "#ff8a3d" },
   maps:     { label: "Maps",    glyph: "⌖",  accent: "#4fc3f7" },
   bank:     { label: "Bank",    glyph: "$",  accent: "#7CFC9B" },
   contacts: { label: "People",  glyph: "☻",  accent: "#b388ff" },
@@ -74,12 +76,13 @@ function renderApp(app) {
   if (app === "status") return renderStatus();
   if (app === "settings") return renderSettings();
   if (app === "music") return renderMusicApp(screenEl);
+  if (app === "band") return renderBandApp(screenEl);
   return renderStub(app);
 }
 
 function renderHome() {
   const s = getState();
-  const order = ["tasks", "status", "maps", "music", "streamr", "bank", "contacts", "settings"];
+  const order = ["tasks", "status", "band", "music", "maps", "streamr", "bank", "contacts", "settings"];
   const grid = order.map((id) => {
     const m = APP_META[id];
     const enabled = DATA.config.apps[id];

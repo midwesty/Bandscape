@@ -54,7 +54,7 @@ export function newGameState(slot, char) {
     musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },
     songs: [],               // Step 5
     songDraft: null,         // current studio arrangement in progress
-    band: { name: null, members: [] }, // Step 7
+    band: { name: null, members: [], chemistry: 0 }, // Step 7
     debt: { pawn: cfg.economy.startingDebtPawn },
     flags: {},
     location: "apartment",

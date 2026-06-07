@@ -573,3 +573,34 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .shop-price { font-family: var(--mono); color: var(--yellow); }
 .shop-btn { width: auto; margin: 0; padding: 6px 12px; font-size: 12px; }
 .shop-note { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* ============================================================
+   STEP 7 — recruit modal + BAND app
+   ============================================================ */
+#recruit { position: absolute; inset: 0; z-index: 47; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 16px; }
+#recruit.open { opacity: 1; }
+#recruit.hidden { display: none; }
+.bd-modal { width: min(420px, 94vw); background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); overflow: hidden; }
+.bd-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #000; border-bottom: 2px solid var(--line); }
+.bd-portrait { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--text); display: grid; place-items: center; font-family: var(--display); font-size: 24px; color: #0b0b0f; flex: none; }
+.bd-portrait.sm { width: 30px; height: 30px; font-size: 15px; }
+.bd-name { font-family: var(--display); font-size: 22px; letter-spacing: .5px; }
+.bd-arch { font-family: var(--cond); color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+.bd-head .phone-nav { margin-left: auto; }
+.bd-body { padding: 14px; }
+.bd-stat { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-family: var(--cond); font-size: 11px; letter-spacing: 1px; color: var(--muted); }
+.bd-stat > span { width: 78px; flex: none; }
+.bd-bar { flex: 1; height: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.bd-bar > div { height: 100%; }
+.bd-vices { font-family: var(--cond); color: var(--muted); font-size: 12px; margin: 6px 0; }
+.bd-action { margin: 12px 0 4px; }
+.bd-recruit { border-color: var(--green); color: var(--green); }
+
+.band-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.band-name { font-family: var(--display); font-size: 24px; letter-spacing: .5px; }
+.band-mini { width: auto; margin: 0; padding: 5px 10px; font-size: 11px; }
+.band-roster { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.band-member { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 6px 8px; }
+.band-member small { display: block; color: var(--muted); font-size: 11px; }
+.band-rehearse { border-color: var(--yellow); color: var(--yellow); margin-top: 4px; }
+.band-foot { font-size: 11px; margin-top: 10px; line-height: 1.45; }
