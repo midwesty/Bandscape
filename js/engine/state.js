@@ -56,6 +56,7 @@ export function newGameState(slot, char) {
     songDraft: null,         // current studio arrangement in progress
     bands: [{ id: "band_1", name: null, members: [], chemistry: 0, pressKit: null, showsPlayed: 0, playerIn: true }], // Step 10
     activeBandId: "band_1",
+    gear: { device: "sp400" },               // Step 11: SoundPound device
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
     flags: {},

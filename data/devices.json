@@ -1,0 +1,9 @@
+{
+  "_comment": "SoundPound recording devices. The current device (state.gear.device) drives the DAW: track count, max song length (bars), which mixer effects are available, and FIDELITY (which feeds song quality → show payouts). tape tiers are lo-fi; digital tiers unlock more. Buy upgrades at the pawn shop. Prices in $.",
+  "devices": [
+    { "id": "sp400",  "name": "SoundPound 400",  "type": "tape",    "tracks": 4,  "maxBars": 16, "fidelity": 0.45, "effects": ["reverb"],                 "price": 0,    "desc": "A battered 4-track cassette recorder. Warm, lo-fi, no frills. You start with this." },
+    { "id": "sp800",  "name": "SoundPound 800",  "type": "tape",    "tracks": 8,  "maxBars": 16, "fidelity": 0.62, "effects": ["reverb", "lowpass"],      "price": 140,  "desc": "8 tracks of tape. Room to layer a real arrangement." },
+    { "id": "sp1200", "name": "SoundPound 1200", "type": "digital", "tracks": 12, "maxBars": 24, "fidelity": 0.80, "effects": ["eq", "reverb", "lowpass"], "price": 480,  "desc": "Goes digital. 12 tracks, full 10-band EQ, cleaner sound." },
+    { "id": "sp1600", "name": "SoundPound 1600", "type": "digital", "tracks": 16, "maxBars": 32, "fidelity": 0.92, "effects": ["eq", "reverb", "lowpass"], "price": 1200, "desc": "16 tracks, pristine fidelity. The big leagues." }
+  ]
+}

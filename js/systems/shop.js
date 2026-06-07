@@ -20,6 +20,7 @@ import { toast } from "../ui/toast.js";
 import { giveItem } from "./inventory.js";
 import { advanceMinutes } from "./time.js";
 import { playCode, ensureAudio } from "./audio.js";
+import { deviceList, currentDevice, deviceIndex, ownDevice } from "./gear.js";
 
 let overlay = null, currentShop = null;
 
@@ -80,9 +81,15 @@ function pawnBody() {
           <div><span class="shop-price">+$${sellOf(st.item, rate)}</span> <button class="btn shop-btn" data-sell="${i}">Sell 1</button></div></div>`;
       }).join("")
     : `<p class="shop-note">Your pockets are empty — nothing to hock.</p>`;
+  const cur = currentDevice(); const curIdx = deviceIndex(cur.id);
+  const upgrades = deviceList().filter((d, i) => i > curIdx && d.price > 0);
+  const gearRows = `<div class="shop-section">RECORDING GEAR</div>
+    <div class="shop-row"><div><strong>Current: ${esc(cur.name)}</strong><small>${cur.tracks} tracks · fidelity ${Math.round((cur.fidelity || 0) * 100)}</small></div></div>
+    ${upgrades.length ? upgrades.map((d) => `<div class="shop-row"><div><strong>${esc(d.name)}</strong><small>${d.tracks} tracks · ${esc(d.desc)}</small></div><div><span class="shop-price">$${d.price}</span> <button class="btn shop-btn" data-buy-device="${d.id}">Buy</button></div></div>`).join("") : `<p class="shop-note">Top of the line — nothing better in stock.</p>`}`;
   return `
     <div class="shop-debt">Pawn debt: $${debt}</div>
     <div class="shop-pay">${payBtns}</div>
+    ${gearRows}
     <div class="shop-section">SELL FROM POCKETS (½ value)</div>
     ${sellRows}
     <p class="shop-note" style="margin-top:12px">The clerk doesn't make eye contact. Pay it down and your gear's safe.</p>`;
@@ -114,6 +121,7 @@ function bind() {
   overlay.querySelectorAll("[data-pay]").forEach((b) => b.addEventListener("click", () => payDebt(b.dataset.pay)));
   overlay.querySelectorAll("[data-sell]").forEach((b) => b.addEventListener("click", () => sellItem(parseInt(b.dataset.sell, 10))));
   overlay.querySelectorAll("[data-buy]").forEach((b) => b.addEventListener("click", () => buyItem(b.dataset.buy)));
+  overlay.querySelectorAll("[data-buy-device]").forEach((b) => b.addEventListener("click", () => buyDevice(b.dataset.buyDevice)));
 }
 
 // ---- transactions ----
@@ -148,6 +156,14 @@ function buyItem(id) {
   addStat("money", -price);
   persist(); emit("renderAll");
   toast(`Bought ${item(id)?.name || id}.`, "good");
+  render();
+}
+function buyDevice(id) {
+  const d = deviceList().find((x) => x.id === id); if (!d) return;
+  if (money() < d.price) { toast("Can't afford that yet.", "warn"); return; }
+  addStat("money", -d.price); ownDevice(id);
+  persist(); emit("renderAll");
+  toast(`Upgraded to ${d.name}! More tracks, better fidelity.`, "good");
   render();
 }
 

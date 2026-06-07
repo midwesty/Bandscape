@@ -14,9 +14,11 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { DATA } from "../engine/data.js";
 import { playCode, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { deviceTracks, deviceBars, deviceEffects, currentDevice } from "./gear.js";
 
-const NTRACKS = 4, BARS = 16, BARW = 54, BEATS_PER_BAR = 4;
-const TRACK_COLORS = ["#ff3b6b", "#4fc3f7", "#7CFC9B", "#b388ff"];
+const BARW = 54, BEATS_PER_BAR = 4;
+const TRACK_COLORS = ["#ff3b6b", "#4fc3f7", "#7CFC9B", "#b388ff", "#ffd23f", "#ff8a3d", "#4fe0c0", "#e060ff"];
+function trackColor(ti) { return TRACK_COLORS[ti % TRACK_COLORS.length]; }
 const PALETTE_RECENT = 6;
 
 let overlay = null, draft = null, armed = null, selected = null;
@@ -28,8 +30,9 @@ function ensurePatternIds() { (getState().patterns || []).forEach((p, i) => { if
 function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || null; }
 function clipBars(pat) { if (pat && pat.type === "audio") return Math.max(1, pat.bars || 2); return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
 function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000 }; }
-function newDraft() { return { name: "Untitled Song", bpm: 110, lengthBars: BARS, metroOn: false, tracks: Array.from({ length: NTRACKS }, () => []), fx: Array.from({ length: NTRACKS }, blankFX) }; }
-function ensureFx() { draft.fx = draft.fx || []; for (let i = 0; i < NTRACKS; i++) draft.fx[i] = Object.assign(blankFX(), draft.fx[i] || {}); }
+function newDraft() { const nt = deviceTracks(); return { name: "Untitled Song", bpm: 110, lengthBars: deviceBars(), metroOn: false, tracks: Array.from({ length: nt }, () => []), fx: Array.from({ length: nt }, blankFX) }; }
+function ensureFx() { const nt = deviceTracks(); draft.fx = draft.fx || []; for (let i = 0; i < nt; i++) draft.fx[i] = Object.assign(blankFX(), draft.fx[i] || {}); }
+function padDraft() { const nt = deviceTracks(); draft.tracks = draft.tracks || []; while (draft.tracks.length < nt) draft.tracks.push([]); ensureFx(); }
 function instName(id) { return DATA.instruments[id]?.name || id; }
 function persist() { const s = getState(); s.songDraft = draft; saveToSlot(s.meta.slot, s); }
 
@@ -39,8 +42,9 @@ export function openDAW() {
   overlay = overlay || document.getElementById("daw");
   ensurePatternIds();
   draft = getState().songDraft || newDraft();
-  if (!Array.isArray(draft.tracks) || draft.tracks.length !== NTRACKS) draft = newDraft();
-  ensureFx();
+  if (!Array.isArray(draft.tracks)) draft = newDraft();
+  if (!draft.lengthBars) draft.lengthBars = deviceBars();
+  padDraft();
   armed = null; selected = null;
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
@@ -63,7 +67,7 @@ function render() {
   overlay.innerHTML = `
     <div class="daw-modal">
       <div class="daw-head">
-        <span class="daw-title">STUDIO</span>
+        <span class="daw-title">STUDIO</span><span class="daw-dev">${currentDevice().name}</span>
         <div class="daw-transport">
           <label class="mus-sel">BPM <input id="daw-bpm" type="number" min="50" max="220" value="${draft.bpm}"></label>
           <label class="mus-check"><input id="daw-metro" type="checkbox" ${draft.metroOn ? "checked" : ""}> Click</label>
@@ -84,8 +88,8 @@ function render() {
       </div>
 
       <div class="daw-timeline-wrap">
-        <div class="daw-timeline" style="width:${BARS * BARW + 8}px">
-          <div class="daw-ruler">${Array.from({ length: BARS }, (_, b) => `<span class="daw-bar" style="width:${BARW}px">${b + 1}</span>`).join("")}</div>
+        <div class="daw-timeline" style="width:${draft.lengthBars * BARW + 8}px">
+          <div class="daw-ruler">${Array.from({ length: draft.lengthBars }, (_, b) => `<span class="daw-bar" style="width:${BARW}px">${b + 1}</span>`).join("")}</div>
           <div class="daw-tracks">${draft.tracks.map((t, ti) => laneHTML(t, ti)).join("")}</div>
           <div class="daw-playhead" id="daw-playhead" style="left:0"></div>
         </div>
@@ -105,9 +109,9 @@ function laneHTML(track, ti) {
     const pat = patternById(c.patternId); if (!pat) return "";
     const w = clipBars(pat) * BARW;
     const sel = selected && selected.track === ti && selected.clip === ci ? "sel" : "";
-    return `<div class="daw-clip ${sel}" data-track="${ti}" data-clip="${ci}" style="left:${c.startBar * BARW}px;width:${w - 3}px;background:${TRACK_COLORS[ti]}22;border-color:${TRACK_COLORS[ti]}"><span>${esc(pat.name || "Loop")}</span></div>`;
+    return `<div class="daw-clip ${sel}" data-track="${ti}" data-clip="${ci}" style="left:${c.startBar * BARW}px;width:${w - 3}px;background:${trackColor(ti)}22;border-color:${trackColor(ti)}"><span>${esc(pat.name || "Loop")}</span></div>`;
   }).join("");
-  return `<div class="daw-lane" data-track="${ti}" style="width:${BARS * BARW}px">${clips}</div>`;
+  return `<div class="daw-lane" data-track="${ti}" style="width:${draft.lengthBars * BARW}px">${clips}</div>`;
 }
 
 function bind() {
@@ -128,7 +132,7 @@ function bind() {
     if (e.target.closest(".daw-clip")) return;
     if (!armed) { toast("Tap a loop first (or LOAD LOOP).", "info"); return; }
     const rect = lane.getBoundingClientRect();
-    const bar = Math.max(0, Math.min(BARS - 1, Math.floor((e.clientX - rect.left) / BARW)));
+    const bar = Math.max(0, Math.min(draft.lengthBars - 1, Math.floor((e.clientX - rect.left) / BARW)));
     placeClip(parseInt(lane.dataset.track, 10), bar);
   }));
   overlay.querySelectorAll(".daw-clip").forEach((c) => c.addEventListener("click", (e) => { e.stopPropagation(); selected = { track: +c.dataset.track, clip: +c.dataset.clip }; render(); }));
@@ -170,7 +174,7 @@ function openMixer() {
   const sub = showSub(`
     <div class="daw-sub-card">
       <div class="daw-sub-head"><span class="daw-title">MIXER</span><button class="phone-nav" id="sub-close">✕</button></div>
-      <p class="muted mix-note">Effects apply on playback. More unlock with better gear later.</p>
+      <p class="muted mix-note">Effects apply on playback. Available effects depend on your device — upgrade for more.</p>
       <div class="mix-tracks">${draft.fx.map((fx, ti) => mixTrackHTML(fx, ti)).join("")}</div>
     </div>`);
   sub.querySelector("#sub-close").addEventListener("click", closeSub);
@@ -184,16 +188,17 @@ function openMixer() {
   }));
 }
 function mixTrackHTML(fx, ti) {
-  const eq = EQ_FREQS.map((f, i) => `
+  const eff = deviceEffects();
+  const revHTML = eff.includes("reverb") ? `<label class="mix-knob">Reverb <input type="range" min="0" max="100" value="${Math.round((fx.reverb || 0) * 100)}" data-fx="reverb" data-track="${ti}"><span class="mix-val">${Math.round((fx.reverb || 0) * 100)}%</span></label>` : "";
+  const lpHTML = eff.includes("lowpass") ? `<label class="mix-knob">Lowpass <input type="range" min="500" max="20000" step="100" value="${fx.lowpass || 20000}" data-fx="lowpass" data-track="${ti}"><span class="mix-val">${fx.lowpass || 20000}Hz</span></label>` : "";
+  const eqHTML = eff.includes("eq") ? `<div class="mix-eq-label">10-BAND EQ</div><div class="mix-eq">${EQ_FREQS.map((f, i) => `
     <label class="eq-band"><span>${f >= 1000 ? (f / 1000) + "k" : f}</span>
-      <input type="range" min="-12" max="12" step="1" value="${fx.eq[i] || 0}" data-fx="eq" data-track="${ti}" data-band="${i}" class="eq-slider" orient="vertical"></label>`).join("");
+      <input type="range" min="-12" max="12" step="1" value="${fx.eq[i] || 0}" data-fx="eq" data-track="${ti}" data-band="${i}" class="eq-slider" orient="vertical"></label>`).join("")}</div>` : "";
   return `
-    <div class="mix-track" style="border-color:${TRACK_COLORS[ti]}">
-      <div class="mix-th" style="color:${TRACK_COLORS[ti]}">TRACK ${ti + 1}</div>
-      <label class="mix-knob">Reverb <input type="range" min="0" max="100" value="${Math.round((fx.reverb || 0) * 100)}" data-fx="reverb" data-track="${ti}"><span class="mix-val">${Math.round((fx.reverb || 0) * 100)}%</span></label>
-      <label class="mix-knob">Lowpass <input type="range" min="500" max="20000" step="100" value="${fx.lowpass || 20000}" data-fx="lowpass" data-track="${ti}"><span class="mix-val">${fx.lowpass || 20000}Hz</span></label>
-      <div class="mix-eq-label">10-BAND EQ</div>
-      <div class="mix-eq">${eq}</div>
+    <div class="mix-track" style="border-color:${trackColor(ti)}">
+      <div class="mix-th" style="color:${trackColor(ti)}">TRACK ${ti + 1}</div>
+      ${revHTML}${lpHTML}${eqHTML}
+      ${!revHTML && !lpHTML && !eqHTML ? `<p class="muted" style="font-size:10px">No effects on this device.</p>` : ""}
     </div>`;
 }
 
@@ -208,8 +213,9 @@ function saveSong() {
 function loadSong(i) {
   const song = (getState().songs || [])[i]; if (!song) return;
   draft = JSON.parse(JSON.stringify(song));
-  if (!Array.isArray(draft.tracks) || draft.tracks.length !== NTRACKS) draft = newDraft();
-  ensureFx(); selected = null; persist(); render(); toast(`Loaded "${song.name}".`, "info");
+  if (!Array.isArray(draft.tracks)) draft = newDraft();
+  if (!draft.lengthBars) draft.lengthBars = deviceBars();
+  padDraft(); selected = null; persist(); render(); toast(`Loaded "${song.name}".`, "info");
 }
 
 // ---- playback (lookahead scheduler w/ per-track FX) ----

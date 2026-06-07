@@ -16,6 +16,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
+import { deviceFidelity } from "./gear.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null;
 
@@ -35,7 +36,7 @@ export function songQuality(song, band) {
   const chem = (band.chemistry || 0) / maxChem;
   const members = band.members || [];
   const skill = members.length ? members.reduce((a, m) => a + (m.skill || 0), 0) / members.length : 0;
-  const fid = DATA.config.gear?.fidelity ?? 0.5;
+  const fid = deviceFidelity();
   const q = 100 * (0.30 * content + 0.25 * chem + 0.20 * skill + 0.25 * fid);
   return Math.round(Math.max(0, Math.min(100, q)));
 }

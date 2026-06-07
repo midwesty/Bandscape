@@ -687,3 +687,6 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .bm-role { background: #000; color: var(--text); border: 1px solid var(--line); border-radius: 2px; font-family: var(--cond); font-size: 11px; padding: 3px 4px; flex: none; }
 .bm-kick { background: none; border: 1px solid var(--line); color: var(--pink); border-radius: 2px; cursor: pointer; width: 26px; height: 26px; flex: none; font-size: 12px; }
 .bm-kick:hover { border-color: var(--pink); }
+
+/* Step 11.0 — device label in DAW header */
+.daw-dev { font-family: var(--cond); font-size: 11px; letter-spacing: 1px; color: var(--blue); margin-left: 8px; }
