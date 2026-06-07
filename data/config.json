@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.8.0 (Step 8: The show)",
+  "version": "0.9.0 (Step 9: Calendar & Scheduling)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -44,7 +44,8 @@
     "bank": false,
     "contacts": false,
     "streamr": false,
-    "band": true
+    "band": true,
+    "calendar": true
   },
   "band": {
     "rehearse": {
@@ -70,5 +71,35 @@
     "moodGain": 8,
     "fameDrawFactor": 0.5,
     "chemDrawDiv": 20
+  },
+  "calendar": {
+    "slots": [
+      {
+        "id": "morning",
+        "label": "Morning",
+        "start": 8,
+        "end": 12
+      },
+      {
+        "id": "afternoon",
+        "label": "Afternoon",
+        "start": 12,
+        "end": 17
+      },
+      {
+        "id": "evening",
+        "label": "Evening",
+        "start": 17,
+        "end": 22
+      },
+      {
+        "id": "late",
+        "label": "Late",
+        "start": 22,
+        "end": 28
+      }
+    ],
+    "horizonDays": 7,
+    "showSlot": "evening"
   }
 }

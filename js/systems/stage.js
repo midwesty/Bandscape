@@ -21,7 +21,7 @@ import { openContainerView, giveItem } from "./inventory.js";
 import { openDAW } from "./daw.js";
 import { openShop, busk } from "./shop.js";
 import { openRecruit } from "./band.js";
-import { openBooking } from "./shows.js";
+import { openPerform } from "./shows.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -233,6 +233,7 @@ function travel(to, spawn) {
   const s = getState();
   if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
   s.location = to;
+  if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
   s.player.tile = spawn ? { x: spawn.x, y: spawn.y } : null;
   persist();
@@ -342,7 +343,7 @@ function interact(obj) {
       openRecruit(obj.npcId);
       break;
     case "stage":
-      openBooking();
+      openPerform();
       break;
     case "exit":
       travel(obj.to, obj.spawn);

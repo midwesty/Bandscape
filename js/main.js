@@ -15,6 +15,7 @@ import { renderStage, pauseStage } from "./systems/stage.js";
 import { initPhone } from "./systems/phone.js";
 import { initInventory } from "./systems/inventory.js";
 import { initDAW } from "./systems/daw.js";
+import { initCalendar } from "./systems/calendar.js";
 import { initObjectives } from "./systems/objectives.js";
 import { startCharCreate } from "./systems/charcreate.js";
 import { toast } from "./ui/toast.js";
@@ -109,6 +110,7 @@ function enterGame(isNew) {
   initPhone();
   initInventory();
   initDAW();
+  initCalendar();
   renderHUD();
   renderStage();
 

@@ -629,3 +629,30 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .band-pk { font-family: var(--cond); font-size: 12px; color: var(--muted); margin: 8px 0; }
 .band-pk strong { color: var(--green); }
 .band-actions { margin-bottom: 6px; }
+
+/* ============================================================
+   STEP 9 — calendar app + scheduler picker
+   ============================================================ */
+#cal { position: absolute; inset: 0; z-index: 48; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 14px; }
+#cal.open { opacity: 1; }
+#cal.hidden { display: none; }
+.cal-modal { width: min(440px, 96vw); max-height: 90%; overflow: auto; background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); }
+.cal-body { padding: 14px; }
+.cal-day { margin-bottom: 10px; }
+.cal-day-h { font-family: var(--cond); letter-spacing: 1px; color: var(--yellow); font-size: 12px; margin-bottom: 4px; }
+.cal-slots { display: flex; gap: 6px; flex-wrap: wrap; }
+.cal-slot-btn { width: auto; margin: 0; padding: 7px 12px; font-size: 12px; border-color: var(--blue); color: var(--blue); }
+
+/* calendar phone app */
+.cal-note { font-size: 12px; line-height: 1.5; margin: 4px 0 10px; }
+.cal-grid { display: flex; flex-direction: column; gap: 5px; }
+.cal-row { display: flex; align-items: center; gap: 8px; }
+.cal-row-d { width: 64px; flex: none; font-family: var(--cond); font-size: 11px; color: var(--muted); }
+.cal-row-cells { display: flex; gap: 4px; flex: 1; }
+.cal-cell { flex: 1; min-width: 0; height: 34px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.cal-cell-sl { font-family: var(--mono); font-size: 7px; color: var(--muted); letter-spacing: .5px; }
+.cal-cell-t { font-size: 12px; line-height: 1; }
+.cal-cell.reh { border-color: var(--orange); background: #2a210f; }
+.cal-cell.show { border-color: var(--pink); background: #2a0f1a; }
+.cal-cell.now { outline: 2px solid var(--green); outline-offset: -2px; }
+.cal-legend { font-size: 10px; margin-top: 10px; line-height: 1.4; }

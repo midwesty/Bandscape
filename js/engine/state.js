@@ -56,6 +56,7 @@ export function newGameState(slot, char) {
     songDraft: null,         // current studio arrangement in progress
     band: { name: null, members: [], chemistry: 0 }, // Step 7
     debt: { pawn: cfg.economy.startingDebtPawn },
+    calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
     flags: {},
     location: "apartment",
     placedObjects: { apartment: JSON.parse(JSON.stringify(DATA.locations.apartment?.objects || [])) },

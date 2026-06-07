@@ -15,8 +15,9 @@ import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
+import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 
-let overlay = null;
+let overlay = null, pendingShowCmt = null;
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -46,16 +47,22 @@ function tierFlavor(q) {
 }
 
 // ---- booking ----
-export function openBooking() {
+export function openPerform() {
   const s = getState(); const band = s.band || {};
-  if (!band.members || !band.members.length) { toast("You need a band first — recruit some of these musicians.", "warn"); return; }
-  if (!(s.songs || []).length) { toast("Book what, exactly? Record and save a song first.", "warn"); return; }
-  if (!band.pressKit) { toast("The booker wants a press kit — put one together in your BAND app.", "warn"); return; }
+  const ready = findReady("show");
+  if (!ready) {
+    const nx = nextCommitment("show");
+    toast(nx ? `No show tonight. Next: Day ${nx.day}, ${slotLabel(nx.slot)} — be here then.` : "No show booked. Book one in the BAND app.", "info");
+    return;
+  }
+  if (!band.members || !band.members.length) { toast("You booked a show with no band?!", "warn"); return; }
+  if (!(s.songs || []).length) { toast("A gig and no songs. Awkward.", "warn"); return; }
+  pendingShowCmt = ready.id;
   overlay = overlay || document.getElementById("show");
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
   document.body.classList.add("modal-open");
-  renderBooking(new Set([band.pressKit.songId].filter(Boolean)));
+  renderBooking(new Set([band.pressKit?.songId].filter(Boolean)));
 }
 export function closeShow() {
   overlay.classList.remove("open");
@@ -130,6 +137,7 @@ function playShow(setIds) {
   s.band.showsPlayed = (s.band.showsPlayed || 0) + 1;
   advanceMinutes(minutes);
   persist();
+  if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }
   emit("show:played", { pay: est.pay, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
   emit("renderAll");
 

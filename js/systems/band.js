@@ -17,6 +17,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { songQuality } from "./shows.js";
+import { findReady, nextCommitment, complete, openScheduler, slotLabel } from "./calendar.js";
 
 const NPC_COLOR = { npc_brian: "#ff8a3d", npc_lex: "#4fc3f7", npc_ruby: "#ff3b6b", npc_jo: "#b388ff" };
 const BAND_NAMES = ["The Damp Sells", "Parking Lot Gods", "Wet Sprocket Jr.", "The Landlords", "Crab Rangoon", "Future Tenants", "The Damage Deposit", "Couch Surfers"];
@@ -112,6 +113,15 @@ export function renderBandApp(container) {
     return;
   }
   const maxChem = DATA.config.band?.maxChemistry || 100;
+  const rehReady = findReady("rehearse");
+  const nextReh = nextCommitment("rehearse");
+  const nextShow = nextCommitment("show");
+  const canBook = !!(b.pressKit && getState().flags?.venue_discovered);
+  let schedNote = rehReady ? "Your band's here — start the rehearsal."
+    : nextReh ? `Next rehearsal: Day ${nextReh.day}, ${slotLabel(nextReh.slot)}.`
+    : "Schedule a rehearsal — only slots where your band is free will appear.";
+  if (nextShow) schedNote += ` · Next show: Day ${nextShow.day}, ${slotLabel(nextShow.slot)}.`;
+  else if (!b.pressKit) schedNote += " Assemble a press kit to book shows.";
   container.innerHTML = `
     <div class="band-head">
       <div><div class="band-name">${esc(b.name || "Untitled Band")}</div><div class="muted">${b.members.length} member${b.members.length > 1 ? "s" : ""}</div></div>
@@ -123,10 +133,17 @@ export function renderBandApp(container) {
         <div><strong>${esc(m.name)}</strong><small>${esc(m.archetype)} · skill ${Math.round((m.skill || 0) * 100)}</small></div></div>`).join("")}
     </div>
     ${b.pressKit ? `<div class="band-pk">Press kit · lead single: <strong>${esc(b.pressKit.songName)}</strong></div>` : ""}
-    <div class="band-actions"><button class="btn band-mini" id="band-pk">${b.pressKit ? "Reassemble" : "Assemble Press Kit"}</button></div>
-    <button class="btn band-rehearse" id="band-rehearse">REHEARSE</button>
-    <p class="muted band-foot">Rehearsing builds chemistry — costs energy and a couple hours. A <em>press kit</em> (your best song as a lead single) lets you book shows at The Dive.</p>`;
-  container.querySelector("#band-rehearse").addEventListener("click", rehearse);
+    <div class="band-actions">
+      <button class="btn band-mini" id="band-pk">${b.pressKit ? "Reassemble Kit" : "Assemble Press Kit"}</button>
+      ${canBook ? `<button class="btn band-mini" id="band-book">Book a Show</button>` : ""}
+    </div>
+    ${rehReady
+      ? `<button class="btn band-rehearse" id="band-rehearse">▶ START REHEARSAL (now)</button>`
+      : `<button class="btn band-rehearse" id="band-sched">Schedule Rehearsal</button>`}
+    <p class="muted band-foot">${schedNote}</p>`;
+  const rehBtn = container.querySelector("#band-rehearse"); if (rehBtn) rehBtn.addEventListener("click", rehearse);
+  const schBtn = container.querySelector("#band-sched"); if (schBtn) schBtn.addEventListener("click", () => openScheduler("rehearse"));
+  const bookBtn = container.querySelector("#band-book"); if (bookBtn) bookBtn.addEventListener("click", () => openScheduler("show"));
   container.querySelector("#band-rename").addEventListener("click", () => {
     const nm = (prompt("Rename your band:", b.name || "") || "").trim();
     if (nm) { b.name = nm; persist(); emit("renderAll"); }
@@ -160,8 +177,11 @@ function haveAnyCategory(cats) {
 function rehearse() {
   const s = getState(); const b = band();
   if (!b.members.length) { toast("No band to rehearse with.", "warn"); return; }
+  const ready = findReady("rehearse");
+  if (!ready) { toast("Schedule a rehearsal first, then show up during its slot.", "warn"); return; }
   const cfg = DATA.config.band?.rehearse || { minutes: 120, energyCost: 15, chemistryGain: 8, chemistryBonus: 4, moodGain: 2 };
   if ((s.stats.energy ?? 0) < cfg.energyCost) { toast("You're too tired to rehearse. Get some rest.", "warn"); return; }
+  complete(ready.id);
   const bonus = haveAnyCategory(neededCategories(b)) ? (cfg.chemistryBonus || 0) : 0;
   const gain = (cfg.chemistryGain || 8) + bonus;
   const maxChem = DATA.config.band?.maxChemistry || 100;

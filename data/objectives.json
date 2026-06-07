@@ -318,8 +318,8 @@
     },
     {
       "id": "obj_practice",
-      "title": "Rehearse with your band",
-      "desc": "Open the BAND app on your phone and REHEARSE to build chemistry. Tight bands play better shows.",
+      "title": "Schedule & play a rehearsal",
+      "desc": "Open the BAND app and Schedule a Rehearsal on an open slot, then hit START REHEARSAL during that slot to build chemistry.",
       "step": 7,
       "active": false,
       "trigger": "band:rehearsed",
@@ -347,7 +347,7 @@
     {
       "id": "obj_show",
       "title": "Play your first show",
-      "desc": "Tap the stage in The Dive, pick a setlist, and play. Gigs pay real money \u2014 enough to clear that pawn debt.",
+      "desc": "Assemble a press kit, Book a Show from the BAND app on one of The Dive's open nights, then be at the stage that evening to play it.",
       "step": 8,
       "active": false,
       "trigger": "show:played",

@@ -8,10 +8,26 @@
       "reliability": 0.8,
       "skill": 0.6,
       "genre": "punk",
-      "requires": { "practice": ["food"], "gig": ["food", "drink"] },
-      "vices": ["snacks"],
-      "recruitConditions": { "flag": "met_brian" },
-      "portrait": "assets/img/chars/brian.png"
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_brian"
+      },
+      "portrait": "assets/img/chars/brian.png",
+      "availability": [
+        "evening",
+        "late"
+      ]
     },
     {
       "id": "npc_lex",
@@ -20,10 +36,24 @@
       "reliability": 0.7,
       "skill": 0.55,
       "genre": "punk",
-      "requires": { "practice": ["drink"], "gig": ["drink"] },
-      "vices": ["beer"],
+      "requires": {
+        "practice": [
+          "drink"
+        ],
+        "gig": [
+          "drink"
+        ]
+      },
+      "vices": [
+        "beer"
+      ],
       "recruitConditions": {},
-      "portrait": "assets/img/chars/lex.png"
+      "portrait": "assets/img/chars/lex.png",
+      "availability": [
+        "afternoon",
+        "evening",
+        "late"
+      ]
     },
     {
       "id": "npc_ruby",
@@ -32,10 +62,20 @@
       "reliability": 0.65,
       "skill": 0.5,
       "genre": "indie",
-      "requires": { "practice": [], "gig": ["drink"] },
+      "requires": {
+        "practice": [],
+        "gig": [
+          "drink"
+        ]
+      },
       "vices": [],
       "recruitConditions": {},
-      "portrait": "assets/img/chars/ruby.png"
+      "portrait": "assets/img/chars/ruby.png",
+      "availability": [
+        "afternoon",
+        "evening",
+        "late"
+      ]
     },
     {
       "id": "npc_jo",
@@ -44,10 +84,20 @@
       "reliability": 0.6,
       "skill": 0.5,
       "genre": "indie",
-      "requires": { "practice": [], "gig": [] },
-      "vices": ["smokes"],
+      "requires": {
+        "practice": [],
+        "gig": []
+      },
+      "vices": [
+        "smokes"
+      ],
       "recruitConditions": {},
-      "portrait": "assets/img/chars/jo.png"
+      "portrait": "assets/img/chars/jo.png",
+      "availability": [
+        "morning",
+        "afternoon",
+        "evening"
+      ]
     }
   ]
 }
