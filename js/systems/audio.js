@@ -161,3 +161,20 @@ export function schedulePattern(pattern, onDone) {
   stopTimer = setTimeout(() => { stopTimer = null; onDone && onDone(); }, dur + 150);
 }
 export function stopPattern() { if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; } }
+
+// ---- recorded audio clips (vocals/mic) ----
+export async function decodeDataURL(url) {
+  const c = ensureAudio();
+  const res = await fetch(url);
+  const ab = await res.arrayBuffer();
+  return await c.decodeAudioData(ab);
+}
+export function playAudioBuffer(buf, when = 0, out) {
+  if (!buf) return null;
+  ensureAudio();
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(out || ctx.destination);
+  src.start(ctx.currentTime + Math.max(0, when));
+  return src;
+}

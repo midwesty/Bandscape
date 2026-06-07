@@ -550,3 +550,6 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .mix-eq { display: flex; gap: 3px; justify-content: space-between; }
 .eq-band { display: flex; flex-direction: column; align-items: center; font-family: var(--mono); font-size: 7px; color: var(--muted); gap: 2px; }
 .eq-slider { writing-mode: vertical-lr; direction: rtl; width: 14px; height: 64px; }
+
+/* Step 5.2 — microphone / vocals */
+.mic-foot { font-size: 10px; margin-top: 10px; line-height: 1.45; }

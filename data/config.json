@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.5.1 (Step 5.1: Instruments, loop browser, FX)",
+  "version": "0.5.2 (Step 5.2: Microphone & vocals)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
 

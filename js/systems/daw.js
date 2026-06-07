@@ -13,7 +13,7 @@ import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { DATA } from "../engine/data.js";
-import { playCode, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS } from "./audio.js";
+import { playCode, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS, decodeDataURL, playAudioBuffer } from "./audio.js";
 
 const NTRACKS = 4, BARS = 16, BARW = 54, BEATS_PER_BAR = 4;
 const TRACK_COLORS = ["#ff3b6b", "#4fc3f7", "#7CFC9B", "#b388ff"];
@@ -21,11 +21,12 @@ const PALETTE_RECENT = 6;
 
 let overlay = null, draft = null, armed = null, selected = null;
 let playing = false, schedTimer = null, rafId = null, startTime = 0, events = [], songDur = 0, schedIdx = 0, secPerBarCache = 1, chains = [];
+const dawAudioBuf = new Map();
 let browseFilter = "all", browseQuery = "";
 
 function ensurePatternIds() { (getState().patterns || []).forEach((p, i) => { if (!p.id) p.id = "pat_" + (p.createdAt || Date.now()) + "_" + i; }); }
 function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || null; }
-function clipBars(pat) { return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
+function clipBars(pat) { if (pat && pat.type === "audio") return Math.max(1, pat.bars || 2); return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
 function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000 }; }
 function newDraft() { return { name: "Untitled Song", bpm: 110, lengthBars: BARS, metroOn: false, tracks: Array.from({ length: NTRACKS }, () => []), fx: Array.from({ length: NTRACKS }, blankFX) }; }
 function ensureFx() { draft.fx = draft.fx || []; for (let i = 0; i < NTRACKS; i++) draft.fx[i] = Object.assign(blankFX(), draft.fx[i] || {}); }
@@ -214,20 +215,22 @@ function loadSong(i) {
 // ---- playback (lookahead scheduler w/ per-track FX) ----
 function buildEvents() {
   const secPerBeat = 60 / draft.bpm, secPerBar = secPerBeat * BEATS_PER_BAR, secPerStep = secPerBeat / 4;
-  const evs = [];
+  const evs = []; let maxEnd = draft.lengthBars * secPerBar;
   draft.tracks.forEach((track, ti) => {
     for (const clip of track) {
       const pat = patternById(clip.patternId); if (!pat) continue;
       const base = clip.startBar * secPerBar;
+      if (pat.type === "audio") { evs.push({ t: base, audio: pat.id, track: ti }); maxEnd = Math.max(maxEnd, base + (pat.duration || clipBars(pat) * secPerBar)); continue; }
       for (const e of (pat.events || [])) evs.push({ t: base + e.step * secPerStep, inst: pat.instrument || "guitar", code: e.code, oct: e.oct, track: ti });
     }
   });
   if (draft.metroOn) { const tb = draft.lengthBars * BEATS_PER_BAR; for (let b = 0; b < tb; b++) evs.push({ t: b * secPerBeat, click: b % BEATS_PER_BAR === 0 }); }
   evs.sort((a, b) => a.t - b.t);
-  return { evs, dur: draft.lengthBars * secPerBar, secPerBar };
+  return { evs, dur: maxEnd, secPerBar };
 }
-function play() {
+async function play() {
   stop(); ensureAudio(); ensureFx();
+  await prepareAudio();
   const built = buildEvents();
   events = built.evs; songDur = built.dur; secPerBarCache = built.secPerBar;
   if (!events.length) { toast("Nothing to play — place some loops.", "info"); return; }
@@ -236,12 +239,18 @@ function play() {
   schedTimer = setInterval(scheduler, 25);
   rafPlayhead();
 }
+async function prepareAudio() {
+  const ids = new Set();
+  draft.tracks.forEach((t) => t.forEach((c) => { const p = patternById(c.patternId); if (p && p.type === "audio") ids.add(p.id); }));
+  for (const id of ids) { if (!dawAudioBuf.has(id)) { const p = patternById(id); try { dawAudioBuf.set(id, await decodeDataURL(p.audio)); } catch { dawAudioBuf.set(id, null); } } }
+}
 function scheduler() {
   if (!playing) return;
   const now = audioNow(), lookahead = 0.13;
   while (schedIdx < events.length && events[schedIdx].t < (now - startTime) + lookahead) {
     const e = events[schedIdx++]; const when = Math.max(0, startTime + e.t - now);
     if (e.click !== undefined) click(e.click, when);
+    else if (e.audio !== undefined) playAudioBuffer(dawAudioBuf.get(e.audio), when, chains[e.track]);
     else playCode(e.inst, e.code, when, { octave: e.oct, out: chains[e.track] });
   }
   if ((now - startTime) > songDur + 0.5) stop();
@@ -250,9 +259,8 @@ function rafPlayhead() {
   const head = overlay.querySelector("#daw-playhead");
   const step = () => {
     if (!playing) return;
-    const pos = (audioNow() - startTime) / secPerBarCache;
+    const pos = Math.min(draft.lengthBars, (audioNow() - startTime) / secPerBarCache);
     if (head) head.style.left = Math.max(0, pos * BARW) + "px";
-    if (pos >= draft.lengthBars) { stop(); return; }
     rafId = requestAnimationFrame(step);
   };
   rafId = requestAnimationFrame(step);

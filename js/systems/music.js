@@ -14,7 +14,8 @@ import { getState } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
-import { playCode, schedulePattern, stopPattern, ensureAudio, armAudio, click } from "./audio.js";
+import { playCode, schedulePattern, stopPattern, ensureAudio, armAudio, click, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { ensureMic, recordClip, cancelClip, releaseMic, blobToDataURL, micSupported } from "./micrec.js";
 
 const NOTE_ORDER = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const MAJOR = [2, 2, 1, 2, 2, 2, 1];
@@ -30,6 +31,9 @@ let screenEl = null, musicActive = false, tab = "play";
 let isRecording = false, currentPattern = null, stepTimer = null, currentStep = 0, tickCount = 0;
 let curLength = 32, curStepsPerBeat = 4, curBeatsPerBar = 4;
 let libStop = null;
+let micState = "idle"; // idle | countin | recording
+let micCancel = false;
+const audioBufCache = new Map();
 
 function MS() { const s = getState(); s.musicSettings = Object.assign({}, DEFAULTS, s.musicSettings || {}); return s.musicSettings; }
 function setMS(k, v) { MS()[k] = v; persist(); }
@@ -64,14 +68,10 @@ export function renderMusicApp(container) {
       <p>You're not holding an instrument.</p><p class="muted">Pick one up in your apartment, then come back.</p></div>`;
     return;
   }
-  if (inst.kind === "audio") {
-    screenEl.innerHTML = `<div class="mus-top"><div class="mus-controls">${instSwitcher()}</div></div>
-      <div class="stub"><div class="stub-glyph">🎤</div><p>${inst.name}</p>
-      <p class="muted">Vocal &amp; audio recording with your device mic is coming in the next build.</p></div>`;
-    bindSwitcher();
-    return;
-  }
-  const melodic = inst.kind !== "percussion";
+  const kind = inst.kind;                       // melodic | percussion | audio
+  const melodic = kind === "melodic";
+  const tabs = kind === "audio" ? ["record", "library"] : ["play", "record", "library"];
+  if (!tabs.includes(tab)) tab = tabs[0];
   screenEl.innerHTML = `
     <div class="mus-top">
       <div class="mus-controls">
@@ -79,7 +79,7 @@ export function renderMusicApp(container) {
         ${melodic ? selCtl("KEY", "key", KEYS, MS().key) + selCtl("CH OCT", "chordOct", OCTS, MS().chordOct) + selCtl("NT OCT", "noteOct", OCTS, MS().noteOct) : ""}
       </div>
       <div class="mus-tabs">
-        ${["play", "record", "library"].map((t) => `<button class="mus-tab ${t === tab ? "active" : ""}" data-tab="${t}">${t.toUpperCase()}</button>`).join("")}
+        ${tabs.map((t) => `<button class="mus-tab ${t === tab ? "active" : ""}" data-tab="${t}">${t.toUpperCase()}</button>`).join("")}
       </div>
     </div>
     <div id="mus-body"></div>`;
@@ -89,8 +89,80 @@ export function renderMusicApp(container) {
 
   const body = screenEl.querySelector("#mus-body");
   if (tab === "library") return renderLibrary(body);
+  if (kind === "audio") return renderMic(body);
   if (melodic) renderMelodic(body, tab === "record");
   else renderDrums(body, tab === "record");
+}
+
+// ---- microphone / vocals ----
+function micBtnLabel() { return micState === "idle" ? "● RECORD" : micState === "countin" ? "■ CANCEL" : "■ STOP"; }
+function renderMic(body) {
+  const ms = MS();
+  if (!micSupported()) {
+    body.innerHTML = `<div class="stub"><div class="stub-glyph">🎤</div><p>Mic not available</p>
+      <p class="muted">Your browser can't capture audio here. Try Chrome or Safari over https (or localhost).</p></div>`;
+    return;
+  }
+  body.innerHTML = `
+    <p class="mus-hint muted">Sing or play into your device mic. You'll be asked for permission the first time. Headphones recommended if you're playing along to a backing loop.</p>
+    <div class="rec-opts">
+      <label class="mus-sel">BPM <input class="rec-opt" data-ms="bpm" type="number" min="50" max="220" value="${ms.bpm}"></label>
+      <label class="mus-sel">TIME ${selOptions("timeSig", Object.keys(TIME_SIGS), ms.timeSig)}</label>
+      <label class="mus-sel">BARS ${selOptions("bars", BARS, ms.bars)}</label>
+      <label class="mus-sel">COUNT-IN ${selOptions("countInBars", COUNTIN, ms.countInBars, (c) => c + " bar")}</label>
+      <label class="mus-check"><input class="rec-opt" data-ms="metroOn" type="checkbox" ${ms.metroOn ? "checked" : ""}> Count-in clicks</label>
+    </div>
+    <div class="rec-bar"><button class="btn rec-btn ${micState === "recording" ? "recording" : ""}" id="mic-rec">${micBtnLabel()}</button><span id="rec-status" class="rec-status muted"></span></div>
+    <p class="muted mic-foot">Clips record for the set bars at the set tempo, then save to your LIBRARY. The metronome only clicks during the count-in (so it won't bleed into your recording).</p>`;
+  body.querySelectorAll(".rec-opt").forEach((el) => el.addEventListener("change", () => onRecOpt(el)));
+  body.querySelector("#mic-rec").addEventListener("click", micButton);
+}
+function micButton() {
+  if (micState === "idle") startMicRecord();
+  else { micCancel = true; cancelClip(); }
+}
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+async function startMicRecord() {
+  const ms = MS(); const ts = TIME_SIGS[ms.timeSig];
+  const secPerBeat = 60 / ms.bpm, beatsPerBar = ts.bpb;
+  const recSec = ms.bars * beatsPerBar * secPerBeat;
+  ensureAudio();
+  try { await ensureMic(); } catch (e) { toast("Couldn't access the microphone. Check your browser's permission.", "bad"); return; }
+  micCancel = false; micState = "countin"; renderMusicApp(screenEl);
+  const countBeats = (ms.metroOn ? ms.countInBars : 0) * beatsPerBar;
+  for (let b = 0; b < countBeats; b++) {
+    if (micCancel) { micState = "idle"; renderMusicApp(screenEl); return; }
+    click(isAccent(b % beatsPerBar, ms.accent), 0); setStatus("count-in… " + (countBeats - b)); await wait(secPerBeat * 1000);
+  }
+  if (micCancel) { micState = "idle"; renderMusicApp(screenEl); return; }
+  micState = "recording"; renderMusicApp(screenEl);
+  let remain = Math.ceil(recSec); setStatus("● recording… " + remain + "s");
+  const statusTimer = setInterval(() => { remain--; if (remain >= 0) setStatus("● recording… " + remain + "s"); }, 1000);
+  let blob = null;
+  try { blob = await recordClip(recSec * 1000); }
+  catch (e) { clearInterval(statusTimer); micState = "idle"; renderMusicApp(screenEl); if (String(e && e.message) !== "cancelled") toast("Recording failed.", "bad"); return; }
+  clearInterval(statusTimer);
+  await saveVocalClip(blob, ms, recSec);
+  micState = "idle"; renderMusicApp(screenEl);
+}
+async function saveVocalClip(blob, ms, recSec) {
+  let dataURL, duration = recSec;
+  try { dataURL = await blobToDataURL(blob); } catch { toast("Couldn't process the recording.", "bad"); return; }
+  try { const buf = await decodeDataURL(dataURL); duration = buf.duration; } catch {}
+  const name = (prompt("Name this clip:", "Vocal " + ((getState().patterns?.length || 0) + 1)) || "Untitled").trim();
+  const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", audio: dataURL, duration, bpm: ms.bpm, bars: ms.bars, createdAt: Date.now() };
+  getState().patterns = getState().patterns || [];
+  getState().patterns.push(pat);
+  if (!persistSafe()) { getState().patterns.pop(); toast("Save is full — delete some loops to free space, then try again.", "bad"); return; }
+  emit("pattern:recorded", { name }); toast(`Saved "${name}".`, "good"); tab = "library";
+}
+function persistSafe() { const s = getState(); return saveToSlot(s.meta.slot, s); }
+async function playAudioPattern(pat) {
+  try {
+    let buf = audioBufCache.get(pat.id);
+    if (!buf) { buf = await decodeDataURL(pat.audio); audioBufCache.set(pat.id, buf); }
+    ensureAudio(); playAudioBuffer(buf, 0); toast(`Playing "${pat.name}".`, "info");
+  } catch { toast("Couldn't play that clip.", "bad"); }
 }
 
 function instSwitcher() {
@@ -175,7 +247,7 @@ function renderLibrary(body) {
   body.innerHTML = `<div class="loop-list">` + pats.map((p, i) => `
     <div class="loop-row">
       <div class="loop-info"><strong>${escapeHTML(p.name || "Untitled")}</strong>
-        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${(p.events || []).length} notes</small></div>
+        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : ((p.events || []).length + " notes")}</small></div>
       <div class="loop-btns"><button class="btn loop-act" data-act="play" data-i="${i}">▶</button><button class="btn loop-act" data-act="del" data-i="${i}">✕</button></div>
     </div>`).join("") + `</div>`;
   body.querySelectorAll(".loop-act").forEach((b) => b.addEventListener("click", () => {
@@ -236,6 +308,7 @@ function stopRecording() {
 function stopRec(silent) { if (isRecording) { isRecording = false; clearInterval(stepTimer); stepTimer = null; currentPattern = null; if (!silent) toast("Recording stopped.", "info"); } }
 function playLoop(pattern) {
   if (libStop) { stopPattern(); libStop = null; }
+  if (pattern.type === "audio") { playAudioPattern(pattern); return; }
   ensureAudio(); toast(`Playing "${pattern.name}".`, "info"); libStop = true;
   schedulePattern(pattern, () => { libStop = null; });
 }
@@ -265,7 +338,7 @@ function onKey(e) {
   const ri = right.indexOf(k); if (ri >= 0) { e.preventDefault(); return hit(notes[ri], padEl("note", ri)); }
 }
 function padEl(type, i) { return screenEl?.querySelector(`.pad[data-type="${type}"][data-i="${i}"]`) || null; }
-function deactivate() { musicActive = false; stopRec(true); if (libStop) { stopPattern(); libStop = null; } }
+function deactivate() { musicActive = false; stopRec(true); if (libStop) { stopPattern(); libStop = null; } if (micState !== "idle") { micCancel = true; cancelClip(); micState = "idle"; } releaseMic(); }
 
 armAudio();
 window.addEventListener("keydown", onKey);
