@@ -553,3 +553,23 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 
 /* Step 5.2 — microphone / vocals */
 .mic-foot { font-size: 10px; margin-top: 10px; line-height: 1.45; }
+
+/* ============================================================
+   STEP 6 — town shops / venue
+   ============================================================ */
+#shop { position: absolute; inset: 0; z-index: 46; display: grid; place-items: center; background: rgba(0,0,0,.62); opacity: 0; transition: opacity .2s; padding: 14px; }
+#shop.open { opacity: 1; }
+#shop.hidden { display: none; }
+.shop-modal { width: min(560px, 96vw); max-height: 92%; overflow: auto; background: var(--panel); border: 3px solid var(--text); border-radius: 4px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); }
+.shop-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; background: #000; border-bottom: 2px solid var(--line); position: sticky; top: 0; }
+.shop-title { font-family: var(--display); font-size: 22px; letter-spacing: 1px; }
+.shop-cash { font-family: var(--mono); color: var(--green); margin-right: 6px; }
+.shop-body { padding: 14px; }
+.shop-debt { font-family: var(--display); font-size: 22px; color: var(--pink); margin-bottom: 10px; }
+.shop-pay { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.shop-section { font-family: var(--cond); letter-spacing: 2px; color: var(--yellow); font-size: 11px; margin: 14px 0 6px; }
+.shop-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.shop-row small { color: var(--muted); display: block; font-size: 11px; }
+.shop-price { font-family: var(--mono); color: var(--yellow); }
+.shop-btn { width: auto; margin: 0; padding: 6px 12px; font-size: 12px; }
+.shop-note { color: var(--muted); font-size: 12px; line-height: 1.5; }

@@ -1,0 +1,15 @@
+{
+  "_comment": "The street outside your building. Fixed hotspots (shops, busk corner, your door home) live in 'exits': solid:true blocks the tile so you stand adjacent; an exit with 'to' travels to another location (step onto it). 'objects' is for movable furniture (none here yet). Edit shop stock in data/shops.json.",
+  "id": "town",
+  "name": "Your Block",
+  "size": { "w": 11, "h": 8 },
+  "ambient": "street_night",
+  "objects": [],
+  "exits": [
+    { "id": "pawn",    "name": "Last Resort Pawn", "tile": { "x": 2, "y": 1 }, "interact": "shop", "shopId": "pawn",    "solid": true },
+    { "id": "grocery", "name": "Corner Store",      "tile": { "x": 5, "y": 1 }, "interact": "shop", "shopId": "grocery", "solid": true },
+    { "id": "venue",   "name": "The Dive",          "tile": { "x": 8, "y": 1 }, "interact": "shop", "shopId": "venue",   "solid": true },
+    { "id": "busk",    "name": "Street Corner",     "tile": { "x": 1, "y": 5 }, "interact": "busk", "solid": true },
+    { "id": "home",    "name": "Your Building",     "tile": { "x": 5, "y": 7 }, "to": "apartment", "spawn": { "x": 4, "y": 4 } }
+  ]
+}

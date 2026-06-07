@@ -9,7 +9,9 @@
       "active": true,
       "trigger": "game:started",
       "reward": {},
-      "unlocks": ["obj_openphone"]
+      "unlocks": [
+        "obj_openphone"
+      ]
     },
     {
       "id": "obj_openphone",
@@ -19,7 +21,10 @@
       "active": false,
       "trigger": "phone:opened",
       "reward": {},
-      "unlocks": ["obj_tasks", "obj_status"]
+      "unlocks": [
+        "obj_tasks",
+        "obj_status"
+      ]
     },
     {
       "id": "obj_tasks",
@@ -28,7 +33,9 @@
       "step": 1,
       "active": false,
       "trigger": "phone:appOpened",
-      "match": { "app": "tasks" },
+      "match": {
+        "app": "tasks"
+      },
       "reward": {},
       "unlocks": []
     },
@@ -39,9 +46,14 @@
       "step": 1,
       "active": false,
       "trigger": "phone:appOpened",
-      "match": { "app": "status" },
+      "match": {
+        "app": "status"
+      },
       "reward": {},
-      "unlocks": ["obj_backup", "obj_sleep"]
+      "unlocks": [
+        "obj_backup",
+        "obj_sleep"
+      ]
     },
     {
       "id": "obj_backup",
@@ -51,7 +63,9 @@
       "active": false,
       "optional": true,
       "trigger": "save:exported",
-      "reward": { "mood": 3 },
+      "reward": {
+        "mood": 3
+      },
       "unlocks": []
     },
     {
@@ -62,7 +76,9 @@
       "active": false,
       "trigger": "day:advanced",
       "reward": {},
-      "unlocks": ["obj_walk"]
+      "unlocks": [
+        "obj_walk"
+      ]
     },
     {
       "id": "obj_walk",
@@ -71,8 +87,12 @@
       "step": 2,
       "active": false,
       "trigger": "player:moved",
-      "reward": { "mood": 2 },
-      "unlocks": ["obj_step2_teaser"]
+      "reward": {
+        "mood": 2
+      },
+      "unlocks": [
+        "obj_step2_teaser"
+      ]
     },
     {
       "id": "obj_step2_teaser",
@@ -81,8 +101,12 @@
       "step": 2,
       "active": false,
       "trigger": "instrument:equipped",
-      "reward": { "mood": 4 },
-      "unlocks": ["obj_open_bag"]
+      "reward": {
+        "mood": 4
+      },
+      "unlocks": [
+        "obj_open_bag"
+      ]
     },
     {
       "id": "obj_open_bag",
@@ -92,17 +116,21 @@
       "active": false,
       "trigger": "inventory:opened",
       "reward": {},
-      "unlocks": ["obj_use_item"]
+      "unlocks": [
+        "obj_use_item"
+      ]
     },
     {
       "id": "obj_use_item",
       "title": "Use something",
-      "desc": "Tap an item to select it, then hit Use. Eat, drink, whatever — watch your needs in Status.",
+      "desc": "Tap an item to select it, then hit Use. Eat, drink, whatever \u2014 watch your needs in Status.",
       "step": 3,
       "active": false,
       "trigger": "item:used",
       "reward": {},
-      "unlocks": ["obj_stash"]
+      "unlocks": [
+        "obj_stash"
+      ]
     },
     {
       "id": "obj_stash",
@@ -111,8 +139,12 @@
       "step": 3,
       "active": false,
       "trigger": "item:moved",
-      "reward": { "mood": 3 },
-      "unlocks": ["obj_play"]
+      "reward": {
+        "mood": 3
+      },
+      "unlocks": [
+        "obj_play"
+      ]
     },
     {
       "id": "obj_play",
@@ -121,8 +153,12 @@
       "step": 4,
       "active": false,
       "trigger": "note:played",
-      "reward": { "mood": 4 },
-      "unlocks": ["obj_record"]
+      "reward": {
+        "mood": 4
+      },
+      "unlocks": [
+        "obj_record"
+      ]
     },
     {
       "id": "obj_record",
@@ -131,18 +167,24 @@
       "step": 4,
       "active": false,
       "trigger": "pattern:recorded",
-      "reward": { "mood": 6 },
-      "unlocks": ["obj_open_daw"]
+      "reward": {
+        "mood": 6
+      },
+      "unlocks": [
+        "obj_open_daw"
+      ]
     },
     {
       "id": "obj_open_daw",
       "title": "Boot up the studio",
-      "desc": "Walk to your laptop and open it. That's your DAW — where loops become songs.",
+      "desc": "Walk to your laptop and open it. That's your DAW \u2014 where loops become songs.",
       "step": 5,
       "active": false,
       "trigger": "daw:opened",
       "reward": {},
-      "unlocks": ["obj_arrange"]
+      "unlocks": [
+        "obj_arrange"
+      ]
     },
     {
       "id": "obj_arrange",
@@ -151,28 +193,94 @@
       "step": 5,
       "active": false,
       "trigger": "clip:placed",
-      "reward": { "mood": 4 },
-      "unlocks": ["obj_save_song"]
+      "reward": {
+        "mood": 4
+      },
+      "unlocks": [
+        "obj_save_song"
+      ]
     },
     {
       "id": "obj_save_song",
       "title": "Save your first song",
-      "desc": "Arrange a few loops, then hit SAVE to keep the song. Congrats — you made a thing.",
+      "desc": "Arrange a few loops, then hit SAVE to keep the song. Congrats \u2014 you made a thing.",
       "step": 5,
       "active": false,
       "trigger": "song:saved",
-      "reward": { "mood": 8, "fame": 1 },
-      "unlocks": ["obj_town_teaser"]
+      "reward": {
+        "mood": 8,
+        "fame": 1
+      },
+      "unlocks": [
+        "obj_town_teaser"
+      ]
     },
     {
       "id": "obj_town_teaser",
-      "title": "There's a world out there",
-      "desc": "That front door leads to town — venues, the pawn shop, the corner store. It opens up in a later build.",
+      "title": "Step outside",
+      "desc": "Head out your front door and see the block.",
       "step": 6,
       "active": false,
-      "locked": true,
+      "locked": false,
       "trigger": "location:changed",
+      "reward": {
+        "mood": 3
+      },
+      "unlocks": [
+        "obj_shops"
+      ]
+    },
+    {
+      "id": "obj_shops",
+      "title": "Scope out the block",
+      "desc": "Tap a storefront \u2014 the pawn shop, the corner store, or the venue \u2014 to see what's there.",
+      "step": 6,
+      "active": false,
+      "trigger": "shop:opened",
       "reward": {},
+      "unlocks": [
+        "obj_busk"
+      ]
+    },
+    {
+      "id": "obj_busk",
+      "title": "Busk for cash",
+      "desc": "You're broke. Stand at the street corner with an instrument equipped and busk for tips.",
+      "step": 6,
+      "active": false,
+      "trigger": "money:earned",
+      "reward": {
+        "mood": 4
+      },
+      "unlocks": [
+        "obj_paydebt"
+      ]
+    },
+    {
+      "id": "obj_paydebt",
+      "title": "Chip at the debt",
+      "desc": "Take your money to the pawn shop and make a payment on your $350 debt.",
+      "step": 6,
+      "active": false,
+      "trigger": "debt:paid",
+      "reward": {
+        "mood": 6
+      },
+      "unlocks": [
+        "obj_payoff"
+      ]
+    },
+    {
+      "id": "obj_payoff",
+      "title": "Pay off the pawn shop",
+      "desc": "Clear the full $350 pawn debt \u2014 your gear, free and clear. That's the goal.",
+      "step": 6,
+      "active": false,
+      "trigger": "debt:cleared",
+      "reward": {
+        "mood": 20,
+        "fame": 3
+      },
       "unlocks": []
     }
   ]

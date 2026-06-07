@@ -94,6 +94,20 @@ export function sleep({ forced = false } = {}) {
   emit("renderAll");
 }
 
+// Advance the clock by N minutes (busking, traveling, activities). Rolls hours
+// (with hourly decay/conditions) but never advances the day — only sleep does.
+export function advanceMinutes(mins) {
+  const s = getState();
+  if (!s) return;
+  for (let i = 0; i < mins; i++) {
+    s.time.minute += 1;
+    if (s.time.minute >= 60) { s.time.minute = 0; s.time.hour += 1; onHour(); if (s.time.hour >= 24) s.time.hour = 0; }
+  }
+  emit("time:tick", { time: s.time });
+  emit("renderAll");
+  checkCurfew();
+}
+
 export function timeString() {
   const s = getState();
   if (!s) return "--:--";

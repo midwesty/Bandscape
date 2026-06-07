@@ -11,6 +11,7 @@ export const DATA = {
   dialogue: null,
   items: null,
   npcs: null,
+  shops: null,
   instruments: {},
   locations: {}
 };
@@ -22,11 +23,12 @@ const FILES = {
   objectives: "data/objectives.json",
   dialogue:   "data/dialogue.json",
   items:      "data/items.json",
-  npcs:       "data/npcs.json"
+  npcs:       "data/npcs.json",
+  shops:      "data/shops.json"
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];
-const LOCATIONS = ["apartment"];
+const LOCATIONS = ["apartment", "town"];
 
 async function fetchJSON(path) {
   const res = await fetch(path + "?v=" + Date.now()); // cache-bust (GitHub Pages caches hard)

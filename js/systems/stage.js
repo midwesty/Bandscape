@@ -19,6 +19,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
 import { openDAW } from "./daw.js";
+import { openShop, busk } from "./shop.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -106,6 +107,7 @@ function rebuildBlocked(except) {
   const w = room.size?.w || 8, h = room.size?.h || 6;
   blocked = Array.from({ length: h }, () => Array(w).fill(false));
   for (const o of furniture) { if (o !== except && o.tile && o.kind !== "item") blocked[o.tile.y][o.tile.x] = true; }
+  for (const o of exits) { if (o.solid && o.tile && inBounds(o.tile.x, o.tile.y)) blocked[o.tile.y][o.tile.x] = true; }
 }
 function firstFreeTile() {
   const w = room.size?.w || 8, h = room.size?.h || 6;
@@ -224,6 +226,20 @@ function handleArrangeClick(t) {
 }
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 
+// Move to another location. Spawn is the arrival tile (falls back to a free tile).
+function travel(to, spawn) {
+  const s = getState();
+  if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
+  s.location = to;
+  s.player = s.player || {};
+  s.player.tile = spawn ? { x: spawn.x, y: spawn.y } : null;
+  persist();
+  emit("location:changed", { to });
+  renderStage();
+  emit("renderAll");
+  toast(to === "town" ? "You step out onto the block." : "You head back inside.", "info");
+}
+
 // ---- movement / pathfinding ----
 function walkTo(tx, ty, interact) {
   const start = { x: Math.round(player.x), y: Math.round(player.y) };
@@ -311,8 +327,14 @@ function interact(obj) {
     case "daw":
       openDAW();
       break;
+    case "shop":
+      openShop(obj.shopId);
+      break;
+    case "busk":
+      busk();
+      break;
     case "exit":
-      toast("The town's out there. That map opens up in a later build.", "info");
+      travel(obj.to, obj.spawn);
       break;
     default:
       toast(obj.name, "info");
@@ -476,6 +498,11 @@ function drawProc(o, cx, cy) {
     case "drums":  drumsShape(cx, cy); break;
     case "mic":    micShape(cx, cy); break;
     case "door":   doorway(cx, cy); break;
+    case "pawn":    building(cx, cy, C.yellow); break;
+    case "grocery": building(cx, cy, C.green); break;
+    case "venue":   building(cx, cy, C.pink); break;
+    case "busk":    buskSpot(cx, cy); break;
+    case "home":    homeDoor(cx, cy); break;
     default:       cuboid(cx, cy, 14, 7, 18, C.purple, "#6e54a0", "#523f78");
   }
 }
@@ -523,6 +550,29 @@ function micShape(cx, cy) {
   ctx.strokeStyle = "#9aa3ad"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 30); ctx.stroke();
   ctx.fillStyle = "#2a2233"; ctx.beginPath(); ctx.ellipse(cx, cy, 9, 4, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = C.pink; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 34, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+function building(cx, cy, color) {
+  const w = 22, h = 11, ht = 56;
+  cuboid(cx, cy, w, h, ht, "#241d30", "#181122", "#120d18");
+  ctx.fillStyle = color; ctx.fillRect(cx - w, cy - ht + 4, w * 2, 9);
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.strokeRect(cx - w, cy - ht + 4, w * 2, 9);
+  ctx.fillStyle = "#1b2333"; ctx.strokeRect(cx - w + 6, cy - 32, 15, 12); ctx.fillRect(cx - w + 6, cy - 32, 15, 12);
+  ctx.fillStyle = "#0c0810"; ctx.fillRect(cx + 2, cy - 19, 13, 19);
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.strokeRect(cx + 2, cy - 19, 13, 19);
+}
+function buskSpot(cx, cy) {
+  cuboid(cx, cy, 11, 6, 15, "#2a2233", "#1f1828", "#160f1f");
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.fillStyle = "#0c0810";
+  ctx.beginPath(); ctx.arc(cx - 3, cy - 9, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "rgba(124,252,155,0.45)"; ctx.fillRect(cx + 7, cy - 9, 8, 9);
+  ctx.strokeStyle = C.green; ctx.strokeRect(cx + 7, cy - 9, 8, 9);
+}
+function homeDoor(cx, cy) {
+  cuboid(cx, cy, 16, 8, 34, "#2b2336", "#1f1829", "#160f1f");
+  ctx.fillStyle = C.purple; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 18, cy - 34); ctx.lineTo(cx, cy - 47); ctx.lineTo(cx + 18, cy - 34); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#0c0810"; ctx.fillRect(cx - 5, cy - 17, 10, 17);
+  ctx.strokeStyle = C.yellow; ctx.strokeRect(cx - 5, cy - 17, 10, 17);
 }
 // short, floor-level threshold — never occludes furniture behind it
 function doorway(cx, cy) {

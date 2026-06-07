@@ -1,9 +1,8 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.5.2 (Step 5.2: Microphone & vocals)",
+  "version": "0.6.0 (Step 6: The town)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
-
   "time": {
     "_comment": "realMsPerGameMinute: how many real milliseconds = 1 in-game minute. dayStartHour: what time you wake up. curfewHour: if you push past this you pass out and lose the rest of the night.",
     "realMsPerGameMinute": 700,
@@ -13,24 +12,28 @@
     "startHour": 9,
     "startMinute": 0
   },
-
   "save": {
     "slots": 3,
     "autosaveOnSleep": true
   },
-
   "economy": {
     "startingMoney": 12,
-    "startingDebtPawn": 350
+    "startingDebtPawn": 350,
+    "busk": {
+      "minutes": 90,
+      "energyCost": 12,
+      "tipMin": 3,
+      "tipMax": 14,
+      "moodGain": 3,
+      "fameChancePct": 35
+    }
   },
-
   "inventory": {
     "_comment": "A 'slot' holds one stack. Pockets are small so the fridge/crate matter.",
     "pocketSlots": 12,
     "fridgeSlots": 24,
     "storageSlots": 24
   },
-
   "apps": {
     "_comment": "true = working app, false = shows a 'coming soon' teaser. Later steps flip these on.",
     "tasks": true,

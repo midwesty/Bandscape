@@ -1,0 +1,17 @@
+{
+  "_comment": "Shop data. grocery.stock = item ids sold (price = item.value * markup, rounded up). pawn.sellRate = fraction of item.value you get when selling. venue is a teaser hub until shows arrive (Step 8). All item ids must exist in items.json.",
+  "grocery": {
+    "name": "Corner Store",
+    "markup": 1.0,
+    "stock": ["water", "soda", "juice", "coffee", "energy_drink", "pizza_slice", "ramen_cup", "candy_bar", "energy_bar", "protein_shake", "smokes", "beer"]
+  },
+  "pawn": {
+    "name": "Last Resort Pawn",
+    "sellRate": 0.5,
+    "payOptions": [20, 50]
+  },
+  "venue": {
+    "name": "The Dive",
+    "teaser": "The booker barely looks up from her crossword. \"Got a band and a demo? Then we'll talk. Stage time's for paying acts.\" She nods at the door."
+  }
+}
