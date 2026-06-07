@@ -1,0 +1,7 @@
+{
+  "_comment": "Functioning microphone. Vocal/audio recording arrives in the next build.",
+  "id": "microphone",
+  "name": "Functioning Microphone",
+  "kind": "audio",
+  "audioFolder": "assets/audio/vocals/"
+}

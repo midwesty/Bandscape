@@ -47,7 +47,8 @@ export function newGameState(slot, char) {
       fridge:  [ { item: "beer", qty: 4 }, { item: "water", qty: 3 }, { item: "cold_fries", qty: 2 }, { item: "energy_drink", qty: 2 } ],
       storage: [ { item: "ramen_cup", qty: 3 }, { item: "candy_bar", qty: 2 }, { item: "guitar_picks", qty: 8 } ]
     },
-    equipped: { instrumentId: null },        // what you're holding (guitar, etc.)
+    equipped: { instrumentId: null },        // what you're holding
+    owned: [],                               // instruments you've picked up (for the in-app switcher)
     addictions: {},                          // substance -> accumulated use (light hook for later)
     patterns: [],            // Step 4 (loop format ported from old build)
     musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },

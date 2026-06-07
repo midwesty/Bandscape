@@ -25,7 +25,7 @@ const FILES = {
   npcs:       "data/npcs.json"
 };
 
-const INSTRUMENTS = ["guitar"];
+const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];
 const LOCATIONS = ["apartment"];
 
 async function fetchJSON(path) {

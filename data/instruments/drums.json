@@ -1,0 +1,67 @@
+{
+  "_comment": "Broken drum kit. Percussion: each piece is a code. Synth drums until you drop samples into assets/audio/drums/. pieces[].key = keyboard key.",
+  "id": "drums",
+  "name": "Broken Drum Kit",
+  "kind": "percussion",
+  "audioFolder": "assets/audio/drums/",
+  "pieces": [
+    {
+      "id": "kick",
+      "label": "Kick",
+      "code": "kick",
+      "key": "a",
+      "sample": "kick.wav"
+    },
+    {
+      "id": "snare",
+      "label": "Snare",
+      "code": "snare",
+      "key": "s",
+      "sample": "snare.wav"
+    },
+    {
+      "id": "hihat",
+      "label": "Hi-Hat",
+      "code": "hihat",
+      "key": "d",
+      "sample": "hihat.wav"
+    },
+    {
+      "id": "openhat",
+      "label": "Open Hat",
+      "code": "openhat",
+      "key": "f",
+      "sample": "openhat.wav"
+    },
+    {
+      "id": "tom",
+      "label": "Tom",
+      "code": "tom",
+      "key": "g",
+      "sample": "tom.wav"
+    },
+    {
+      "id": "clap",
+      "label": "Clap",
+      "code": "clap",
+      "key": "h",
+      "sample": "clap.wav"
+    },
+    {
+      "id": "crash",
+      "label": "Crash",
+      "code": "crash",
+      "key": "j",
+      "sample": "crash.wav"
+    }
+  ],
+  "samples": {
+    "kick": "kick.wav",
+    "snare": "snare.wav",
+    "hihat": "hihat.wav",
+    "openhat": "openhat.wav",
+    "tom": "tom.wav",
+    "clap": "clap.wav",
+    "crash": "crash.wav"
+  }
+}

@@ -1,8 +1,14 @@
 {
-  "_comment": "Melodic instrument. samples map a note/chord code to a file; missing files are synthesized (wave/octaveOffset). ui.leftKeys play chords, ui.rightKeys play notes.",
-  "id": "guitar",
-  "name": "Crappy Guitar",
-  "audioFolder": "assets/audio/guitar/",
+  "_comment": "Starter bass guitar. Lower + rounder than the guitar.",
+  "id": "bass",
+  "name": "Starter Bass",
+  "kind": "melodic",
+  "audioFolder": "assets/audio/bass/",
+  "synth": {
+    "wave": "sawtooth",
+    "octaveOffset": -2,
+    "release": 0.6
+  },
   "samples": {
     "chord_C": "chord_C.mp3",
     "chord_Cs": "chord_Cs.mp3",
@@ -58,10 +64,5 @@
       ".",
       "/"
     ]
-  },
-  "kind": "melodic",
-  "synth": {
-    "wave": "triangle",
-    "octaveOffset": 0
   }
 }

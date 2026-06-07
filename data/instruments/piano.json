@@ -1,8 +1,14 @@
 {
-  "_comment": "Melodic instrument. samples map a note/chord code to a file; missing files are synthesized (wave/octaveOffset). ui.leftKeys play chords, ui.rightKeys play notes.",
-  "id": "guitar",
-  "name": "Crappy Guitar",
-  "audioFolder": "assets/audio/guitar/",
+  "_comment": "Malfunctioning piano. A bit out of tune in spirit, fully playable.",
+  "id": "piano",
+  "name": "Malfunctioning Piano",
+  "kind": "melodic",
+  "audioFolder": "assets/audio/piano/",
+  "synth": {
+    "wave": "triangle",
+    "octaveOffset": 0,
+    "release": 1.1
+  },
   "samples": {
     "chord_C": "chord_C.mp3",
     "chord_Cs": "chord_Cs.mp3",
@@ -58,10 +64,5 @@
       ".",
       "/"
     ]
-  },
-  "kind": "melodic",
-  "synth": {
-    "wave": "triangle",
-    "octaveOffset": 0
   }
 }

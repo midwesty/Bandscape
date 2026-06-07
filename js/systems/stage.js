@@ -87,6 +87,9 @@ function syncToState() {
     s.placedObjects[s.location] = JSON.parse(JSON.stringify(room.objects || []));
   }
   furniture = s.placedObjects[s.location];
+  // merge any objects added in an update (e.g. new instruments) into existing saves
+  const haveIds = new Set(furniture.map((o) => o.id));
+  for (const o of (room.objects || [])) if (!haveIds.has(o.id)) furniture.push(JSON.parse(JSON.stringify(o)));
   exits = room.exits || [];
   rebuildBlocked();
 
@@ -293,8 +296,10 @@ function interact(obj) {
       const s = getState();
       s.equipped = s.equipped || { instrumentId: null };
       s.equipped.instrumentId = obj.instrumentId;
+      s.owned = s.owned || [];
+      if (!s.owned.includes(obj.instrumentId)) s.owned.push(obj.instrumentId);
       emit("instrument:equipped", { id: obj.instrumentId });
-      toast("You pick up the " + (DATA.instruments[obj.instrumentId]?.name || "guitar") + ".", "good");
+      toast("You pick up the " + (DATA.instruments[obj.instrumentId]?.name || "instrument") + ".", "good");
       break;
     }
     case "container":
@@ -465,7 +470,11 @@ function drawProc(o, cx, cy) {
     case "laptop": cuboid(cx, cy, 18, 9, 5, "#2b2533", "#211b29", "#1a1521");
                    ctx.fillStyle = "#1a1422"; ctx.fillRect(cx - 12, cy - 24, 24, 16);
                    ctx.fillStyle = C.green; ctx.fillRect(cx - 10, cy - 22, 20, 12); break;
-    case "guitar": billboardGuitar(cx, cy); break;
+    case "guitar": stringed(cx, cy, C.orange); break;
+    case "bass":   stringed(cx, cy, C.blue); break;
+    case "piano":  pianoShape(cx, cy); break;
+    case "drums":  drumsShape(cx, cy); break;
+    case "mic":    micShape(cx, cy); break;
     case "door":   doorway(cx, cy); break;
     default:       cuboid(cx, cy, 14, 7, 18, C.purple, "#6e54a0", "#523f78");
   }
@@ -489,6 +498,31 @@ function billboardGuitar(cx, cy) {
   ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, -8, 4, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#caa56b"; ctx.fillRect(-2.5, -40, 5, 26); ctx.strokeRect(-2.5, -40, 5, 26);
   ctx.restore();
+}
+function stringed(cx, cy, color) {
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.32);
+  ctx.fillStyle = color; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(0, -8, 12, 16, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, -8, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#caa56b"; ctx.fillRect(-2.5, -44, 5, 30); ctx.strokeRect(-2.5, -44, 5, 30);
+  ctx.restore();
+}
+function pianoShape(cx, cy) {
+  cuboid(cx, cy, 24, 12, 12, "#1c1622", "#15101b", "#100c15");
+  ctx.fillStyle = "#e8e4ec"; ctx.fillRect(cx - 18, cy - 13, 36, 5);
+  ctx.fillStyle = "#0b0b0f"; for (let i = -15; i <= 15; i += 6) ctx.fillRect(cx + i, cy - 13, 2, 3);
+}
+function drumsShape(cx, cy) {
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  ctx.fillStyle = "#3a2d40"; ctx.beginPath(); ctx.ellipse(cx, cy - 6, 18, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#cfc9d6"; ctx.beginPath(); ctx.ellipse(cx, cy - 12, 18, 8, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.orange; ctx.beginPath(); ctx.ellipse(cx + 15, cy - 18, 8, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = C.yellow; ctx.beginPath(); ctx.moveTo(cx - 22, cy - 26); ctx.lineTo(cx - 6, cy - 20); ctx.stroke();
+}
+function micShape(cx, cy) {
+  ctx.strokeStyle = "#9aa3ad"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 30); ctx.stroke();
+  ctx.fillStyle = "#2a2233"; ctx.beginPath(); ctx.ellipse(cx, cy, 9, 4, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = C.pink; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 34, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 }
 // short, floor-level threshold — never occludes furniture behind it
 function doorway(cx, cy) {

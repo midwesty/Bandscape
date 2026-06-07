@@ -514,3 +514,39 @@ body.modal-open #log { opacity: 0; pointer-events: none; transition: opacity .12
 .daw-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--yellow); box-shadow: 0 0 8px var(--yellow); pointer-events: none; z-index: 3; }
 .daw-foot { padding: 8px 12px; background: #000; border-top: 2px solid var(--line); min-height: 44px; display: flex; align-items: center; }
 .daw-del { width: auto; margin: 0; padding: 7px 12px; font-size: 12px; border-color: var(--pink); color: var(--pink); }
+
+/* ============================================================
+   STEP 5.1 — extra instruments, loop browser, mixer FX
+   ============================================================ */
+.pad-drum { background: #2a2118; color: var(--orange); border-color: #4a3a22; }
+.mus-inst { font-family: var(--display); font-size: 16px; color: var(--green); letter-spacing: .5px; }
+
+.daw-modal { position: relative; }
+.daw-loadloop { flex: none; width: auto; margin: 0; padding: 6px 10px; font-size: 11px; border-color: var(--green); color: var(--green); }
+
+#daw-sub { position: absolute; inset: 0; background: rgba(0,0,0,.62); display: grid; place-items: center; padding: 14px; z-index: 5; }
+#daw-sub.hidden { display: none; }
+.daw-sub-card { width: min(740px, 96%); max-height: 90%; overflow: auto; background: var(--panel); border: 3px solid var(--text); border-radius: 4px; padding: 14px; box-shadow: 8px 10px 0 rgba(0,0,0,.5); }
+.daw-sub-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+.browse-q { width: 100%; padding: 8px 10px; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; font-family: var(--body); margin-bottom: 8px; }
+.browse-q:focus { outline: none; border-color: var(--green); }
+.browse-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.browse-filter { font-family: var(--cond); font-size: 11px; padding: 5px 9px; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 2px; cursor: pointer; }
+.browse-filter.active { color: var(--green); border-color: var(--green); }
+.browse-list { display: flex; flex-direction: column; gap: 6px; max-height: 46vh; overflow: auto; }
+.browse-row { text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 8px 10px; color: var(--text); cursor: pointer; display: flex; flex-direction: column; }
+.browse-row:hover { border-color: var(--green); }
+.browse-row small { color: var(--muted); font-size: 11px; }
+
+.mix-note { font-size: 11px; margin: 0 0 10px; }
+.mix-tracks { display: flex; gap: 10px; flex-wrap: wrap; }
+.mix-track { flex: 1 1 150px; min-width: 150px; border: 2px solid; border-radius: 3px; padding: 8px; background: var(--bg); }
+.mix-th { font-family: var(--display); font-size: 15px; margin-bottom: 6px; }
+.mix-knob { display: flex; flex-direction: column; font-family: var(--cond); font-size: 10px; letter-spacing: 1px; color: var(--muted); gap: 2px; margin-bottom: 6px; }
+.mix-knob input { width: 100%; }
+.mix-val { color: var(--text); font-family: var(--mono); font-size: 10px; }
+.mix-eq-label { font-family: var(--cond); font-size: 9px; letter-spacing: 1px; color: var(--yellow); margin: 6px 0 4px; }
+.mix-eq { display: flex; gap: 3px; justify-content: space-between; }
+.eq-band { display: flex; flex-direction: column; align-items: center; font-family: var(--mono); font-size: 7px; color: var(--muted); gap: 2px; }
+.eq-slider { writing-mode: vertical-lr; direction: rtl; width: 14px; height: 64px; }
