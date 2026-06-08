@@ -1,0 +1,20 @@
+{
+  "_comment": "The Foundry — Rocktroit's open-mic venue (venueId 'foundry'). Works like The Dive: a stage to play, and the city's musicians hanging around to recruit. These players are pickier (recruitConditions in npcs.json) and harder to keep happy (lower happyStart).",
+  "id": "rocktroit_bar",
+  "name": "The Foundry",
+  "size": { "w": 12, "h": 8 },
+  "ambient": "dive_bar",
+  "objects": [],
+  "exits": [
+    { "id": "stage",      "name": "The Stage", "tile": { "x": 6, "y": 1 }, "interact": "stage", "venueId": "foundry", "solid": true },
+    { "id": "npc_dex",    "name": "Dex",   "tile": { "x": 2, "y": 2 }, "interact": "talk", "npcId": "npc_dex",   "solid": true },
+    { "id": "npc_marlo",  "name": "Marlo", "tile": { "x": 4, "y": 2 }, "interact": "talk", "npcId": "npc_marlo", "solid": true },
+    { "id": "npc_pidge",  "name": "Pidge", "tile": { "x": 9, "y": 2 }, "interact": "talk", "npcId": "npc_pidge", "solid": true },
+    { "id": "npc_suzie",  "name": "Suzie", "tile": { "x": 2, "y": 4 }, "interact": "talk", "npcId": "npc_suzie", "solid": true },
+    { "id": "npc_grim",   "name": "Grim",  "tile": { "x": 4, "y": 4 }, "interact": "talk", "npcId": "npc_grim",  "solid": true },
+    { "id": "npc_tex",    "name": "Tex",   "tile": { "x": 9, "y": 4 }, "interact": "talk", "npcId": "npc_tex",   "solid": true },
+    { "id": "npc_vee",    "name": "Vee",   "tile": { "x": 9, "y": 5 }, "interact": "talk", "npcId": "npc_vee",   "solid": true },
+    { "id": "npc_otis",   "name": "Otis",  "tile": { "x": 2, "y": 5 }, "interact": "talk", "npcId": "npc_otis",  "solid": true },
+    { "id": "out",        "name": "Exit to Rocktroit", "tile": { "x": 6, "y": 7 }, "to": "rocktroit", "spawn": { "x": 5, "y": 2 } }
+  ]
+}

@@ -18,7 +18,7 @@ import { advanceMinutes } from "./time.js";
 import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 import { deviceFidelity } from "./gear.js";
 
-let overlay = null, pendingShowCmt = null, perfBand = null;
+let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -49,13 +49,39 @@ function tierFlavor(q) {
   return ["You tore the roof off.", "The whole room lost it. People are asking your name."];
 }
 
+
+// ---- venue registry (Step 15) ----
+export function venueById(id) { return ((DATA.venues && DATA.venues.venues) || {})[id] || null; }
+export function venueList() { const v = (DATA.venues && DATA.venues.venues) || {}; return Object.keys(v).map((id) => Object.assign({ id }, v[id])); }
+export function venuesInTown(town) { return venueList().filter((v) => v.town === town); }
+export function showsInTown(town) { return (getState().showsByTown || {})[town] || 0; }
+export function venueEligible(id) {
+  const v = venueById(id); if (!v) return false; if (v.open) return true;
+  const s = getState(); const r = v.req || {};
+  if (r.minFame && (s.stats.fame || 0) < r.minFame) return false;
+  if (r.minFans && (s.stats.fans || 0) < r.minFans) return false;
+  if (r.minReleases && (s.releases || []).length < r.minReleases) return false;
+  if (r.showsInTown && showsInTown(v.town) < r.showsInTown) return false;
+  return true;
+}
+export function venueReqText(id) {
+  const v = venueById(id); if (!v) return ""; if (v.open) return "Open mic — any band with a demo can play.";
+  const s = getState(); const r = v.req || {}; const p = [];
+  if (r.minReleases) p.push(`${(s.releases || []).length}/${r.minReleases} releases`);
+  if (r.minFans) p.push(`${s.stats.fans || 0}/${r.minFans} fans`);
+  if (r.minFame) p.push(`${s.stats.fame || 0}/${r.minFame} fame`);
+  if (r.showsInTown) p.push(`${showsInTown(v.town)}/${r.showsInTown} shows in town`);
+  return "Requires " + p.join(" · ");
+}
+
 // ---- booking ----
-export function openPerform() {
+export function openPerform(venueId = "thedive") {
   const s = getState();
-  const ready = findReady("show");
+  perfVenueId = venueId;
+  const ready = findReady("show", null, venueId);
   if (!ready) {
     const nx = nextCommitment("show");
-    toast(nx ? `No show tonight. Next: Day ${nx.day}, ${slotLabel(nx.slot)} — be here then.` : "No show booked. Book one in the BAND app.", "info");
+    toast(nx ? `No show booked here right now. Next: Day ${nx.day}, ${slotLabel(nx.slot)}.` : "No show booked here. Book one in the BAND app.", "info");
     return;
   }
   perfBand = bandById(ready.bandId) || activeBand() || {};
@@ -79,7 +105,8 @@ function estimate(setIds, band) {
   const cfg = DATA.config.shows;
   const mem = band.id ? performingMembers(band.id) : [];
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
-  const draw = Math.round((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20));
+  const vm = (DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].drawMult) || 1;
+  const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm);
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
@@ -142,6 +169,8 @@ function playShow(setIds) {
   band.fame = (band.fame || 0) + est.fameGain;
   band.chemistry = Math.min(maxChem, (band.chemistry || 0) + (cfg.chemistryGain || 5));
   band.showsPlayed = (band.showsPlayed || 0) + 1;
+  const _town = (DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].town);
+  if (_town) { s.showsByTown = s.showsByTown || {}; s.showsByTown[_town] = (s.showsByTown[_town] || 0) + 1; }
   // player's personal clout (career-wide, smaller)
   addStat("fame", Math.max(1, Math.round(est.fameGain * (cfg.playerFameShare ?? 0.4))));
   addStat("fans", Math.round(est.fans * (cfg.playerFansShare ?? 0.25)));

@@ -12,14 +12,14 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState } from "../engine/state.js";
+import { getState, addStat, setFlag } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
 import { openDAW } from "./daw.js";
-import { openShop, busk } from "./shop.js";
+import { openShop, busk, openVenue } from "./shop.js";
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
 
@@ -304,6 +304,16 @@ function update(dt) {
   }
 }
 
+function handleBus(obj) {
+  const s = getState(); const fee = (DATA.config.travel && DATA.config.travel.busFare) || 1000;
+  if (s.flags && s.flags.rocktroit_unlocked) { travel(obj.to, obj.spawn); return; }
+  if ((s.stats.money || 0) < fee) { toast(`A bus pass to Rocktroit is $${fee}. You can't afford it yet.`, "warn"); return; }
+  if (!confirm(`Buy a one-time bus pass to Rocktroit for $${fee}? After this, the bus runs free both ways forever.`)) return;
+  addStat("money", -fee); setFlag("rocktroit_unlocked", true);
+  toast("Bus pass bought. Next stop: Rocktroit.", "good");
+  travel(obj.to, obj.spawn);
+}
+
 // ---- interactions ----
 function interact(obj) {
   const kind = obj.interact || (obj.to ? "exit" : null);
@@ -343,7 +353,16 @@ function interact(obj) {
       openRecruit(obj.npcId);
       break;
     case "stage":
-      openPerform();
+      openPerform(obj.venueId);
+      break;
+    case "bus":
+      handleBus(obj);
+      break;
+    case "venue":
+      openVenue(obj.venueId);
+      break;
+    case "flavor":
+      toast(obj.flavor || obj.name, "info");
       break;
     case "exit":
       travel(obj.to, obj.spawn);
@@ -517,6 +536,15 @@ function drawProc(o, cx, cy) {
     case "venue":   building(cx, cy, C.pink); break;
     case "busk":    buskSpot(cx, cy); break;
     case "home":    homeDoor(cx, cy); break;
+    case "pawn2":    building(cx, cy, C.orange); break;
+    case "foundry":  building(cx, cy, C.pink); break;
+    case "steelroom":building(cx, cy, C.blue); break;
+    case "apex":     building(cx, cy, C.purple); break;
+    case "arcade":   building(cx, cy, C.green); break;
+    case "diner":    building(cx, cy, C.orange); break;
+    case "records":  building(cx, cy, C.pink); break;
+    case "bus":      busSign(cx, cy); break;
+    case "cab1": case "cab2": case "cab3": case "cab4": cabinet(cx, cy); break;
     default:       cuboid(cx, cy, 14, 7, 18, C.purple, "#6e54a0", "#523f78");
   }
 }
@@ -588,8 +616,23 @@ function homeDoor(cx, cy) {
   ctx.fillStyle = "#0c0810"; ctx.fillRect(cx - 5, cy - 17, 10, 17);
   ctx.strokeStyle = C.yellow; ctx.strokeRect(cx - 5, cy - 17, 10, 17);
 }
+function busSign(cx, cy) {
+  cuboid(cx, cy, 6, 3, 30, "#2a2233", "#1f1828", "#160f1f");
+  ctx.fillStyle = C.yellow; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  ctx.fillRect(cx - 13, cy - 30, 22, 11); ctx.strokeRect(cx - 13, cy - 30, 22, 11);
+  ctx.fillStyle = C.ink; ctx.font = "bold 8px " + (C.mono || "monospace"); ctx.textAlign = "center";
+  ctx.fillText("BUS", cx - 2, cy - 22); ctx.textAlign = "left";
+}
+function cabinet(cx, cy) {
+  cuboid(cx, cy, 9, 5, 34, "#241d30", "#181122", "#120d18");
+  ctx.fillStyle = "rgba(79,195,247,0.6)"; ctx.fillRect(cx - 6, cy - 30, 12, 13);
+  ctx.strokeStyle = C.blue; ctx.lineWidth = 1.5; ctx.strokeRect(cx - 6, cy - 30, 12, 13);
+  ctx.fillStyle = C.pink; ctx.fillRect(cx - 6, cy - 14, 12, 3);
+}
 function npcFigure(cx, cy, o) {
-  const cols = { npc_brian: C.orange, npc_lex: C.blue, npc_ruby: C.pink, npc_jo: C.purple };
+  const cols = { npc_brian: C.orange, npc_lex: C.blue, npc_ruby: C.pink, npc_jo: C.purple,
+    npc_dex: C.pink, npc_marlo: C.orange, npc_pidge: C.green, npc_suzie: C.yellow,
+    npc_grim: C.blue, npc_tex: C.orange, npc_vee: C.purple, npc_otis: C.blue };
   const col = cols[o.npcId] || C.green;
   ctx.fillStyle = "#1b1622"; ctx.fillRect(cx - 5, cy - 12, 4, 12); ctx.fillRect(cx + 1, cy - 12, 4, 12);
   ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;

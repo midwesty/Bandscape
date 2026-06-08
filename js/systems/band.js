@@ -21,7 +21,7 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
-import { songQuality } from "./shows.js";
+import { songQuality, venueList, venueEligible, venueReqText } from "./shows.js";
 import { findReady, nextCommitment, complete, openScheduler, slotLabel } from "./calendar.js";
 import { writeSession } from "./songwriter.js";
 
@@ -77,7 +77,28 @@ function conditionsMet(npc) {
   const rc = npc.recruitConditions || {};
   if (rc.flag && !getState().flags?.[rc.flag]) return false;
   if (rc.minFame && (getState().stats.fame || 0) < rc.minFame) return false;
+  if (rc.minFans && (getState().stats.fans || 0) < rc.minFans) return false;
+  if (rc.minReleases && (getState().releases || []).length < rc.minReleases) return false;
   return true;
+}
+function bookShowFlow() {
+  const ov = document.getElementById("cal"); if (!ov) return;
+  const s = getState();
+  const accessible = (t) => t === "yourtown" || (t === "rocktroit" && s.flags && s.flags.rocktroit_unlocked);
+  const vs = venueList().filter((v) => accessible(v.town));
+  const rows = vs.map((v) => {
+    const elig = venueEligible(v.id);
+    const where = v.town === "rocktroit" ? "Rocktroit" : "your block";
+    const action = elig
+      ? `<button class="cal-slot-btn" data-venue="${v.id}">Book here ▸</button>`
+      : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
+    return `<div class="cal-day"><div class="cal-day-h">${esc(v.name)} <small>· ${esc(where)}</small></div><div class="cal-slots">${action}</div></div>`;
+  }).join("");
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">PICK A VENUE</span><button class="phone-nav" id="vp-close">✕</button></div>
+    <div class="cal-body"><p class="shop-note">Where do you want to play? Locked rooms show what they still need.</p>${rows}</div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  ov.querySelector("#vp-close").addEventListener("click", () => { ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); });
+  ov.querySelectorAll("[data-venue]").forEach((b) => b.addEventListener("click", () => openScheduler("show", b.dataset.venue)));
 }
 const hasDemo = () => (getState().songs || []).length > 0;
 function bar(label, v, col) { return `<div class="bd-stat"><span>${label}</span><div class="bd-bar"><div style="width:${Math.round(v * 100)}%;background:${col}"></div></div></div>`; }
@@ -228,7 +249,7 @@ function renderBand(view) {
   view.querySelector("#band-rename").addEventListener("click", () => editBand(b));
   const reh = view.querySelector("#band-rehearse"); if (reh) reh.addEventListener("click", rehearse);
   const sch = view.querySelector("#band-sched"); if (sch) sch.addEventListener("click", () => openScheduler("rehearse"));
-  const bk = view.querySelector("#band-book"); if (bk) bk.addEventListener("click", () => openScheduler("show"));
+  const bk = view.querySelector("#band-book"); if (bk) bk.addEventListener("click", bookShowFlow);
   view.querySelector("#band-pk").addEventListener("click", assemblePressKit);
   const wr = view.querySelector("#band-write"); if (wr) wr.addEventListener("click", () => writeAction(b));
   const pj = view.querySelector("#player-join"); if (pj) pj.addEventListener("click", () => playerJoin(b, true));

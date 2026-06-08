@@ -13,7 +13,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat } from "../engine/state.js";
+import { getState, addStat, activeBand } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -21,8 +21,10 @@ import { giveItem } from "./inventory.js";
 import { advanceMinutes } from "./time.js";
 import { playCode, ensureAudio } from "./audio.js";
 import { deviceList, currentDevice, deviceIndex, ownDevice } from "./gear.js";
+import { openPerform, venueById, venueEligible, venueReqText } from "./shows.js";
+import { openScheduler, findReady } from "./calendar.js";
 
-let overlay = null, currentShop = null;
+let overlay = null, currentShop = null, currentVenue = null;
 
 const money = () => getState().stats.money || 0;
 const item = (id) => DATA.items.items[id] || null;
@@ -55,11 +57,11 @@ function render() {
       <span class="shop-title">${esc(title)}</span>
       <div><span class="shop-cash">$${money()}</span> <button class="phone-nav" id="shop-close">✕</button></div>
     </div>`;
-  let body = "";
-  if (currentShop === "pawn") body = pawnBody();
-  else if (currentShop === "grocery") body = groceryBody();
-  else body = venueBody();
-  const title = currentShop === "pawn" ? DATA.shops.pawn.name : currentShop === "grocery" ? DATA.shops.grocery.name : DATA.shops.venue.name;
+  let body = "", title = "";
+  if (currentShop === "pawn" || currentShop === "pawn2") { body = pawnBody(); title = currentShop === "pawn" ? DATA.shops.pawn.name : "Rust Belt Pawn"; }
+  else if (currentShop === "grocery") { body = groceryBody(); title = DATA.shops.grocery.name; }
+  else if (currentShop === "venuebook") { body = venuePanelBody(); title = venueById(currentVenue)?.name || "Venue"; }
+  else { body = venueBody(); title = DATA.shops.venue.name; }
   overlay.innerHTML = `<div class="shop-modal">${head(title)}<div class="shop-body">${body}</div></div>`;
   overlay.querySelector("#shop-close").addEventListener("click", closeShop);
   bind();
@@ -67,7 +69,8 @@ function render() {
 
 // ---- pawn ----
 function pawnBody() {
-  const debt = getState().debt.pawn || 0;
+  const isDebtShop = currentShop === "pawn";
+  const debt = isDebtShop ? (getState().debt.pawn || 0) : 0;
   const opts = DATA.shops.pawn.payOptions || [20, 50];
   const rate = DATA.shops.pawn.sellRate || 0.5;
   const inv = getState().inventory || [];
@@ -87,12 +90,11 @@ function pawnBody() {
     <div class="shop-row"><div><strong>Current: ${esc(cur.name)}</strong><small>${cur.tracks} tracks · fidelity ${Math.round((cur.fidelity || 0) * 100)}</small></div></div>
     ${upgrades.length ? upgrades.map((d) => `<div class="shop-row"><div><strong>${esc(d.name)}</strong><small>${d.tracks} tracks · ${esc(d.desc)}</small></div><div><span class="shop-price">$${d.price}</span> <button class="btn shop-btn" data-buy-device="${d.id}">Buy</button></div></div>`).join("") : `<p class="shop-note">Top of the line — nothing better in stock.</p>`}`;
   return `
-    <div class="shop-debt">Pawn debt: $${debt}</div>
-    <div class="shop-pay">${payBtns}</div>
+    ${isDebtShop ? `<div class="shop-debt">Pawn debt: $${debt}</div><div class="shop-pay">${payBtns}</div>` : `<p class="shop-note">Rocktroit's finest secondhand gear emporium. No tab — cash on the barrel.</p>`}
     ${gearRows}
     <div class="shop-section">SELL FROM POCKETS (½ value)</div>
     ${sellRows}
-    <p class="shop-note" style="margin-top:12px">The clerk doesn't make eye contact. Pay it down and your gear's safe.</p>`;
+    <p class="shop-note" style="margin-top:12px">${isDebtShop ? "The clerk doesn't make eye contact. Pay it down and your gear's safe." : "The clerk's seen better decades. So has the inventory."}</p>`;
 }
 
 // ---- grocery ----
@@ -117,7 +119,32 @@ function venueBody() {
     <p class="shop-note" style="margin-top:12px">Booking shows opens up once you've got a band and something to play.</p>`;
 }
 
+export function openVenue(venueId) {
+  overlay = overlay || document.getElementById("shop"); if (!overlay) return;
+  currentShop = "venuebook"; currentVenue = venueId;
+  overlay.classList.remove("hidden");
+  requestAnimationFrame(() => overlay.classList.add("open"));
+  document.body.classList.add("modal-open");
+  render(); emit("shop:opened", { shop: "venue:" + venueId });
+}
+function venuePanelBody() {
+  const id = currentVenue; const v = venueById(id); const elig = venueEligible(id);
+  const ready = findReady("show", null, id);
+  const pk = activeBand() && activeBand().pressKit;
+  const size = v && v.drawMult >= 3 ? "a serious room" : v && v.drawMult >= 2 ? "a real stage" : "a cozy stage";
+  const reqLine = `<p class="shop-note" style="color:${elig ? "var(--green)" : "var(--pink)"}">${esc(venueReqText(id))}</p>`;
+  const playBtn = ready ? `<button class="btn shop-btn" id="venue-play">▶ Play tonight's show here</button>` : `<p class="shop-note">No show booked here right now.</p>`;
+  let bookBtn;
+  if (!elig) bookBtn = `<p class="shop-note">Locked. Build up your standing and come back.</p>`;
+  else if (!pk) bookBtn = `<p class="shop-note">Assemble a press kit first (BAND app), then book.</p>`;
+  else bookBtn = `<button class="btn shop-btn" id="venue-book">Book a Show Here</button>`;
+  return `<p class="shop-note" style="font-size:13px;line-height:1.6">${esc(v && v.name)} — ${size}.</p>${reqLine}
+    <div class="shop-section">TONIGHT</div>${playBtn}
+    <div class="shop-section">BOOKING</div>${bookBtn}`;
+}
 function bind() {
+  const vp = overlay.querySelector("#venue-play"); if (vp) vp.addEventListener("click", () => { const id = currentVenue; closeShop(); openPerform(id); });
+  const vb = overlay.querySelector("#venue-book"); if (vb) vb.addEventListener("click", () => { const id = currentVenue; closeShop(); openScheduler("show", id); });
   overlay.querySelectorAll("[data-pay]").forEach((b) => b.addEventListener("click", () => payDebt(b.dataset.pay)));
   overlay.querySelectorAll("[data-sell]").forEach((b) => b.addEventListener("click", () => sellItem(parseInt(b.dataset.sell, 10))));
   overlay.querySelectorAll("[data-buy]").forEach((b) => b.addEventListener("click", () => buyItem(b.dataset.buy)));

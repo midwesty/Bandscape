@@ -58,6 +58,7 @@ export function newGameState(slot, char) {
     activeBandId: "band_1",
     musicians: [],                           // BandMgmt 3.0: persistent pool of everyone you've met
     releases: [],                            // Step 14: published releases (Streamr)
+    showsByTown: {},                         // Step 15: per-town show counts (venue gates)
     gear: { device: "sp400" },               // Step 11: SoundPound device
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
@@ -102,7 +103,7 @@ export function musicianFromNpc(npc, bandId = null, status = "active") {
   return {
     id: npc.id, name: npc.name || "Musician", archetype: npc.archetype || "musician", genre: npc.genre || null,
     isPlayer: false, status, bandId, role: roleFromArchetype(npc.archetype),
-    happiness: (DATA.config.band?.happiness?.start) ?? 70,
+    happiness: npc.happyStart ?? (DATA.config.band?.happiness?.start) ?? 70,
     stats: seedStats(npc, sk, rel),
     potential: npc.potential != null ? npc.potential : clamp100((sk == null ? 0.5 : sk) * 100 + 15),
     fame: npc.fame != null ? npc.fame : Math.round((sk == null ? 0.5 : sk) * 10),

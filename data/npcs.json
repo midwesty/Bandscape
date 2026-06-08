@@ -130,6 +130,296 @@
         "songwriting": 63,
         "reliability": 80
       }
+    },
+    {
+      "id": "npc_dex",
+      "name": "Dex",
+      "archetype": "Guitarist",
+      "reliability": 0.55,
+      "skill": 0.82,
+      "genre": "metal",
+      "requires": {
+        "practice": [
+          "booze"
+        ],
+        "gig": [
+          "booze"
+        ]
+      },
+      "vices": [
+        "whiskey"
+      ],
+      "recruitConditions": {
+        "flag": "met_dex",
+        "minFans": 80
+      },
+      "happyStart": 55,
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 18,
+      "potential": 88,
+      "stats": {
+        "musicianship": 84,
+        "stagePresence": 78,
+        "songwriting": 66,
+        "reliability": 50
+      }
+    },
+    {
+      "id": "npc_marlo",
+      "name": "Marlo",
+      "archetype": "Bassist",
+      "reliability": 0.78,
+      "skill": 0.7,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "drink"
+        ]
+      },
+      "vices": [
+        "coffee"
+      ],
+      "recruitConditions": {
+        "flag": "met_marlo",
+        "minFans": 60
+      },
+      "happyStart": 58,
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 11,
+      "potential": 82,
+      "stats": {
+        "musicianship": 76,
+        "stagePresence": 64,
+        "songwriting": 70,
+        "reliability": 74
+      }
+    },
+    {
+      "id": "npc_pidge",
+      "name": "Pidge",
+      "archetype": "Drummer",
+      "reliability": 0.6,
+      "skill": 0.74,
+      "genre": "punk",
+      "requires": {
+        "practice": [
+          "snacks"
+        ],
+        "gig": [
+          "booze"
+        ]
+      },
+      "vices": [
+        "energy drinks"
+      ],
+      "recruitConditions": {
+        "flag": "met_pidge",
+        "minFans": 50
+      },
+      "happyStart": 56,
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 80,
+      "stats": {
+        "musicianship": 78,
+        "stagePresence": 72,
+        "songwriting": 52,
+        "reliability": 56
+      }
+    },
+    {
+      "id": "npc_suzie",
+      "name": "Suzie",
+      "archetype": "Vocalist",
+      "reliability": 0.7,
+      "skill": 0.86,
+      "genre": "pop",
+      "requires": {
+        "practice": [
+          "drink"
+        ],
+        "gig": [
+          "drink"
+        ]
+      },
+      "vices": [
+        "fame"
+      ],
+      "recruitConditions": {
+        "flag": "met_suzie",
+        "minFame": 60,
+        "minReleases": 1
+      },
+      "happyStart": 50,
+      "availability": [
+        "evening"
+      ],
+      "fame": 26,
+      "potential": 92,
+      "stats": {
+        "musicianship": 74,
+        "stagePresence": 90,
+        "songwriting": 75,
+        "reliability": 66
+      }
+    },
+    {
+      "id": "npc_grim",
+      "name": "Grim",
+      "archetype": "Keyboardist",
+      "reliability": 0.82,
+      "skill": 0.79,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "drink"
+        ]
+      },
+      "vices": [
+        "synths"
+      ],
+      "recruitConditions": {
+        "flag": "met_grim",
+        "minFans": 100
+      },
+      "happyStart": 60,
+      "availability": [
+        "afternoon",
+        "evening",
+        "late"
+      ],
+      "fame": 14,
+      "potential": 86,
+      "stats": {
+        "musicianship": 82,
+        "stagePresence": 55,
+        "songwriting": 80,
+        "reliability": 78
+      }
+    },
+    {
+      "id": "npc_tex",
+      "name": "Tex",
+      "archetype": "Guitarist",
+      "reliability": 0.75,
+      "skill": 0.68,
+      "genre": "country",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "booze"
+        ]
+      },
+      "vices": [
+        "cigarettes"
+      ],
+      "recruitConditions": {
+        "flag": "met_tex",
+        "minFans": 50
+      },
+      "happyStart": 62,
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 78,
+      "stats": {
+        "musicianship": 72,
+        "stagePresence": 68,
+        "songwriting": 64,
+        "reliability": 72
+      }
+    },
+    {
+      "id": "npc_vee",
+      "name": "Vee",
+      "archetype": "Drummer",
+      "reliability": 0.88,
+      "skill": 0.9,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "drink"
+        ],
+        "gig": [
+          "drink"
+        ]
+      },
+      "vices": [
+        "vinyl"
+      ],
+      "recruitConditions": {
+        "flag": "met_vee",
+        "minFame": 90,
+        "minReleases": 1
+      },
+      "happyStart": 48,
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 30,
+      "potential": 94,
+      "stats": {
+        "musicianship": 92,
+        "stagePresence": 70,
+        "songwriting": 68,
+        "reliability": 86
+      }
+    },
+    {
+      "id": "npc_otis",
+      "name": "Otis",
+      "archetype": "Bassist",
+      "reliability": 0.8,
+      "skill": 0.72,
+      "genre": "blues",
+      "requires": {
+        "practice": [
+          "booze"
+        ],
+        "gig": [
+          "booze"
+        ]
+      },
+      "vices": [
+        "whiskey"
+      ],
+      "recruitConditions": {
+        "flag": "met_otis",
+        "minFans": 70
+      },
+      "happyStart": 58,
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 12,
+      "potential": 80,
+      "stats": {
+        "musicianship": 78,
+        "stagePresence": 66,
+        "songwriting": 72,
+        "reliability": 76
+      }
     }
   ]
 }

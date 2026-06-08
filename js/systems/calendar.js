@@ -19,7 +19,7 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 
-let overlay = null;
+let overlay = null, schedVenue = null;
 
 const cfg = () => DATA.config.calendar;
 const slots = () => cfg().slots;
@@ -45,7 +45,8 @@ function bandAvailableCount(slot) {
   return mem.filter((m) => { const n = npcs.find((x) => x.id === m.id); return n && (n.availability || []).includes(slot); }).length;
 }
 
-export function findReady(type, bandId) { return list().find((c) => c.status === "booked" && c.type === type && (!bandId || c.bandId === bandId) && c.day === today() && c.slot === currentSlot()) || null; }
+const venueMatch = (c, venueId) => !venueId || c.venue === venueId || (venueId === "thedive" && (c.venue === "venue" || c.venue == null));
+export function findReady(type, bandId, venueId) { return list().find((c) => c.status === "booked" && c.type === type && (!bandId || c.bandId === bandId) && venueMatch(c, venueId) && c.day === today() && c.slot === currentSlot()) || null; }
 export function nextCommitment(type, bandId) {
   const ni = nowIndex();
   return list().filter((c) => c.status === "booked" && (!type || c.type === type) && (!bandId || c.bandId === bandId) && cmtIndex(c) >= ni).sort((a, b) => cmtIndex(a) - cmtIndex(b))[0] || null;
@@ -70,11 +71,13 @@ function availableSlots(type) {
 }
 
 // ---- scheduler picker ----
-export function openScheduler(type) {
+export function openScheduler(type, venueId) {
+  schedVenue = venueId || (type === "show" ? "thedive" : null);
   const opts = availableSlots(type);
   overlay = overlay || document.getElementById("cal");
   const title = type === "show" ? "BOOK A SHOW" : "SCHEDULE REHEARSAL";
-  const sub = type === "show" ? "The Dive's open nights. Be there that evening to play." : "Open slots where enough of your band is free. Show up to rehearse.";
+  const schedVName = (DATA.venues && DATA.venues.venues && DATA.venues.venues[schedVenue] && DATA.venues.venues[schedVenue].name) || "The Dive";
+  const sub = type === "show" ? `${schedVName}'s open nights. Be there that evening to play.` : "Open slots where enough of your band is free. Show up to rehearse.";
   const byDay = {};
   opts.forEach((o) => { (byDay[o.day] = byDay[o.day] || []).push(o); });
   const daysHTML = Object.keys(byDay).length
@@ -100,8 +103,10 @@ function closeScheduler() {
 }
 function book(type, day, slot) {
   const band = activeBand() || {};
-  const title = type === "show" ? `Show · ${band.name || "your band"} @ The Dive` : `Rehearsal · ${band.name || "your band"}`;
-  list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, bandId: band.id, venue: type === "show" ? "venue" : null });
+  const venueId = type === "show" ? (schedVenue || "thedive") : null;
+  const vName = (DATA.venues && DATA.venues.venues && DATA.venues.venues[venueId] && DATA.venues.venues[venueId].name) || "the venue";
+  const title = type === "show" ? `Show · ${band.name || "your band"} @ ${vName}` : `Rehearsal · ${band.name || "your band"}`;
+  list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, bandId: band.id, venue: venueId });
   persist();
   emit("calendar:booked", { type, day, slot });
   emit("renderAll");

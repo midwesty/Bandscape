@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.14.0 (Step 14: releases + Streamr)",
+  "version": "0.15.0 (Step 15: Rocktroit + tiered venues)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -143,5 +143,8 @@
     "fanConversion": 0.02,
     "payoutPerStream": 0.05,
     "launchBurst": 0.5
+  },
+  "travel": {
+    "busFare": 1000
   }
 }

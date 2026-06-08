@@ -800,3 +800,7 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .rel-q { font-family: var(--mono); font-size: 10px; color: var(--muted); }
 .rel-release { width: 100%; }
 .rel-release.dim { opacity: 0.4; }
+
+/* ---- Step 15: Rocktroit venue picker / panel ---- */
+.cal-slot-btn[disabled] { white-space: normal; text-align: left; line-height: 1.35; font-size: 11px; cursor: default; max-width: 100%; }
+.cal-day-h small { color: var(--muted); font-weight: normal; text-transform: none; letter-spacing: 0; }

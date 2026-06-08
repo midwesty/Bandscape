@@ -1,0 +1,9 @@
+{
+  "_comment": "Venue registry (Step 15). open=true means any band with a demo/press kit can book. Otherwise booking is gated by req (checked against the player's global fame/fans, release count, and per-town show count in state.showsByTown). drawMult scales audience + pay (bigger rooms pay more). town links a venue to its map. Performing happens at the venue's stage (interior venues like The Dive / The Foundry) or via the venue panel (storefront venues).",
+  "venues": {
+    "thedive":   { "name": "The Dive",       "town": "yourtown",  "open": true,  "drawMult": 1.0, "req": {} },
+    "foundry":   { "name": "The Foundry",     "town": "rocktroit", "open": true,  "drawMult": 1.4, "req": {} },
+    "steelroom": { "name": "The Steel Room",  "town": "rocktroit", "open": false, "drawMult": 2.2, "req": { "minReleases": 1, "minFans": 150, "showsInTown": 2 } },
+    "apex":      { "name": "Apex Hall",       "town": "rocktroit", "open": false, "drawMult": 3.4, "req": { "minReleases": 2, "minFame": 120, "minFans": 600, "showsInTown": 5 } }
+  }
+}
