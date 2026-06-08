@@ -14,7 +14,8 @@ import { getState } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
-import { playCode, schedulePattern, stopPattern, ensureAudio, armAudio, click, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { playCode, playNote, schedulePattern, stopPattern, ensureAudio, armAudio, click, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { currentDevice } from "./gear.js";
 import { ensureMic, recordClip, cancelClip, releaseMic, blobToDataURL, micSupported } from "./micrec.js";
 import { midiOf, noteLength, patternNotes } from "./notes.js";
 
@@ -29,6 +30,8 @@ const ACCENTS = { beat1: "Beat 1", b1_3: "1 & 3", all: "Every beat", none: "None
 const DEFAULTS = { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 };
 
 let screenEl = null, musicActive = false, tab = "play";
+let editPattern = null, editIndex = null, brushLen = 2, prPlaying = false, prRaf = null, prDirty = false, prScrollL = 0, prScrollT = 0;
+const PR_CELL = 22, PR_ROW = 20;
 let isRecording = false, currentPattern = null, stepTimer = null, currentStep = 0, tickCount = 0;
 let curLength = 32, curStepsPerBeat = 4, curBeatsPerBar = 4;
 let libStop = null;
@@ -69,6 +72,7 @@ export function renderMusicApp(container) {
       <p>You're not holding an instrument.</p><p class="muted">Pick one up in your apartment, then come back.</p></div>`;
     return;
   }
+  if (editPattern) { renderPianoRoll(container); return; }
   const kind = inst.kind;                       // melodic | percussion | audio
   const melodic = kind === "melodic";
   const tabs = kind === "audio" ? ["record", "library"] : ["play", "record", "library"];
@@ -244,18 +248,25 @@ function onRecOpt(el) {
 
 function renderLibrary(body) {
   const pats = getState().patterns || [];
-  if (!pats.length) { body.innerHTML = `<p class="muted" style="padding:14px 4px">No loops yet. Hit RECORD and make some noise.</p>`; return; }
-  body.innerHTML = `<div class="loop-list">` + pats.map((p, i) => `
+  const aInst = activeInst();
+  const composable = aInst && aInst.kind !== "audio";
+  const composeBtn = composable ? `<button class="btn pr-compose" id="pr-compose">✎ Compose new loop (${escapeHTML(aInst.name || "instrument")})</button>` : "";
+  if (!pats.length) { body.innerHTML = composeBtn + `<p class="muted" style="padding:14px 4px">No loops yet. Hit RECORD and make some noise — or compose one above.</p>`; bindCompose(body); return; }
+  body.innerHTML = composeBtn + `<div class="loop-list">` + pats.map((p, i) => `
     <div class="loop-row">
       <div class="loop-info"><strong>${escapeHTML(p.name || "Untitled")}</strong>
         <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : (patternNotes(p).length + " notes")}</small></div>
-      <div class="loop-btns"><button class="btn loop-act" data-act="play" data-i="${i}">▶</button><button class="btn loop-act" data-act="del" data-i="${i}">✕</button></div>
+      <div class="loop-btns"><button class="btn loop-act" data-act="play" data-i="${i}">▶</button>${p.type === "audio" ? "" : `<button class="btn loop-act" data-act="edit" data-i="${i}">✎</button>`}<button class="btn loop-act" data-act="del" data-i="${i}">✕</button></div>
     </div>`).join("") + `</div>`;
+  bindCompose(body);
   body.querySelectorAll(".loop-act").forEach((b) => b.addEventListener("click", () => {
     const i = parseInt(b.dataset.i, 10);
     if (b.dataset.act === "play") playLoop(getState().patterns[i]);
+    else if (b.dataset.act === "edit") openEditor(i);
     else { getState().patterns.splice(i, 1); persist(); renderMusicApp(screenEl); }
   }));
+}
+function bindCompose(body) { const c = body.querySelector("#pr-compose"); if (c) c.addEventListener("click", openCompose);
 }
 
 // ---- play / record ----
@@ -355,3 +366,157 @@ armAudio();
 window.addEventListener("keydown", onKey);
 on("phone:appChanged", ({ app }) => { musicActive = app === "music"; if (!musicActive) deactivate(); });
 on("phone:closed", deactivate);
+
+// ============================================================
+// PIANO ROLL (Step 12) — view / edit / compose a loop's notes
+// on a grid. Melodic patterns use a pitch grid (MIDI rows);
+// percussion patterns use a piece grid. Tap to add a note of
+// the current length, tap a note to remove it. Operates on the
+// canonical note model from notes.js.
+// ============================================================
+const PR_PITCH_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+function midiLabel(m) { return PR_PITCH_NAMES[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1); }
+function isBlack(m) { return [1, 3, 6, 8, 10].includes(((m % 12) + 12) % 12); }
+function prGateLocked() {
+  if (!(DATA.config.daw && DATA.config.daw.pianoRollRequiresDigital)) return false;
+  if (currentDevice().type === "digital") return false;
+  toast("Piano-roll editing needs a digital SoundPound (1200+). Upgrade at the pawn shop.", "warn");
+  return true;
+}
+function openEditor(index) {
+  if (prGateLocked()) return;
+  const p = getState().patterns[index];
+  if (!p || p.type === "audio") return;
+  editPattern = JSON.parse(JSON.stringify(p));
+  editPattern.notes = patternNotes(editPattern).map((n) => ({ ...n }));   // migrate legacy + own copy
+  delete editPattern.events;
+  editIndex = index; prDirty = false; prScrollL = 0; prScrollT = 0;
+  brushLen = (DATA.instruments[editPattern.instrument]?.kind === "percussion") ? 1 : 2;
+  renderMusicApp(screenEl);
+}
+function openCompose() {
+  if (prGateLocked()) return;
+  const ms = MS(); const ts = TIME_SIGS[ms.timeSig];
+  editPattern = { name: "New Loop", instrument: activeId(), length: ms.bars * ts.bpb * ts.spb, bpm: ms.bpm, stepsPerBeat: ts.spb, timeSig: ms.timeSig, notes: [], createdAt: Date.now() };
+  editIndex = null; prDirty = false; prScrollL = 0; prScrollT = 0;
+  brushLen = (activeInst()?.kind === "percussion") ? 1 : 2;
+  renderMusicApp(screenEl);
+}
+function prRows(p, inst) {
+  if (inst.kind === "percussion") return (inst.pieces || []).map((pc) => ({ key: pc.code, label: pc.label || pc.code, black: false }));
+  const ms = MS();
+  let lo = midiOf("C", (ms.noteOct || 4) - 1), hi = midiOf("B", (ms.noteOct || 4) + 1);
+  const pitches = p.notes.filter((n) => n.pitch != null).map((n) => n.pitch);
+  if (pitches.length) { lo = Math.min(lo, ...pitches); hi = Math.max(hi, ...pitches); }
+  lo = Math.max(12, lo); hi = Math.min(120, hi);
+  const rows = [];
+  for (let m = hi; m >= lo; m--) rows.push({ key: m, label: midiLabel(m), black: isBlack(m) });
+  return rows;
+}
+function noteBars(p, rows, perc) {
+  const idx = {}; rows.forEach((r, i) => (idx[r.key] = i));
+  return p.notes.map((n) => {
+    const key = perc ? n.piece : n.pitch;
+    const ri = idx[key]; if (ri == null) return "";
+    const len = perc ? 1 : (n.length || 1);
+    return `<div class="pr-note" style="left:${n.start * PR_CELL}px;top:${ri * PR_ROW}px;width:${len * PR_CELL - 1}px;height:${PR_ROW - 1}px"></div>`;
+  }).join("");
+}
+function renderPianoRoll(container) {
+  const prev = container.querySelector(".pr-scroll");
+  if (prev) { prScrollL = prev.scrollLeft; prScrollT = prev.scrollTop; }
+  const p = editPattern;
+  const inst = DATA.instruments[p.instrument] || {};
+  const perc = inst.kind === "percussion";
+  const steps = p.length || 32, spb = p.stepsPerBeat || 4;
+  const rows = prRows(p, inst);
+  const brushSel = perc ? "" : [1, 2, 4, 8].map((b) => `<button class="pr-brush ${brushLen === b ? "active" : ""}" data-brush="${b}">${b}</button>`).join("");
+  container.innerHTML = `
+    <div class="pr-bar">
+      <button class="btn pr-mini" id="pr-back">‹ Back</button>
+      <span class="pr-name" id="pr-name" title="Rename">${escapeHTML(p.name || "Loop")}</span>
+      <button class="btn pr-mini" id="pr-play">${prPlaying ? "■" : "▶"}</button>
+      <button class="btn pr-mini" id="pr-save">Save</button>
+    </div>
+    ${perc ? "" : `<div class="pr-tools"><span class="pr-tlabel">Note length</span>${brushSel}</div>`}
+    <div class="pr-scroll">
+      <div class="pr-inner">
+        <div class="pr-gutter">${rows.map((r) => `<div class="pr-rl ${r.black ? "blk" : ""}">${escapeHTML(r.label)}</div>`).join("")}</div>
+        <div class="pr-grid" id="pr-grid" style="width:${steps * PR_CELL}px;height:${rows.length * PR_ROW}px;background-size:${PR_CELL}px 100%, ${PR_CELL * spb}px 100%, 100% ${PR_ROW}px">
+          ${rows.map((r, ri) => (r.black ? `<div class="pr-rowbg" style="top:${ri * PR_ROW}px;height:${PR_ROW}px"></div>` : "")).join("")}
+          ${noteBars(p, rows, perc)}
+          <div class="pr-playhead" id="pr-ph" style="display:none;height:${rows.length * PR_ROW}px"></div>
+        </div>
+      </div>
+    </div>
+    <p class="muted pr-foot">Tap to add · tap a note to remove · ${steps} steps${editIndex == null ? " · new loop" : ""}</p>`;
+  const sc = container.querySelector(".pr-scroll"); if (sc) { sc.scrollLeft = prScrollL; sc.scrollTop = prScrollT; }
+  container.querySelector("#pr-back").addEventListener("click", exitEditor);
+  container.querySelector("#pr-save").addEventListener("click", savePattern);
+  container.querySelector("#pr-play").addEventListener("click", togglePrPlay);
+  container.querySelector("#pr-name").addEventListener("click", () => { const nm = (prompt("Loop name:", p.name || "") || "").trim(); if (nm) { p.name = nm; prDirty = true; renderMusicApp(screenEl); } });
+  container.querySelectorAll(".pr-brush").forEach((b) => b.addEventListener("click", () => { brushLen = +b.dataset.brush; renderMusicApp(screenEl); }));
+  const grid = container.querySelector("#pr-grid");
+  grid.addEventListener("click", (e) => prGridTap(e, grid, rows, steps, perc));
+}
+function prGridTap(e, grid, rows, steps, perc) {
+  const rect = grid.getBoundingClientRect();
+  const col = Math.floor((e.clientX - rect.left) / PR_CELL);
+  const ri = Math.floor((e.clientY - rect.top) / PR_ROW);
+  if (col < 0 || col >= steps || ri < 0 || ri >= rows.length) return;
+  const key = rows[ri].key, p = editPattern;
+  const hit = p.notes.findIndex((n) => (perc ? n.piece === key : n.pitch === key) && n.start <= col && col < n.start + (perc ? 1 : (n.length || 1)));
+  const secPerStep = (60 / (p.bpm || 120)) / (p.stepsPerBeat || 4);
+  if (hit >= 0) { p.notes.splice(hit, 1); }
+  else if (perc) { p.notes.push({ start: col, length: 1, piece: key }); playNote(p.instrument, { piece: key, length: 1 }, 0, secPerStep); }
+  else { const len = Math.max(1, Math.min(brushLen, steps - col)); p.notes.push({ start: col, length: len, pitch: key, vel: 1 }); playNote(p.instrument, { pitch: key, length: len, vel: 1 }, 0, secPerStep); }
+  prDirty = true;
+  const sc = grid.closest(".pr-scroll"); if (sc) { prScrollL = sc.scrollLeft; prScrollT = sc.scrollTop; }
+  renderMusicApp(screenEl);
+}
+function setPrPlayBtn() { const b = screenEl?.querySelector("#pr-play"); if (b) b.textContent = prPlaying ? "■" : "▶"; }
+function togglePrPlay() {
+  if (prPlaying) { stopPattern(); prStopPlayhead(); prPlaying = false; setPrPlayBtn(); return; }
+  ensureAudio();
+  prPlaying = true; setPrPlayBtn();
+  schedulePattern(editPattern, () => { prPlaying = false; prStopPlayhead(); setPrPlayBtn(); });
+  prStartPlayhead();
+}
+function prStartPlayhead() {
+  const ph = screenEl?.querySelector("#pr-ph"); if (!ph) return;
+  const steps = editPattern.length || 32;
+  const secPerStep = (60 / (editPattern.bpm || 120)) / (editPattern.stepsPerBeat || 4);
+  const total = steps * secPerStep * 1000 + 80;
+  ph.style.display = "block";
+  const t0 = performance.now();
+  const tick = () => {
+    if (!prPlaying) { ph.style.display = "none"; return; }
+    const frac = Math.min(1, (performance.now() - t0) / total);
+    ph.style.left = (frac * steps * PR_CELL) + "px";
+    if (frac < 1) prRaf = requestAnimationFrame(tick); else ph.style.display = "none";
+  };
+  prRaf = requestAnimationFrame(tick);
+}
+function prStopPlayhead() { if (prRaf) { cancelAnimationFrame(prRaf); prRaf = null; } const ph = screenEl?.querySelector("#pr-ph"); if (ph) ph.style.display = "none"; }
+function savePattern() {
+  const p = editPattern;
+  if (!p.notes.length) { toast("Nothing to save — add some notes first.", "warn"); return; }
+  stopPattern(); prStopPlayhead(); prPlaying = false;
+  getState().patterns = getState().patterns || [];
+  if (editIndex != null && getState().patterns[editIndex]) {
+    p.id = getState().patterns[editIndex].id || ("pat_" + p.createdAt + "_" + Math.random().toString(36).slice(2, 6));
+    getState().patterns[editIndex] = p;
+  } else {
+    if (p.name === "New Loop") { const nm = (prompt("Name this loop:", "Loop " + ((getState().patterns.length || 0) + 1)) || p.name).trim(); p.name = nm || p.name; }
+    p.id = "pat_" + p.createdAt + "_" + Math.random().toString(36).slice(2, 6);
+    getState().patterns.push(p);
+  }
+  persist(); emit("pattern:recorded", { name: p.name });
+  toast(`Saved "${p.name}".`, "good");
+  editPattern = null; editIndex = null; tab = "library"; renderMusicApp(screenEl);
+}
+function exitEditor() {
+  if (prDirty && !confirm("Discard changes to this loop?")) return;
+  stopPattern(); prStopPlayhead(); prPlaying = false;
+  editPattern = null; editIndex = null; tab = "library"; renderMusicApp(screenEl);
+}

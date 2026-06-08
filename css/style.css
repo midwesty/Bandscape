@@ -746,3 +746,29 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .m-controls select { background: #000; color: var(--text); border: 1px solid var(--line); border-radius: 2px; padding: 5px; font-family: var(--body); }
 .m-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
 .btn.danger { color: var(--pink); border-color: var(--pink); }
+
+/* ============================================================
+   STEP 12 — Piano roll editor
+   ============================================================ */
+.pr-compose { width: 100%; margin-bottom: 10px; }
+.pr-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pr-mini { padding: 6px 10px; font-size: 12px; }
+.pr-name { flex: 1; font-family: var(--display); font-size: 18px; color: var(--pink); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-tools { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.pr-tlabel { font-family: var(--cond); font-size: 10px; letter-spacing: 1px; color: var(--muted); }
+.pr-brush { width: 28px; height: 24px; background: #000; color: var(--muted); border: 1px solid var(--line); border-radius: 2px; font-family: var(--mono); cursor: pointer; }
+.pr-brush.active { border-color: var(--yellow); color: var(--yellow); }
+.pr-scroll { overflow: auto; max-height: 48vh; border: 1px solid var(--line); border-radius: 2px; -webkit-overflow-scrolling: touch; }
+.pr-inner { display: flex; width: max-content; }
+.pr-gutter { position: sticky; left: 0; z-index: 3; background: #0a0710; border-right: 1px solid var(--line); }
+.pr-rl { height: 20px; padding: 0 6px; display: flex; align-items: center; justify-content: flex-end; font-family: var(--mono); font-size: 9px; color: var(--muted); box-sizing: border-box; }
+.pr-rl.blk { background: #070509; color: #5b5566; }
+.pr-grid { position: relative; background-color: #0c0810; background-repeat: repeat;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255,255,255,0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px); }
+.pr-rowbg { position: absolute; left: 0; width: 100%; background: rgba(255,255,255,0.03); pointer-events: none; }
+.pr-note { position: absolute; background: var(--pink); border: 1px solid rgba(255,255,255,0.25); border-radius: 2px; box-shadow: 0 0 4px rgba(255,59,107,0.5); pointer-events: none; }
+.pr-playhead { position: absolute; top: 0; width: 2px; background: var(--yellow); pointer-events: none; z-index: 2; }
+.pr-foot { margin-top: 6px; }

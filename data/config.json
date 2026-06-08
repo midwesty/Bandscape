@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.12.0-band3b (dropdown fix)",
+  "version": "0.13.0 (Step 12: piano roll)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -125,5 +125,8 @@
     ],
     "horizonDays": 7,
     "showSlot": "evening"
+  },
+  "daw": {
+    "pianoRollRequiresDigital": false
   }
 }
