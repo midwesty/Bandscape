@@ -24,7 +24,7 @@ import { deviceList, currentDevice, deviceIndex, ownDevice } from "./gear.js";
 import { openPerform, venueById, venueEligible, venueReqText } from "./shows.js";
 import { openScheduler, findReady } from "./calendar.js";
 
-let overlay = null, currentShop = null, currentVenue = null;
+let overlay = null, currentShop = null, currentVenue = null, lastRenderKey = null;
 
 const money = () => getState().stats.money || 0;
 const item = (id) => DATA.items.items[id] || null;
@@ -52,6 +52,9 @@ export function closeShop() {
 }
 
 function render() {
+  const renderKey = currentShop === "venuebook" ? "venuebook:" + currentVenue : currentShop;
+  const sc = overlay.querySelector(".shop-modal");
+  const prevTop = (renderKey === lastRenderKey && sc) ? sc.scrollTop : 0;  // keep scroll on same screen, reset when shop changes
   const head = (title) => `
     <div class="shop-head">
       <span class="shop-title">${esc(title)}</span>
@@ -63,6 +66,8 @@ function render() {
   else if (currentShop === "venuebook") { body = venuePanelBody(); title = venueById(currentVenue)?.name || "Venue"; }
   else { body = venueBody(); title = DATA.shops.venue.name; }
   overlay.innerHTML = `<div class="shop-modal">${head(title)}<div class="shop-body">${body}</div></div>`;
+  lastRenderKey = renderKey;
+  const nm = overlay.querySelector(".shop-modal"); if (nm) nm.scrollTop = prevTop;
   overlay.querySelector("#shop-close").addEventListener("click", closeShop);
   bind();
 }

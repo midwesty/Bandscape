@@ -16,7 +16,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { songQuality } from "./shows.js";
 
-let appEl = null, view = "list", draft = null;
+let appEl = null, view = "list", draft = null, lastRenderedView = null;
 
 const CFG = () => Object.assign({ base: 60, fameFactor: 0.015, playerFameFactor: 0.01, decayDays: 12, floor: 0.04, fanConversion: 0.02, payoutPerStream: 0.05, launchBurst: 0.5 }, DATA.config.streams || {});
 const songsAll = () => getState().songs || [];
@@ -71,8 +71,11 @@ on("day:advanced", accrue);
 // ============================ STREAMR APP ============================
 export function renderStreamsApp(container) {
   appEl = container;
-  if (view === "new") return renderBuilder();
-  return renderList();
+  const same = view === lastRenderedView;          // same page -> keep scroll; new page -> top
+  const prev = same ? (appEl.scrollTop || 0) : 0;
+  if (view === "new") renderBuilder(); else renderList();
+  lastRenderedView = view;
+  appEl.scrollTop = prev;
 }
 function refresh() { if (appEl) renderStreamsApp(appEl); emit("renderAll"); }
 
@@ -102,7 +105,12 @@ function renderList() {
 function renderBuilder() {
   const songs = songsAll(); const bands = bandsAll();
   const band = bandById(draft.bandId);
+  const released = new Set();
+  (getState().releases || []).forEach((r) => (r.songIds || []).forEach((id) => released.add(id)));
   const songRows = songs.length ? songs.map((sg) => {
+    if (released.has(sg.id)) {
+      return `<label class="rel-song released"><span>${esc(sg.name || "Untitled")}</span><span class="rel-q">Released</span></label>`;
+    }
     const on = draft.songIds.includes(sg.id);
     return `<label class="rel-song ${on ? "on" : ""}"><input type="checkbox" data-song="${sg.id}" ${on ? "checked" : ""}><span>${esc(sg.name || "Untitled")}</span><span class="rel-q">Q${songQuality(sg, band)}</span></label>`;
   }).join("") : `<p class="muted" style="padding:8px">No finished songs yet — arrange one in the DAW first.</p>`;
@@ -133,6 +141,10 @@ function renderBuilder() {
 }
 
 function createRelease() {
+  const _used = new Set();
+  (getState().releases || []).forEach((r) => (r.songIds || []).forEach((id) => _used.add(id)));
+  draft.songIds = (draft.songIds || []).filter((id) => !_used.has(id));
+  if (!draft.songIds.length) { toast("Those tracks are already released — pick a fresh recording.", "warn"); return; }
   const s = getState(); const band = bandById(draft.bandId);
   const songs = draft.songIds.map(songById).filter(Boolean);
   if (!band || !songs.length || !(draft.title || "").trim()) return;

@@ -804,3 +804,7 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 /* ---- Step 15: Rocktroit venue picker / panel ---- */
 .cal-slot-btn[disabled] { white-space: normal; text-align: left; line-height: 1.35; font-size: 11px; cursor: default; max-width: 100%; }
 .cal-day-h small { color: var(--muted); font-weight: normal; text-transform: none; letter-spacing: 0; }
+
+/* released tracks can't be re-released (Step 15.1) */
+.rel-song.released { opacity: .5; cursor: default; }
+.rel-song.released .rel-q { color: var(--muted); font-style: italic; }
