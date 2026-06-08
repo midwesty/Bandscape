@@ -16,6 +16,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { playCode, schedulePattern, stopPattern, ensureAudio, armAudio, click, decodeDataURL, playAudioBuffer } from "./audio.js";
 import { ensureMic, recordClip, cancelClip, releaseMic, blobToDataURL, micSupported } from "./micrec.js";
+import { midiOf, noteLength, patternNotes } from "./notes.js";
 
 const NOTE_ORDER = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const MAJOR = [2, 2, 1, 2, 2, 2, 1];
