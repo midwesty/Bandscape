@@ -255,7 +255,7 @@ function renderLibrary(body) {
   body.innerHTML = composeBtn + `<div class="loop-list">` + pats.map((p, i) => `
     <div class="loop-row">
       <div class="loop-info"><strong>${escapeHTML(p.name || "Untitled")}</strong>
-        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : (patternNotes(p).length + " notes")}</small></div>
+        <small>${DATA.instruments[p.instrument]?.name || p.instrument} · ${p.bpm || 120} bpm · ${p.type === "audio" ? (Math.round(p.duration || 0) + "s clip") : (patternNotes(p).length + " notes")}${p.by ? " · by " + escapeHTML(p.by) : ""}</small></div>
       <div class="loop-btns"><button class="btn loop-act" data-act="play" data-i="${i}">▶</button>${p.type === "audio" ? "" : `<button class="btn loop-act" data-act="edit" data-i="${i}">✎</button>`}<button class="btn loop-act" data-act="del" data-i="${i}">✕</button></div>
     </div>`).join("") + `</div>`;
   bindCompose(body);

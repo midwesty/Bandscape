@@ -23,6 +23,7 @@ import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { songQuality } from "./shows.js";
 import { findReady, nextCommitment, complete, openScheduler, slotLabel } from "./calendar.js";
+import { writeSession } from "./songwriter.js";
 
 const NPC_COLOR = { npc_brian: "#ff8a3d", npc_lex: "#4fc3f7", npc_ruby: "#ff3b6b", npc_jo: "#b388ff" };
 const BAND_NAMES = ["The Damp Sells", "Parking Lot Gods", "Wet Sprocket Jr.", "The Landlords", "Crab Rangoon", "Future Tenants", "The Damage Deposit", "Couch Surfers", "Night Shift", "The Security Deposit"];
@@ -217,6 +218,7 @@ function renderBand(view) {
     <div class="band-actions">
       <button class="btn band-mini" id="band-pk">${b.pressKit ? "Reassemble Kit" : "Assemble Press Kit"}</button>
       ${canBook ? `<button class="btn band-mini" id="band-book">Book a Show</button>` : ""}
+      ${(mem.length || b.playerIn) ? `<button class="btn band-mini" id="band-write" ${(!b.playerIn && b.pendingWrite) ? "disabled" : ""}>${b.playerIn ? "Write a Song" : (b.pendingWrite ? "Writing demos…" : "Delegate Songwriting")}</button>` : ""}
     </div>
     ${(mem.length || b.playerIn) ? (rehReady ? `<button class="btn band-rehearse" id="band-rehearse">▶ START REHEARSAL (now)</button>`
                : `<button class="btn band-rehearse" id="band-sched">Schedule Rehearsal</button>`) : ""}
@@ -228,6 +230,7 @@ function renderBand(view) {
   const sch = view.querySelector("#band-sched"); if (sch) sch.addEventListener("click", () => openScheduler("rehearse"));
   const bk = view.querySelector("#band-book"); if (bk) bk.addEventListener("click", () => openScheduler("show"));
   view.querySelector("#band-pk").addEventListener("click", assemblePressKit);
+  const wr = view.querySelector("#band-write"); if (wr) wr.addEventListener("click", () => writeAction(b));
   const pj = view.querySelector("#player-join"); if (pj) pj.addEventListener("click", () => playerJoin(b, true));
   const pl = view.querySelector("#player-leave"); if (pl) pl.addEventListener("click", () => playerJoin(b, false));
   view.querySelectorAll(".bm-role").forEach((sel) => sel.addEventListener("change", () => setRole(sel.dataset.roleNpc, sel.value)));
@@ -260,6 +263,24 @@ function releaseMember(npcId) {
   setMusicianStatus(npcId, "free_agent");
   persist(); refresh();
   toast(`${m.name} left ${from?.name || "the band"} — now a free agent.`, "info");
+}
+function writeAction(b) { if (b.playerIn) runWriteNow(b); else delegateWrite(b); }
+function runWriteNow(b) {
+  const s = getState(); const cfg = DATA.config.band?.write || { minutes: 120, energyCost: 18, moodGain: 3 };
+  if ((s.stats.energy ?? 0) < cfg.energyCost) { toast("Too wiped to write. Get some rest first.", "warn"); return; }
+  const loops = writeSession(b);
+  if (!loops.length) { toast("No one to write with.", "warn"); return; }
+  s.patterns = s.patterns || []; s.patterns.push(...loops);
+  addStat("energy", -(cfg.energyCost || 18)); addStat("mood", cfg.moodGain || 3);
+  advanceMinutes(cfg.minutes || 120);
+  persist(); emit("pattern:recorded", { name: loops[0].name }); refresh();
+  toast(`Wrote ${loops.length} loop${loops.length > 1 ? "s" : ""} — open the SOUND library to hear & edit.`, "good");
+}
+function delegateWrite(b) {
+  if (b.pendingWrite) { toast(`${b.name || "They"}'re already working on demos.`, "info"); return; }
+  b.pendingWrite = { since: getState().time?.day || 1 };
+  persist(); refresh();
+  toast(`${b.name || "The band"} will work on demos — check the SOUND library tomorrow.`, "good");
 }
 function assemblePressKit() {
   const s = getState(); const songs = s.songs || []; const b = activeBand();
@@ -379,6 +400,7 @@ on("commitment:missed", ({ bandId, type }) => { const b = bandById(bandId); if (
 on("day:advanced", () => {
   ensureMusicianModel();
   const h = H(); const quits = [];
+  const wrote = [];
   for (const b of bands()) {
     const loyal = !!b.playerIn;
     const decay = loyal ? h.idleDecayLoyal : h.idleDecay;
@@ -388,7 +410,13 @@ on("day:advanced", () => {
         setMusicianStatus(m.id, "free_agent"); quits.push({ name: m.name, band: b.name });
       }
     }
+    if (b.pendingWrite && !b.playerIn) {                 // delegated NPC bands deliver overnight
+      const loops = writeSession(b);
+      if (loops.length) { const s = getState(); s.patterns = s.patterns || []; s.patterns.push(...loops); wrote.push({ band: b.name, n: loops.length }); }
+      b.pendingWrite = null;
+    }
   }
   persist();
   if (quits.length) { refresh(); quits.forEach((q) => toast(`${q.name} quit ${q.band || "the band"} — now a free agent.`, "warn")); }
+  if (wrote.length) { refresh(); wrote.forEach((w) => toast(`${w.band || "Your band"} wrote ${w.n} new loop${w.n > 1 ? "s" : ""} while you were away — check the SOUND library.`, "good")); }
 });

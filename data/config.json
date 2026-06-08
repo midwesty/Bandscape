@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.13.0 (Step 12: piano roll)",
+  "version": "0.13.0 (Step 13: NPC songwriting)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -75,6 +75,11 @@
       "stagePresence": 55,
       "songwriting": 55,
       "reliability": 90
+    },
+    "write": {
+      "minutes": 120,
+      "energyCost": 18,
+      "moodGain": 3
     }
   },
   "gear": {
