@@ -39,7 +39,16 @@ export function initPhone() {
   document.getElementById("phone-home-btn")?.addEventListener("click", () => openApp("home"));
   phoneEl?.addEventListener("click", (e) => { if (e.target === phoneEl) closePhone(); });
 
-  on("renderAll", () => { if (openState && currentApp !== "home" && currentApp !== "music") renderApp(currentApp); });
+  // Re-render the open app on state changes — but NOT while the user has a
+  // form control focused (an open native <select> picker, or an input being
+  // typed in). The real-time clock fires renderAll every game-minute, and
+  // rebuilding the DOM would dismiss an open dropdown / drop input focus.
+  on("renderAll", () => {
+    if (!openState || currentApp === "home" || currentApp === "music") return;
+    const ae = document.activeElement;
+    if (ae && /^(SELECT|INPUT|TEXTAREA)$/.test(ae.tagName)) return;
+    renderApp(currentApp);
+  });
 }
 
 export function togglePhone() { openState ? closePhone() : openPhone(); }
