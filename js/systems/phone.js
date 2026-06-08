@@ -45,7 +45,7 @@ export function initPhone() {
   // typed in). The real-time clock fires renderAll every game-minute, and
   // rebuilding the DOM would dismiss an open dropdown / drop input focus.
   on("renderAll", () => {
-    if (!openState || currentApp === "home" || currentApp === "music") return;
+    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr") return;
     const ae = document.activeElement;
     if (ae && /^(SELECT|INPUT|TEXTAREA)$/.test(ae.tagName)) return;
     renderApp(currentApp);
