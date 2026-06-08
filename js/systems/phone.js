@@ -11,6 +11,7 @@ import { renderTasksApp } from "./objectives.js";
 import { renderMusicApp } from "./music.js";
 import { renderBandApp } from "./band.js";
 import { renderCalendarApp } from "./calendar.js";
+import { renderStreamsApp } from "./releases.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -89,6 +90,7 @@ function renderApp(app) {
   if (app === "music") return renderMusicApp(screenEl);
   if (app === "band") return renderBandApp(screenEl);
   if (app === "calendar") return renderCalendarApp(screenEl);
+  if (app === "streamr") return renderStreamsApp(screenEl);
   return renderStub(app);
 }
 

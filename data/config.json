@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.13.0 (Step 13: NPC songwriting)",
+  "version": "0.14.0 (Step 14: releases + Streamr)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -43,7 +43,7 @@
     "maps": false,
     "bank": false,
     "contacts": false,
-    "streamr": false,
+    "streamr": true,
     "band": true,
     "calendar": true
   },
@@ -133,5 +133,15 @@
   },
   "daw": {
     "pianoRollRequiresDigital": false
+  },
+  "streams": {
+    "base": 60,
+    "fameFactor": 0.015,
+    "playerFameFactor": 0.01,
+    "decayDays": 12,
+    "floor": 0.04,
+    "fanConversion": 0.02,
+    "payoutPerStream": 0.05,
+    "launchBurst": 0.5
   }
 }

@@ -772,3 +772,31 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .pr-note { position: absolute; background: var(--pink); border: 1px solid rgba(255,255,255,0.25); border-radius: 2px; box-shadow: 0 0 4px rgba(255,59,107,0.5); pointer-events: none; }
 .pr-playhead { position: absolute; top: 0; width: 2px; background: var(--yellow); pointer-events: none; z-index: 2; }
 .pr-foot { margin-top: 6px; }
+
+/* ============================================================
+   STEP 14 — Streamr (releases) app
+   ============================================================ */
+.rel-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rel-total span { display: block; font-family: var(--cond); font-size: 9px; letter-spacing: 1px; color: var(--muted); }
+.rel-total strong { font-family: var(--mono); font-size: 20px; color: var(--green); }
+.rel-list { display: flex; flex-direction: column; gap: 8px; }
+.rel-row { display: flex; gap: 10px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 8px; }
+.rel-cover { width: 48px; height: 48px; flex: none; border-radius: 2px; object-fit: cover; border: 1px solid var(--line); }
+.rel-cover.ph { display: flex; align-items: center; justify-content: center; color: var(--orange, #ff8a3d); background: #1a121f; font-size: 20px; }
+.rel-cover.lg { width: 96px; height: 96px; font-size: 36px; }
+.rel-info { flex: 1; min-width: 0; }
+.rel-info strong { display: block; }
+.rel-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; font-family: var(--mono); font-size: 11px; color: var(--text); }
+.rel-trend { color: var(--green); }
+.rel-field { display: flex; flex-direction: column; gap: 4px; font-family: var(--cond); font-size: 10px; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
+.rel-field select, .rel-field input { background: #000; color: var(--text); border: 1px solid var(--line); border-radius: 2px; padding: 8px; font-family: var(--body); }
+.rel-cover-pick { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.rel-coverbtn { cursor: pointer; }
+.rel-type-line { font-family: var(--cond); font-size: 11px; letter-spacing: 1px; color: var(--yellow); margin-bottom: 6px; }
+.rel-songlist { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; max-height: 30vh; overflow-y: auto; }
+.rel-song { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 7px 9px; cursor: pointer; }
+.rel-song.on { border-color: var(--green); }
+.rel-song span:nth-child(2) { flex: 1; }
+.rel-q { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.rel-release { width: 100%; }
+.rel-release.dim { opacity: 0.4; }

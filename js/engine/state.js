@@ -57,6 +57,7 @@ export function newGameState(slot, char) {
     bands: [{ id: "band_1", name: null, genre: null, playerIn: true, chemistry: 0, fans: 0, fame: 0, pressKit: null, showsPlayed: 0 }], // Step 10 / BandMgmt 3.0
     activeBandId: "band_1",
     musicians: [],                           // BandMgmt 3.0: persistent pool of everyone you've met
+    releases: [],                            // Step 14: published releases (Streamr)
     gear: { device: "sp400" },               // Step 11: SoundPound device
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
