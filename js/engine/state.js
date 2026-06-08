@@ -54,8 +54,9 @@ export function newGameState(slot, char) {
     musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },
     songs: [],               // Step 5
     songDraft: null,         // current studio arrangement in progress
-    bands: [{ id: "band_1", name: null, members: [], chemistry: 0, pressKit: null, showsPlayed: 0, playerIn: true }], // Step 10
+    bands: [{ id: "band_1", name: null, genre: null, playerIn: true, chemistry: 0, fans: 0, fame: 0, pressKit: null, showsPlayed: 0 }], // Step 10 / BandMgmt 3.0
     activeBandId: "band_1",
+    musicians: [],                           // BandMgmt 3.0: persistent pool of everyone you've met
     gear: { device: "sp400" },               // Step 11: SoundPound device
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows
@@ -82,6 +83,76 @@ export function activeBand() {
   }
   return s.bands.find((b) => b.id === s.activeBandId) || s.bands[0] || null;
 }
+
+// ============================================================
+// BandMgmt 3.0 — persistent MUSICIAN pool + band identity.
+// Membership is a reference (musician.bandId) rather than an
+// embedded copy; the player belongs via per-band `playerIn`.
+// ============================================================
+const clamp100 = (v) => Math.max(1, Math.min(100, Math.round(v)));
+function npcDefById(id) { return (DATA.npcs?.npcs || []).find((n) => n.id === id) || {}; }
+function seedStats(npc, sk, rel) {
+  if (npc.stats) return { musicianship: 50, stagePresence: 50, songwriting: 50, reliability: 60, ...npc.stats };
+  const base = Math.round((sk == null ? 0.5 : sk) * 100);
+  return { musicianship: clamp100(base), stagePresence: clamp100(base - 8), songwriting: clamp100(base - 4), reliability: clamp100((rel == null ? 0.6 : rel) * 100) };
+}
+export function musicianFromNpc(npc, bandId = null, status = "active") {
+  const sk = npc.skill, rel = npc.reliability;
+  return {
+    id: npc.id, name: npc.name || "Musician", archetype: npc.archetype || "musician", genre: npc.genre || null,
+    isPlayer: false, status, bandId, role: roleFromArchetype(npc.archetype),
+    happiness: (DATA.config.band?.happiness?.start) ?? 70,
+    stats: seedStats(npc, sk, rel),
+    potential: npc.potential != null ? npc.potential : clamp100((sk == null ? 0.5 : sk) * 100 + 15),
+    fame: npc.fame != null ? npc.fame : Math.round((sk == null ? 0.5 : sk) * 10),
+    contract: null, relationships: {}, vices: npc.vices || [], metAt: getState()?.time?.day || 1
+  };
+}
+function memberToMusician(m, bandId) {
+  const npc = npcDefById(m.id);
+  return {
+    id: m.id, name: m.name || npc.name || "Musician", archetype: m.archetype || npc.archetype || "musician", genre: npc.genre || null,
+    isPlayer: false, status: "active", bandId, role: m.role || roleFromArchetype(m.archetype || npc.archetype),
+    happiness: m.happiness == null ? 70 : m.happiness,
+    stats: seedStats(npc, m.skill != null ? m.skill : npc.skill, m.reliability != null ? m.reliability : npc.reliability),
+    potential: npc.potential != null ? npc.potential : clamp100((m.skill || 0.5) * 100 + 15),
+    fame: npc.fame != null ? npc.fame : Math.round((m.skill || npc.skill || 0.5) * 10),
+    contract: null, relationships: {}, vices: npc.vices || [], metAt: getState()?.time?.day || 1
+  };
+}
+// Idempotent: builds the musician pool from any legacy embedded members, upgrades band fields.
+export function ensureMusicianModel() {
+  const s = getState(); if (!s) return;
+  activeBand(); // guarantees s.bands exists (also migrates a legacy single band)
+  if (!Array.isArray(s.musicians)) s.musicians = [];
+  for (const b of s.bands) {
+    if (b.fans == null) b.fans = 0;
+    if (b.fame == null) b.fame = 0;
+    if (b.genre === undefined) b.genre = null;
+    if (Array.isArray(b.members)) {
+      for (const m of b.members) { if (!s.musicians.find((x) => x.id === m.id)) s.musicians.push(memberToMusician(m, b.id)); }
+      delete b.members; // normalized away
+    }
+  }
+}
+export function allMusicians() { ensureMusicianModel(); return getState().musicians; }
+export function musicianById(id) { ensureMusicianModel(); return getState().musicians.find((m) => m.id === id) || null; }
+export function bandMembers(bandId, opts = {}) {
+  ensureMusicianModel();
+  const inc = opts.includeBenched !== false;
+  return getState().musicians.filter((m) => m.bandId === bandId && (m.status === "active" || (inc && m.status === "benched")));
+}
+export function performingMembers(bandId) { ensureMusicianModel(); return getState().musicians.filter((m) => m.bandId === bandId && m.status === "active"); }
+export function freeAgents() { ensureMusicianModel(); return getState().musicians.filter((m) => m.status === "free_agent"); }
+export function retiredMusicians() { ensureMusicianModel(); return getState().musicians.filter((m) => m.status === "retired"); }
+export function musicianOVR(m) { const s = (m && m.stats) || {}; return Math.round(0.4 * (s.musicianship || 0) + 0.25 * (s.stagePresence || 0) + 0.25 * (s.songwriting || 0) + 0.1 * (s.reliability || 0)); }
+export function playerFame() { return getState()?.stats?.fame || 0; }
+export function setMusicianStatus(id, status) {
+  const m = musicianById(id); if (!m) return;
+  m.status = status;
+  if (status === "free_agent" || status === "retired") m.bandId = null;
+}
+export function assignMusician(id, bandId) { const m = musicianById(id); if (!m) return; m.bandId = bandId; m.status = "active"; }
 
 export function statDef(id) {
   return DATA.stats.stats.find((s) => s.id === id) || null;

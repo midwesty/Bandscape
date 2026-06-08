@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandById } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById, performingMembers, playerFame } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -34,8 +34,10 @@ export function songQuality(song, band) {
   const content = Math.min(1, (used / 4) * 0.6 + Math.min(1, clips / 8) * 0.4);
   const maxChem = DATA.config.band?.maxChemistry || 100;
   const chem = (band.chemistry || 0) / maxChem;
-  const members = band.members || [];
-  const skill = members.length ? members.reduce((a, m) => a + (m.skill || 0), 0) / members.length : 0;
+  const ps = DATA.config.band?.playerStats || { musicianship: 55, songwriting: 55 };
+  const perf = (band.id ? performingMembers(band.id) : []).map((m) => ({ mus: m.stats?.musicianship || 0, wri: m.stats?.songwriting || 0 }));
+  if (band.playerIn) perf.push({ mus: ps.musicianship || 55, wri: ps.songwriting || 55 });
+  const skill = perf.length ? perf.reduce((a, x) => a + (0.6 * x.mus + 0.4 * x.wri) / 100, 0) / perf.length : 0;
   const fid = deviceFidelity();
   const q = 100 * (0.30 * content + 0.25 * chem + 0.20 * skill + 0.25 * fid);
   return Math.round(Math.max(0, Math.min(100, q)));
@@ -57,7 +59,7 @@ export function openPerform() {
     return;
   }
   perfBand = bandById(ready.bandId) || activeBand() || {};
-  if (!perfBand.members || !perfBand.members.length) { toast("You booked a show with no band?!", "warn"); return; }
+  if (!(perfBand.playerIn) && !performingMembers(perfBand.id).length) { toast("You booked a show with no band?!", "warn"); return; }
   if (!(s.songs || []).length) { toast("A gig and no songs. Awkward.", "warn"); return; }
   pendingShowCmt = ready.id;
   overlay = overlay || document.getElementById("show");
@@ -74,18 +76,18 @@ export function closeShow() {
 
 function estimate(setIds, band) {
   band = band || perfBand || activeBand() || {};
-  const s = getState(); const cfg = DATA.config.shows;
-  const fame = s.stats.fame || 0;
-  const chem = band.chemistry || 0;
-  const draw = Math.round((cfg.baseAudience || 8) + fame * (cfg.fameDrawFactor || 0.5) + chem / (cfg.chemDrawDiv || 20));
+  const cfg = DATA.config.shows;
+  const mem = band.id ? performingMembers(band.id) : [];
+  const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
+  const draw = Math.round((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20));
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
   const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor);
   const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
-  const fame2 = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
-  return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain: fame2 };
+  const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
+  return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
 }
 
 function renderBooking(selected) {
@@ -108,7 +110,7 @@ function renderBooking(selected) {
           <div><span>Expected crowd</span><strong>${est.draw}</strong></div>
           <div><span>Set quality</span><strong>${est.avgQ}</strong></div>
           <div><span>Est. take</span><strong class="good">$${est.pay}</strong></div>
-          <div><span>Fame / Fans</span><strong>+${est.fameGain} / +${est.fans}</strong></div>
+          <div><span>Band fame / fans</span><strong>+${est.fameGain} / +${est.fans}</strong></div>
         </div>
         <button class="btn show-go" id="show-go" ${selected.size ? "" : "disabled"}>▶ PLAY THE SHOW</button>
       </div>
@@ -132,13 +134,19 @@ function playShow(setIds) {
   const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
 
   addStat("money", est.pay);
-  addStat("fame", est.fameGain);
-  addStat("fans", est.fans);
   addStat("mood", cfg.moodGain || 8);
   addStat("energy", -energy);
   const maxChem = DATA.config.band?.maxChemistry || 100;
+  // per-band identity grows
+  band.fans = (band.fans || 0) + est.fans;
+  band.fame = (band.fame || 0) + est.fameGain;
   band.chemistry = Math.min(maxChem, (band.chemistry || 0) + (cfg.chemistryGain || 5));
   band.showsPlayed = (band.showsPlayed || 0) + 1;
+  // player's personal clout (career-wide, smaller)
+  addStat("fame", Math.max(1, Math.round(est.fameGain * (cfg.playerFameShare ?? 0.4))));
+  addStat("fans", Math.round(est.fans * (cfg.playerFansShare ?? 0.25)));
+  // each performing musician gains individual fame
+  for (const m of performingMembers(band.id)) m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
   advanceMinutes(minutes);
   persist();
   if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }

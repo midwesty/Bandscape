@@ -711,3 +711,38 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .band-tab { flex: 0 0 auto; background: var(--bg); color: var(--muted); border: 2px solid var(--line); border-radius: 2px; padding: 7px 12px; font-family: var(--cond); font-size: 13px; letter-spacing: 0.5px; cursor: pointer; white-space: nowrap; }
 .band-tab.active { border-color: var(--pink); color: var(--text); background: #2a1620; }
 .band-tab.band-new { color: var(--green); border-style: dashed; }
+
+/* ============================================================
+   Band Management 3.0 — two-view app, picker, roster manager
+   ============================================================ */
+.app-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.app-tab { flex: 1; background: var(--bg); color: var(--muted); border: 2px solid var(--line); border-radius: 2px; padding: 8px; font-family: var(--cond); font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+.app-tab.active { border-color: var(--pink); color: var(--text); background: #2a1620; }
+
+.band-picker { margin-bottom: 10px; }
+.picker-head { width: 100%; display: flex; justify-content: space-between; align-items: center; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 2px; padding: 9px 12px; font-family: var(--body); cursor: pointer; }
+.picker-head strong { color: var(--pink); }
+.picker-panel { border: 2px solid var(--line); border-top: none; border-radius: 0 0 2px 2px; padding: 8px; background: #120d1a; }
+.picker-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.pick-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 7px 10px; color: var(--text); cursor: pointer; font-family: var(--body); }
+.pick-row.active { border-color: var(--pink); }
+.pick-row small { color: var(--muted); font-family: var(--mono); font-size: 10px; }
+
+.band-idstats { display: flex; gap: 8px; margin: 8px 0; }
+.band-idstats > div { flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; padding: 6px; text-align: center; }
+.band-idstats span { display: block; font-family: var(--cond); font-size: 9px; letter-spacing: 1px; color: var(--muted); }
+.band-idstats strong { font-family: var(--mono); font-size: 15px; color: var(--text); }
+.ovr { display: inline-block; min-width: 22px; text-align: center; font-family: var(--mono); font-size: 10px; background: #2a1620; border: 1px solid var(--pink); color: var(--pink); border-radius: 2px; padding: 0 3px; margin-left: 2px; }
+
+.m-list { display: flex; flex-direction: column; gap: 6px; }
+.m-row { background: var(--bg); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.m-row.open { border-color: var(--blue); }
+.m-row-head { width: 100%; display: flex; align-items: center; gap: 8px; padding: 7px 8px; background: none; border: none; cursor: pointer; text-align: left; }
+.m-badge { flex: none; font-family: var(--cond); font-size: 9px; letter-spacing: 0.5px; border: 1px solid; border-radius: 2px; padding: 2px 5px; }
+.m-actions { padding: 8px; border-top: 1px solid var(--line); background: #120d1a; }
+.m-statline { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+.m-controls { display: flex; gap: 8px; margin-bottom: 8px; }
+.m-controls label { flex: 1; font-family: var(--cond); font-size: 10px; letter-spacing: 0.5px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+.m-controls select { background: #000; color: var(--text); border: 1px solid var(--line); border-radius: 2px; padding: 5px; font-family: var(--body); }
+.m-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn.danger { color: var(--pink); border-color: var(--pink); }

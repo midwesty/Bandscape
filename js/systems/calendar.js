@@ -14,7 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand } from "../engine/state.js";
+import { getState, addStat, activeBand, bandMembers } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -41,7 +41,7 @@ function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 function bookedAt(day, slot) { return list().some((c) => c.status === "booked" && c.day === day && c.slot === slot); }
 function venueOpen(day) { return (((day * 2654435761) >>> 0) % 3) !== 0; }
 function bandAvailableCount(slot) {
-  const npcs = DATA.npcs.npcs || []; const mem = activeBand()?.members || [];
+  const npcs = DATA.npcs.npcs || []; const ab = activeBand(); const mem = ab ? bandMembers(ab.id) : [];
   return mem.filter((m) => { const n = npcs.find((x) => x.id === m.id); return n && (n.availability || []).includes(slot); }).length;
 }
 
@@ -54,7 +54,7 @@ export function complete(id) { const c = list().find((x) => x.id === id); if (c)
 
 function availableSlots(type) {
   const out = []; const horizon = cfg().horizonDays || 7; const ni = nowIndex();
-  const mem = (activeBand()?.members || []).length;
+  const ab = activeBand(); const mem = (ab ? bandMembers(ab.id) : []).length;
   for (let d = today(); d <= today() + horizon; d++) {
     for (const sl of slots()) {
       const idx = d * nUnits() + slotIndex(sl.id);

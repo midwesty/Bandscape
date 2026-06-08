@@ -27,7 +27,15 @@
       "availability": [
         "evening",
         "late"
-      ]
+      ],
+      "fame": 6,
+      "potential": 78,
+      "stats": {
+        "musicianship": 62,
+        "stagePresence": 70,
+        "songwriting": 48,
+        "reliability": 55
+      }
     },
     {
       "id": "npc_lex",
@@ -53,7 +61,15 @@
         "afternoon",
         "evening",
         "late"
-      ]
+      ],
+      "fame": 9,
+      "potential": 85,
+      "stats": {
+        "musicianship": 74,
+        "stagePresence": 58,
+        "songwriting": 66,
+        "reliability": 72
+      }
     },
     {
       "id": "npc_ruby",
@@ -75,7 +91,15 @@
         "afternoon",
         "evening",
         "late"
-      ]
+      ],
+      "fame": 14,
+      "potential": 90,
+      "stats": {
+        "musicianship": 80,
+        "stagePresence": 82,
+        "songwriting": 71,
+        "reliability": 48
+      }
     },
     {
       "id": "npc_jo",
@@ -97,7 +121,15 @@
         "morning",
         "afternoon",
         "evening"
-      ]
+      ],
+      "fame": 3,
+      "potential": 74,
+      "stats": {
+        "musicianship": 55,
+        "stagePresence": 46,
+        "songwriting": 63,
+        "reliability": 80
+      }
     }
   ]
 }
