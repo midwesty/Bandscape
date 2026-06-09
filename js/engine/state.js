@@ -183,6 +183,47 @@ export function stampItem(item, kind, artistId, bandId) {
   item.kind = kind;
   return item;
 }
+// ---- folder CRUD + item ops (Step 16.2) ----
+export function createFolder(name) {
+  const s = getState(); s.musicFolders = s.musicFolders || [];
+  const f = { id: "fld_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: (name || "New folder").trim() || "New folder", createdDay: s.time?.day || 1 };
+  s.musicFolders.push(f); return f;
+}
+export function renameFolder(id, name) { const f = (getState().musicFolders || []).find((x) => x.id === id); if (f) f.name = (name || f.name).trim() || f.name; }
+export function deleteFolder(id) {
+  const s = getState(); s.musicFolders = (s.musicFolders || []).filter((f) => f.id !== id);
+  for (const p of (s.patterns || [])) if (Array.isArray(p.folders)) p.folders = p.folders.filter((x) => x !== id);
+  for (const g of (s.songs || [])) if (Array.isArray(g.folders)) g.folders = g.folders.filter((x) => x !== id);
+}
+export function libItemById(id) {
+  const s = getState();
+  const p = (s.patterns || []).find((x) => x.id === id); if (p) return { item: p, kind: "loop" };
+  const g = (s.songs || []).find((x) => x.id === id); if (g) return { item: g, kind: "song" };
+  return null;
+}
+export function toggleItemFolder(id, folderId) {
+  const hit = libItemById(id); if (!hit) return;
+  const it = hit.item; it.folders = Array.isArray(it.folders) ? it.folders : [];
+  const i = it.folders.indexOf(folderId);
+  if (i >= 0) it.folders.splice(i, 1); else it.folders.push(folderId);
+}
+export function renameLibItem(id, name) { const hit = libItemById(id); if (hit) hit.item.name = (name || hit.item.name).trim() || hit.item.name; }
+export function deleteLibItem(id) {
+  const s = getState(); const hit = libItemById(id); if (!hit) return;
+  if (hit.kind === "loop") s.patterns = (s.patterns || []).filter((x) => x.id !== id);
+  else s.songs = (s.songs || []).filter((x) => x.id !== id);
+}
+export function duplicateLibItem(id) {
+  const s = getState(); const hit = libItemById(id); if (!hit) return null;
+  const copy = JSON.parse(JSON.stringify(hit.item));
+  copy.id = (hit.kind === "loop" ? "pat_" : "song_") + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  copy.name = (hit.item.name || "Untitled") + " (copy)";
+  copy.createdAt = Date.now(); copy.createdDay = s.time?.day || 1;
+  copy.folders = Array.isArray(hit.item.folders) ? hit.item.folders.slice() : [];
+  if (hit.kind === "loop") (s.patterns = s.patterns || []).push(copy); else (s.songs = s.songs || []).push(copy);
+  return copy.id;
+}
+
 // One-time migration: backfill metadata on pre-Step-16 loops/songs. Idempotent.
 export function ensureLibraryMeta() {
   const s = getState(); if (!s) return;

@@ -8,7 +8,7 @@
 // More effects can be gated behind gear/laptop upgrades later.
 // ============================================================
 
-import { getState, stampItem } from "../engine/state.js";
+import { getState, stampItem, allMusicians, playerArtistName, activeBand } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -245,13 +245,35 @@ function setKnob(el, v) {
 }
 
 // ---- save / load ----
-function saveSong() {
-  const name = (prompt("Name this song:", draft.name || "Untitled Song") || "Untitled Song").trim();
-  draft.name = name;
-  const snap = JSON.parse(JSON.stringify(draft)); snap.id = "song_" + Date.now(); snap.createdAt = Date.now();
-  stampItem(snap, "song");
-  getState().songs = getState().songs || []; getState().songs.push(snap);
-  persist(); emit("song:saved", { name }); toast(`Saved song "${name}".`, "good"); render();
+function saveSong() { openSaveDialog(); }
+function openSaveDialog() {
+  const s = getState();
+  const musicians = allMusicians();
+  const bands = s.bands || [];
+  const folders = s.musicFolders || [];
+  const ab = activeBand();
+  const sub = showSub(`
+    <div class="daw-sub-card">
+      <div class="daw-sub-head"><span class="daw-title">SAVE SONG</span><button class="phone-nav" id="sub-close">✕</button></div>
+      <label class="sv-field">Name<input id="sv-name" value="${esc(draft.name || "Untitled Song")}"></label>
+      <label class="sv-field">Artist<select id="sv-artist"><option value="you">${esc(playerArtistName())} (you)</option>${musicians.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join("")}</select></label>
+      <label class="sv-field">Band<select id="sv-band"><option value="">Solo / none</option>${bands.map((b) => `<option value="${b.id}" ${ab && b.id === ab.id ? "selected" : ""}>${esc(b.name || "Untitled band")}</option>`).join("")}</select></label>
+      ${folders.length ? `<div class="sv-flabel">Add to folders</div><div class="sv-folders">${folders.map((f) => `<label class="sv-fchip"><input type="checkbox" data-fld="${f.id}">${esc(f.name)}</label>`).join("")}</div>` : `<p class="muted" style="font-size:11px;padding:2px 0">No folders yet — make them in the Files app.</p>`}
+      <button class="btn daw-t sv-go" id="sv-save">SAVE SONG</button>
+    </div>`);
+  sub.querySelector("#sub-close").addEventListener("click", closeSub);
+  sub.querySelector("#sv-save").addEventListener("click", () => {
+    const name = (sub.querySelector("#sv-name").value || "Untitled Song").trim() || "Untitled Song";
+    const artistId = sub.querySelector("#sv-artist").value || "you";
+    const bandId = sub.querySelector("#sv-band").value || null;
+    const folderIds = Array.from(sub.querySelectorAll("[data-fld]:checked")).map((c) => c.dataset.fld);
+    draft.name = name;
+    const snap = JSON.parse(JSON.stringify(draft)); snap.id = "song_" + Date.now(); snap.createdAt = Date.now();
+    snap.artistId = artistId; snap.bandId = bandId; snap.folders = folderIds;
+    stampItem(snap, "song", artistId, bandId);
+    getState().songs = getState().songs || []; getState().songs.push(snap);
+    persist(); emit("song:saved", { name }); closeSub(); render(); toast(`Saved "${name}".`, "good");
+  });
 }
 function loadSong(i) {
   const song = (getState().songs || [])[i]; if (!song) return;

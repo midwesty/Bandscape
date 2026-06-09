@@ -830,3 +830,22 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .lib-actions { flex: 0 0 auto; }
 .lib-act { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 7px 12px; font-family: var(--cond); font-size: 13px; cursor: pointer; min-width: 44px; }
 .lib-act.playing { border-color: var(--green); color: var(--green); }
+
+/* ---- Step 16.2: library management (detail panel, folders, save dialog) ---- */
+.lib-row.open { border-color: var(--purple, #b388ff); }
+.lib-info[data-expand] { cursor: pointer; }
+.lib-chip.manage { color: var(--muted); border-style: dashed; }
+.lib-detail { background: #1a1422; border: 1px solid var(--line); border-top: none; border-radius: 0 0 3px 3px; padding: 9px 10px; margin: -6px 0 0; }
+.lib-fchips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+.lib-fchip { background: var(--bg); color: var(--muted); border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px; font-family: var(--cond); font-size: 11px; cursor: pointer; }
+.lib-fchip.on { border-color: var(--purple, #b388ff); color: var(--text); background: #241a33; }
+.lib-fchip.new { border-style: dashed; }
+.lib-detail-acts { display: flex; gap: 6px; }
+.lib-mini { flex: 1; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 7px 8px; font-family: var(--cond); font-size: 12px; letter-spacing: .5px; cursor: pointer; }
+.lib-mini.danger { color: var(--pink); border-color: #5a2233; }
+.sv-field { display: flex; flex-direction: column; gap: 4px; font-family: var(--cond); font-size: 12px; color: var(--muted); margin-bottom: 9px; }
+.sv-field input, .sv-field select { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 8px; font-family: var(--mono); font-size: 13px; }
+.sv-flabel { font-family: var(--cond); font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.sv-folders { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.sv-fchip { display: flex; align-items: center; gap: 5px; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px; font-family: var(--cond); font-size: 11px; color: var(--text); cursor: pointer; }
+.sv-go { width: 100%; margin-top: 4px; }
