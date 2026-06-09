@@ -808,3 +808,25 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 /* released tracks can't be re-released (Step 15.1) */
 .rel-song.released { opacity: .5; cursor: default; }
 .rel-song.released .rel-q { color: var(--muted); font-style: italic; }
+
+/* ---- Step 16.1: Files / library browser ---- */
+.lib-search { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 9px 10px; font-family: var(--mono); font-size: 13px; margin-bottom: 8px; }
+.lib-search:focus { outline: none; border-color: var(--purple, #b388ff); }
+.lib-controls { display: flex; gap: 6px; margin-bottom: 8px; }
+.lib-sel { flex: 1; min-width: 0; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 7px 6px; font-family: var(--cond); font-size: 12px; }
+.lib-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; -webkit-overflow-scrolling: touch; }
+.lib-chip { flex: 0 0 auto; background: var(--bg); color: var(--muted); border: 1px solid var(--line); border-radius: 20px; padding: 6px 11px; font-family: var(--cond); font-size: 12px; letter-spacing: .5px; cursor: pointer; white-space: nowrap; }
+.lib-chip.on { border-color: var(--purple, #b388ff); color: var(--text); background: #241a33; }
+.lib-count { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.lib-list { display: flex; flex-direction: column; gap: 6px; }
+.lib-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 3px; padding: 9px 10px; }
+.lib-info { flex: 1; min-width: 0; }
+.lib-name { font-family: var(--cond); font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.lib-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+.lib-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; padding: 1px 5px; border-radius: 2px; border: 1px solid; }
+.lib-badge.song { color: var(--green); border-color: var(--green); }
+.lib-badge.loop { color: var(--blue); border-color: var(--blue); }
+.lib-rel { font-family: var(--mono); font-size: 9px; color: var(--pink); }
+.lib-actions { flex: 0 0 auto; }
+.lib-act { background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 7px 12px; font-family: var(--cond); font-size: 13px; cursor: pointer; min-width: 44px; }
+.lib-act.playing { border-color: var(--green); color: var(--green); }

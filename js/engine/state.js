@@ -51,6 +51,7 @@ export function newGameState(slot, char) {
     owned: [],                               // instruments you've picked up (for the in-app switcher)
     addictions: {},                          // substance -> accumulated use (light hook for later)
     patterns: [],            // Step 4 (loop format ported from old build)
+    musicFolders: [],        // Step 16: custom tag-style folders for the library
     musicSettings: { key: "C", bpm: 110, timeSig: "4/4", bars: 2, countInBars: 1, metroOn: true, accent: "beat1", chordOct: 3, noteOct: 4 },
     songs: [],               // Step 5
     songDraft: null,         // current studio arrangement in progress
@@ -155,6 +156,56 @@ export function setMusicianStatus(id, status) {
   if (status === "free_agent" || status === "retired") m.bandId = null;
 }
 export function assignMusician(id, bandId) { const m = musicianById(id); if (!m) return; m.bandId = bandId; m.status = "active"; }
+
+// ---------- Step 16: library metadata (artist / band / folders) ----------
+export const PLAYER_ARTIST = "you";                       // sentinel artist id for the player
+export function playerArtistName() { return getState()?.player?.name || "You"; }
+export function artistName(artistId) {
+  if (!artistId) return "—";
+  if (artistId === PLAYER_ARTIST) return playerArtistName();
+  const m = (getState()?.musicians || []).find((x) => x.id === artistId);
+  return m ? m.name : artistId;
+}
+function bandByName(name) { return (getState()?.bands || []).find((b) => (b.name || "") === name) || null; }
+export function topWriter(bandId) {
+  const ms = (getState()?.musicians || []).filter((m) => m.bandId === bandId && (m.status === "active" || m.status === "benched"));
+  if (!ms.length) return null;
+  return ms.reduce((a, b) => ((b.stats?.songwriting || 0) > (a.stats?.songwriting || 0) ? b : a));
+}
+// Stamp a freshly-created loop/song with library metadata. Idempotent.
+export function stampItem(item, kind, artistId, bandId) {
+  const s = getState();
+  if (item.artistId == null) item.artistId = artistId || PLAYER_ARTIST;
+  if (item.bandId === undefined) item.bandId = bandId !== undefined ? bandId : (activeBand()?.id ?? null);
+  if (item.createdDay == null) item.createdDay = s?.time?.day || 1;
+  if (item.createdAt == null) item.createdAt = Date.now();
+  if (!Array.isArray(item.folders)) item.folders = [];
+  item.kind = kind;
+  return item;
+}
+// One-time migration: backfill metadata on pre-Step-16 loops/songs. Idempotent.
+export function ensureLibraryMeta() {
+  const s = getState(); if (!s) return;
+  if (!Array.isArray(s.musicFolders)) s.musicFolders = [];
+  if (s._libMetaDone) return;
+  const day = s.time?.day || 1;
+  for (const p of (s.patterns || [])) {
+    if (!Array.isArray(p.folders)) p.folders = [];
+    if (p.kind == null) p.kind = "loop";
+    if (p.createdDay == null) p.createdDay = day;
+    if (p.artistId == null) {
+      if (p.by && p.by !== "the band") { const b = bandByName(p.by); if (p.bandId === undefined) p.bandId = b ? b.id : null; const w = topWriter(p.bandId); p.artistId = w ? w.id : null; }
+      else { p.artistId = PLAYER_ARTIST; if (p.bandId === undefined) p.bandId = null; }
+    }
+  }
+  for (const sg of (s.songs || [])) {
+    if (!Array.isArray(sg.folders)) sg.folders = [];
+    if (sg.kind == null) sg.kind = "song";
+    if (sg.createdDay == null) sg.createdDay = day;
+    if (sg.artistId == null) { sg.artistId = PLAYER_ARTIST; if (sg.bandId === undefined) sg.bandId = null; }
+  }
+  s._libMetaDone = true;
+}
 
 export function statDef(id) {
   return DATA.stats.stats.find((s) => s.id === id) || null;

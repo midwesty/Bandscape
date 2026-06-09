@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, performingMembers } from "../engine/state.js";
+import { getState, performingMembers, stampItem, topWriter } from "../engine/state.js";
 import { midiOf } from "./notes.js";
 
 const SCALES = {
@@ -87,12 +87,14 @@ export function writeSession(band) {
     if (kind === "percussion") notes = genDrums(bars, spb, bpb, skill);
     else if (inst === "bass") notes = genBass(midiOf(key, 3), scale, prog, bars, spb, bpb, skill);
     else notes = genMelodic(midiOf(key, 4), scale, prog, bars, spb, bpb, skill);
-    loops.push({
+    const _loop = {
       id: "pat_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       name: `${band.name || "Band"} — ${DATA.instruments?.[inst]?.name || inst} idea`,
       instrument: inst, length, bpm, stepsPerBeat: spb, timeSig: "4/4",
       notes, createdAt: Date.now(), by: band.name || "the band", generated: true
-    });
+    };
+    stampItem(_loop, "loop", (topWriter(band.id) || {}).id, band.id);
+    loops.push(_loop);
   }
   return loops;
 }

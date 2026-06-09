@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState } from "../engine/state.js";
+import { getState, stampItem } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -157,6 +157,7 @@ async function saveVocalClip(blob, ms, recSec) {
   const name = (prompt("Name this clip:", "Vocal " + ((getState().patterns?.length || 0) + 1)) || "Untitled").trim();
   const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", audio: dataURL, duration, bpm: ms.bpm, bars: ms.bars, createdAt: Date.now() };
   getState().patterns = getState().patterns || [];
+  stampItem(pat, "loop");
   getState().patterns.push(pat);
   if (!persistSafe()) { getState().patterns.pop(); toast("Save is full — delete some loops to free space, then try again.", "bad"); return; }
   emit("pattern:recorded", { name }); toast(`Saved "${name}".`, "good"); tab = "library";
@@ -322,6 +323,7 @@ function stopRecording() {
     currentPattern.name = name;
     currentPattern.id = "pat_" + currentPattern.createdAt + "_" + Math.random().toString(36).slice(2, 6);
     getState().patterns = getState().patterns || [];
+    stampItem(currentPattern, "loop");
     getState().patterns.push(currentPattern);
     persist(); emit("pattern:recorded", { name }); toast(`Saved "${name}".`, "good"); tab = "library";
   } else toast("Nothing recorded.", "info");
@@ -503,6 +505,7 @@ function savePattern() {
   if (!p.notes.length) { toast("Nothing to save — add some notes first.", "warn"); return; }
   stopPattern(); prStopPlayhead(); prPlaying = false;
   getState().patterns = getState().patterns || [];
+  stampItem(p, "loop");
   if (editIndex != null && getState().patterns[editIndex]) {
     p.id = getState().patterns[editIndex].id || ("pat_" + p.createdAt + "_" + Math.random().toString(36).slice(2, 6));
     getState().patterns[editIndex] = p;

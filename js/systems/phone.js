@@ -12,6 +12,8 @@ import { renderMusicApp } from "./music.js";
 import { renderBandApp } from "./band.js";
 import { renderCalendarApp } from "./calendar.js";
 import { renderStreamsApp } from "./releases.js";
+import { renderLibrary } from "./library.js";
+import { openDAW } from "./daw.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -26,7 +28,8 @@ const APP_META = {
   maps:     { label: "Maps",    glyph: "⌖",  accent: "#4fc3f7" },
   bank:     { label: "Bank",    glyph: "$",  accent: "#7CFC9B" },
   contacts: { label: "People",  glyph: "☻",  accent: "#b388ff" },
-  streamr:  { label: "Streamr", glyph: "▷",  accent: "#ff8a3d" }
+  streamr:  { label: "Streamr", glyph: "▷",  accent: "#ff8a3d" },
+  files:    { label: "Files",   glyph: "▤",  accent: "#b388ff" }
 };
 
 let phoneEl, screenEl, openState = false, currentApp = "home";
@@ -45,7 +48,7 @@ export function initPhone() {
   // typed in). The real-time clock fires renderAll every game-minute, and
   // rebuilding the DOM would dismiss an open dropdown / drop input focus.
   on("renderAll", () => {
-    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr") return;
+    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr" || currentApp === "files") return;
     const ae = document.activeElement;
     if (ae && /^(SELECT|INPUT|TEXTAREA)$/.test(ae.tagName)) return;
     renderApp(currentApp);
@@ -91,12 +94,13 @@ function renderApp(app) {
   if (app === "band") return renderBandApp(screenEl);
   if (app === "calendar") return renderCalendarApp(screenEl);
   if (app === "streamr") return renderStreamsApp(screenEl);
+  if (app === "files") return renderLibrary(screenEl, { mode: "all", showFolders: true, onOpenSong: (id) => { closePhone(); openDAW(id); } });
   return renderStub(app);
 }
 
 function renderHome() {
   const s = getState();
-  const order = ["tasks", "status", "band", "calendar", "music", "maps", "streamr", "bank", "contacts", "settings"];
+  const order = ["tasks", "status", "band", "calendar", "music", "files", "maps", "streamr", "bank", "contacts", "settings"];
   const grid = order.map((id) => {
     const m = APP_META[id];
     const enabled = DATA.config.apps[id];

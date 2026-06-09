@@ -5,7 +5,7 @@
 // ============================================================
 
 import { loadAllData, DATA } from "./engine/data.js";
-import { newGameState, setState, getState } from "./engine/state.js";
+import { newGameState, setState, getState, ensureLibraryMeta } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { on, emit } from "./engine/bus.js";
 
@@ -106,6 +106,7 @@ function enterGame(isNew) {
   $("charcreate").classList.add("hidden");
   $("game").classList.remove("hidden");
 
+  ensureLibraryMeta();   // Step 16: backfill library metadata on older saves
   initObjectives();
   initPhone();
   initInventory();
@@ -128,6 +129,7 @@ function enterGame(isNew) {
     on("save:imported", ({ data }) => {
       if (!data || !data.player) return toast("That didn't look like a Bandscape save.", "warn");
       setState(data);
+      ensureLibraryMeta();
       saveToSlot(data.meta?.slot || 1, data);
       renderHUD(); renderStage();
       toast(`Loaded ${data.player.name}.`, "good");

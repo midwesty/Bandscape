@@ -8,7 +8,7 @@
 // More effects can be gated behind gear/laptop upgrades later.
 // ============================================================
 
-import { getState } from "../engine/state.js";
+import { getState, stampItem } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -39,10 +39,11 @@ function persist() { const s = getState(); s.songDraft = draft; saveToSlot(s.met
 
 export function initDAW() { overlay = document.getElementById("daw"); }
 
-export function openDAW() {
+export function openDAW(songId) {
   overlay = overlay || document.getElementById("daw");
   ensurePatternIds();
-  draft = getState().songDraft || newDraft();
+  const sg = songId ? (getState().songs || []).find((x) => x.id === songId) : null;
+  draft = sg ? JSON.parse(JSON.stringify(sg)) : (getState().songDraft || newDraft());
   if (!Array.isArray(draft.tracks)) draft = newDraft();
   if (!draft.lengthBars) draft.lengthBars = deviceBars();
   padDraft();
@@ -248,6 +249,7 @@ function saveSong() {
   const name = (prompt("Name this song:", draft.name || "Untitled Song") || "Untitled Song").trim();
   draft.name = name;
   const snap = JSON.parse(JSON.stringify(draft)); snap.id = "song_" + Date.now(); snap.createdAt = Date.now();
+  stampItem(snap, "song");
   getState().songs = getState().songs || []; getState().songs.push(snap);
   persist(); emit("song:saved", { name }); toast(`Saved song "${name}".`, "good"); render();
 }
