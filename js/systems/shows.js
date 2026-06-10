@@ -152,6 +152,24 @@ function renderBooking(selected) {
 }
 
 // ---- play ----
+// ---- merch sales at a show (Step 17.0) ----
+function sellMerchAtShow(band, audience) {
+  const cfg = (DATA.config && DATA.config.merch) || {};
+  const types = cfg.types || [];
+  const inv = band.merch || {};
+  const fans = band.fans || 0;
+  let revenue = 0; const lines = [];
+  for (const t of types) {
+    const slot = inv[t.id]; if (!slot || !slot.stock) continue;
+    const price = slot.price || t.basePrice || 1;
+    const priceFactor = Math.pow((t.basePrice || price) / price, cfg.priceElastic || 0.6);
+    const demand = audience * (cfg.saleRateBase || 0.18) * (t.appeal || 1) * priceFactor + fans * (cfg.fanFactor || 0.00015) * (t.appeal || 1);
+    const sold = Math.max(0, Math.min(slot.stock, Math.round(demand)));
+    if (sold > 0) { slot.stock -= sold; const rev = sold * price; revenue += rev; lines.push({ name: t.name, sold, rev }); }
+  }
+  return { revenue: Math.round(revenue), lines };
+}
+
 function playShow(setIds) {
   if (!setIds.length) return;
   const s = getState(); const cfg = DATA.config.shows;
@@ -161,6 +179,8 @@ function playShow(setIds) {
   const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
 
   addStat("money", est.pay);
+  const merch = sellMerchAtShow(band, est.draw);
+  if (merch.revenue > 0) { addStat("money", merch.revenue); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   addStat("mood", cfg.moodGain || 8);
   addStat("energy", -energy);
   const maxChem = DATA.config.band?.maxChemistry || 100;
@@ -179,7 +199,7 @@ function playShow(setIds) {
   advanceMinutes(minutes);
   persist();
   if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }
-  emit("show:played", { bandId: band.id, pay: est.pay, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
+  emit("show:played", { bandId: band.id, pay: est.pay, merch: merch.revenue, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
   emit("renderAll");
 
   const [head, sub] = tierFlavor(est.avgQ);
@@ -192,6 +212,7 @@ function playShow(setIds) {
         <div class="show-est">
           <div><span>Crowd</span><strong>${est.draw}</strong></div>
           <div><span>Earned</span><strong class="good">$${est.pay}</strong></div>
+          ${merch.revenue > 0 ? `<div><span>Merch</span><strong class="good">$${merch.revenue}</strong></div>` : ""}
           <div><span>Fame</span><strong>+${est.fameGain}</strong></div>
           <div><span>New fans</span><strong>+${est.fans}</strong></div>
         </div>
@@ -200,5 +221,5 @@ function playShow(setIds) {
     </div>`;
   overlay.querySelector("#show-close2").addEventListener("click", closeShow);
   overlay.querySelector("#show-done").addEventListener("click", closeShow);
-  toast(`Show done — $${est.pay}, +${est.fans} fans.`, "good");
+  toast(`Show done — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans.`, "good");
 }

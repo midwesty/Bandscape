@@ -850,3 +850,15 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .sv-fchip { display: flex; align-items: center; gap: 5px; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px; font-family: var(--cond); font-size: 11px; color: var(--text); cursor: pointer; }
 .sv-go { width: 100%; margin-top: 4px; }
 .lib-open-hint { font-family: var(--mono); font-size: 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 1px 6px; }
+
+/* ---- Step 17.0: merch (BAND app) ---- */
+.merch-row { background: var(--bg); border: 1px solid var(--line); border-radius: 3px; padding: 10px; margin-bottom: 8px; }
+.merch-head { display: flex; justify-content: space-between; align-items: baseline; }
+.merch-name { font-family: var(--cond); font-size: 15px; color: var(--text); }
+.merch-stock { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.merch-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 3px 0 8px; }
+.merch-ctrls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.merch-price { display: flex; align-items: center; gap: 8px; border: 2px solid var(--line); border-radius: 3px; padding: 3px 6px; }
+.merch-price span { font-family: var(--mono); font-size: 14px; color: var(--text); min-width: 36px; text-align: center; }
+.merch-price button { width: 28px; height: 28px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 3px; font-size: 16px; cursor: pointer; }
+.merch-order { flex: 1; min-width: 90px; background: var(--bg); color: var(--text); border: 2px solid var(--line); border-radius: 3px; padding: 8px 6px; font-family: var(--cond); font-size: 12px; cursor: pointer; }

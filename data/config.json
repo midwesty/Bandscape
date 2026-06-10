@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.16.3 (Step 16.3: Save/Save As + browse folders)",
+  "version": "0.17.0 (Step 17.0: merch)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -147,5 +147,40 @@
   },
   "travel": {
     "busFare": 1000
+  },
+  "merch": {
+    "types": [
+      {
+        "id": "sticker",
+        "name": "Sticker pack",
+        "unitCost": 1,
+        "basePrice": 4,
+        "appeal": 1.3
+      },
+      {
+        "id": "tee",
+        "name": "T-shirt",
+        "unitCost": 7,
+        "basePrice": 20,
+        "appeal": 1.0
+      },
+      {
+        "id": "poster",
+        "name": "Poster",
+        "unitCost": 3,
+        "basePrice": 12,
+        "appeal": 0.8
+      },
+      {
+        "id": "vinyl",
+        "name": "Vinyl record",
+        "unitCost": 12,
+        "basePrice": 28,
+        "appeal": 0.6
+      }
+    ],
+    "saleRateBase": 0.1,
+    "fanFactor": 0.00015,
+    "priceElastic": 0.6
   }
 }

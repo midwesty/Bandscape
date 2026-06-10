@@ -161,11 +161,12 @@ export function renderBandApp(container) {
   const tabs = `<div class="app-tabs">
     <button class="app-tab ${appView === "band" ? "active" : ""}" data-view="band">BAND</button>
     <button class="app-tab ${appView === "musicians" ? "active" : ""}" data-view="musicians">MUSICIANS</button>
+    <button class="app-tab ${appView === "merch" ? "active" : ""}" data-view="merch">MERCH</button>
   </div>`;
   container.innerHTML = `<h2 class="app-title">BAND</h2>${tabs}<div id="band-view"></div>`;
   container.querySelectorAll(".app-tab").forEach((t) => t.addEventListener("click", () => { appView = t.dataset.view; pickerOpen = false; mExpanded = null; renderBandApp(container); }));
   const view = container.querySelector("#band-view");
-  if (appView === "musicians") renderMusicians(view); else renderBand(view);
+  if (appView === "musicians") renderMusicians(view); else if (appView === "merch") renderMerch(view); else renderBand(view);
 }
 
 // ---------------------------- BAND VIEW ----------------------------
@@ -441,3 +442,47 @@ on("day:advanced", () => {
   if (quits.length) { refresh(); quits.forEach((q) => toast(`${q.name} quit ${q.band || "the band"} — now a free agent.`, "warn")); }
   if (wrote.length) { refresh(); wrote.forEach((w) => toast(`${w.band || "Your band"} wrote ${w.n} new loop${w.n > 1 ? "s" : ""} while you were away — check the SOUND library.`, "good")); }
 });
+
+
+// ---------------------------- MERCH VIEW (Step 17.0) ----------------------------
+function merchSlot(b, t) { b.merch = b.merch || {}; if (!b.merch[t.id]) b.merch[t.id] = { stock: 0, price: t.basePrice }; return b.merch[t.id]; }
+function merchTypes() { return (DATA.config.merch && DATA.config.merch.types) || []; }
+function orderMerch(typeId, qty) {
+  const b = activeBand(); if (!b) return;
+  const t = merchTypes().find((x) => x.id === typeId); if (!t) return;
+  const cost = (t.unitCost || 1) * qty;
+  if ((getState().stats.money || 0) < cost) { toast(`You need $${cost} to order ${qty}.`, "warn"); return; }
+  addStat("money", -cost);
+  merchSlot(b, t).stock += qty;
+  persist(); toast(`Ordered ${qty} ${t.name} for $${cost}.`, "good"); renderBandApp(appContainer);
+}
+function setMerchPrice(typeId, delta) {
+  const b = activeBand(); if (!b) return;
+  const t = merchTypes().find((x) => x.id === typeId); if (!t) return;
+  const slot = merchSlot(b, t);
+  slot.price = Math.max((t.unitCost || 1) + 1, (slot.price || t.basePrice) + delta);
+  persist(); renderBandApp(appContainer);
+}
+function renderMerch(view) {
+  const b = activeBand();
+  if (!b) { view.innerHTML = `<p class="muted">No band selected.</p>`; return; }
+  const money = getState().stats.money || 0;
+  const rows = merchTypes().map((t) => {
+    const slot = (b.merch && b.merch[t.id]) || { stock: 0, price: t.basePrice };
+    const price = slot.price || t.basePrice;
+    const margin = price - (t.unitCost || 0);
+    return `<div class="merch-row">
+      <div class="merch-head"><span class="merch-name">${esc(t.name)}</span><span class="merch-stock">${slot.stock} in stock</span></div>
+      <div class="merch-meta">unit cost $${t.unitCost} · margin <strong class="${margin > 0 ? "good" : "bad"}">$${margin}</strong>/ea</div>
+      <div class="merch-ctrls">
+        <div class="merch-price"><button data-price="${t.id}" data-d="-1">−</button><span>$${price}</span><button data-price="${t.id}" data-d="1">+</button></div>
+        <button class="merch-order" data-order="${t.id}" data-qty="10">Order ×10 ($${t.unitCost * 10})</button>
+        <button class="merch-order" data-order="${t.id}" data-qty="50">×50 ($${t.unitCost * 50})</button>
+      </div>
+    </div>`;
+  }).join("");
+  const lifetime = b.merchSold ? `<p class="muted" style="margin-top:10px">Lifetime merch sales for ${esc(b.name)}: <strong class="good">$${b.merchSold}</strong></p>` : "";
+  view.innerHTML = `<p class="band-sub">Stock up, set prices, and sell at <strong>${esc(b.name)}</strong>'s shows. Bigger crowds and more fans buy more. Cash on hand: $${money}.</p>${rows}${lifetime}`;
+  view.querySelectorAll("[data-price]").forEach((btn) => btn.addEventListener("click", () => setMerchPrice(btn.dataset.price, parseInt(btn.dataset.d, 10))));
+  view.querySelectorAll("[data-order]").forEach((btn) => btn.addEventListener("click", () => orderMerch(btn.dataset.order, parseInt(btn.dataset.qty, 10))));
+}
