@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.17.1 (Step 17.1: contracts & payroll)",
+  "version": "0.17.2 (Step 17.2: venue reputation \u2014 Step 17 complete)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -194,5 +194,32 @@
     "saleRateBase": 0.1,
     "fanFactor": 0.00015,
     "priceElastic": 0.6
+  },
+  "venueRep": {
+    "tiers": [
+      {
+        "min": 0,
+        "name": "Newcomer",
+        "pay": 0
+      },
+      {
+        "min": 25,
+        "name": "Regular",
+        "pay": 0.1
+      },
+      {
+        "min": 55,
+        "name": "Favorite",
+        "pay": 0.2
+      },
+      {
+        "min": 80,
+        "name": "Headliner",
+        "pay": 0.35
+      }
+    ],
+    "unlockTownRep": 50,
+    "gainBase": 2,
+    "missPenalty": 8
   }
 }

@@ -889,3 +889,10 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .neg-react .warn-c { color: var(--yellow); }
 .neg-react .bad { color: var(--pink); }
 .neg-acts .btn { width: 100%; }
+
+/* ---- Step 17.1: show-report band cut breakdown ---- */
+.show-cuts { background: var(--bg); border: 1px solid var(--line); border-radius: 3px; padding: 10px; margin: 10px 0; }
+.show-cuts-h { font-family: var(--mono); font-size: 10px; letter-spacing: .5px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.show-cuts > div:not(.show-cuts-h) { display: flex; justify-content: space-between; font-family: var(--cond); font-size: 13px; color: var(--text); padding: 2px 0; }
+.show-cuts-total { border-top: 1px solid var(--line); margin-top: 5px; padding-top: 5px !important; }
+.show-cuts-total strong.bad { color: var(--pink); }

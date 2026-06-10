@@ -60,6 +60,7 @@ export function newGameState(slot, char) {
     musicians: [],                           // BandMgmt 3.0: persistent pool of everyone you've met
     releases: [],                            // Step 14: published releases (Streamr)
     showsByTown: {},                         // Step 15: per-town show counts (venue gates)
+    venueRep: {},                            // Step 17.2: per-venue reputation
     gear: { device: "sp400" },               // Step 11: SoundPound device
     debt: { pawn: cfg.economy.startingDebtPawn },
     calendar: { commitments: [] },   // Step 9: booked rehearsals / shows

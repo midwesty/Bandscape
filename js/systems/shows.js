@@ -55,9 +55,18 @@ export function venueById(id) { return ((DATA.venues && DATA.venues.venues) || {
 export function venueList() { const v = (DATA.venues && DATA.venues.venues) || {}; return Object.keys(v).map((id) => Object.assign({ id }, v[id])); }
 export function venuesInTown(town) { return venueList().filter((v) => v.town === town); }
 export function showsInTown(town) { return (getState().showsByTown || {})[town] || 0; }
+// ---- venue reputation (Step 17.2) ----
+export function venueRepOf(id) { return (getState().venueRep || {})[id] || 0; }
+export function addVenueRep(id, d) { const s = getState(); s.venueRep = s.venueRep || {}; s.venueRep[id] = Math.max(0, Math.min(100, (s.venueRep[id] || 0) + d)); }
+export function venueTier(id) { const r = venueRepOf(id); const tiers = (DATA.config.venueRep && DATA.config.venueRep.tiers) || [{ min: 0, name: "Newcomer", pay: 0 }]; let t = tiers[0]; for (const x of tiers) if (r >= x.min) t = x; return t; }
+export function venueRepPayMult(id) { return 1 + (venueTier(id).pay || 0); }
+export function townRep(town) { const vs = (DATA.venues && DATA.venues.venues) || {}; let m = 0; for (const k in vs) if (vs[k].town === town) m = Math.max(m, venueRepOf(k)); return m; }
+export function venueStanding(id) { const t = venueTier(id); return { name: t.name, rep: venueRepOf(id), payBonus: Math.round((t.pay || 0) * 100) }; }
 export function venueEligible(id) {
   const v = venueById(id); if (!v) return false; if (v.open) return true;
   const s = getState(); const r = v.req || {};
+  const rc = DATA.config.venueRep || {};
+  if (townRep(v.town) >= (rc.unlockTownRep || 50)) return true;   // earned your way in
   if (r.minFame && (s.stats.fame || 0) < r.minFame) return false;
   if (r.minFans && (s.stats.fans || 0) < r.minFans) return false;
   if (r.minReleases && (s.releases || []).length < r.minReleases) return false;
@@ -71,7 +80,8 @@ export function venueReqText(id) {
   if (r.minFans) p.push(`${s.stats.fans || 0}/${r.minFans} fans`);
   if (r.minFame) p.push(`${s.stats.fame || 0}/${r.minFame} fame`);
   if (r.showsInTown) p.push(`${showsInTown(v.town)}/${r.showsInTown} shows in town`);
-  return "Requires " + p.join(" · ");
+  const rc = DATA.config.venueRep || {}; const tr = townRep(v.town); const need = rc.unlockTownRep || 50;
+  return "Requires " + p.join(" · ") + ` — or earn it: town standing ${tr}/${need}`;
 }
 
 // ---- booking ----
@@ -111,7 +121,7 @@ function estimate(setIds, band) {
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
-  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor);
+  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(perfVenueId));
   const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
   const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
   return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
@@ -191,15 +201,18 @@ function playShow(setIds) {
   band.showsPlayed = (band.showsPlayed || 0) + 1;
   const _town = (DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].town);
   if (_town) { s.showsByTown = s.showsByTown || {}; s.showsByTown[_town] = (s.showsByTown[_town] || 0) + 1; }
+  const repGain = Math.max(-2, (DATA.config.venueRep && DATA.config.venueRep.gainBase != null ? DATA.config.venueRep.gainBase : 2) + Math.round((est.avgQ - 60) / 12));
+  addVenueRep(perfVenueId, repGain);
   // player's personal clout (career-wide, smaller)
   addStat("fame", Math.max(1, Math.round(est.fameGain * (cfg.playerFameShare ?? 0.4))));
   addStat("fans", Math.round(est.fans * (cfg.playerFansShare ?? 0.25)));
   // each performing musician gains individual fame + accrues their contracted cut (live + merch)
   ensureContracts();
+  const cutLines = []; let cutTotal = 0;
   for (const m of performingMembers(band.id)) {
     m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
-    accrueOwed(m, liveCut(m, est.pay));
-    accrueOwed(m, merchCut(m, merch.revenue));
+    const cut = liveCut(m, est.pay) + merchCut(m, merch.revenue);
+    if (cut > 0) { accrueOwed(m, cut); cutLines.push({ name: m.name, cut }); cutTotal += cut; }
   }
   advanceMinutes(minutes);
   persist();
@@ -221,10 +234,16 @@ function playShow(setIds) {
           <div><span>Fame</span><strong>+${est.fameGain}</strong></div>
           <div><span>New fans</span><strong>+${est.fans}</strong></div>
         </div>
+        ${cutLines.length ? `<div class="show-cuts">
+          <div class="show-cuts-h">Band's cut — added to what you owe</div>
+          ${cutLines.map((c) => `<div><span>${esc(c.name)}</span><strong>$${c.cut}</strong></div>`).join("")}
+          <div class="show-cuts-total"><span>Owed this show</span><strong class="bad">$${cutTotal}</strong></div>
+          <p class="shop-note" style="margin-top:6px">You banked the full $${est.pay + merch.revenue}; settle up with the band on Payday.</p>
+        </div>` : ""}
         <button class="btn" id="show-done">Done</button>
       </div>
     </div>`;
   overlay.querySelector("#show-close2").addEventListener("click", closeShow);
   overlay.querySelector("#show-done").addEventListener("click", closeShow);
-  toast(`Show done — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans.`, "good");
+  toast(`Show done — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans${cutTotal > 0 ? ` · $${cutTotal} owed to band` : ""}.`, "good");
 }

@@ -143,7 +143,7 @@ function sweepMissed() {
     if (c.status === "booked" && cmtIndex(c) < ni) {
       c.status = "missed";
       if (c.type === "show") missedShow++; else missedReh++;
-      emit("commitment:missed", { bandId: c.bandId, type: c.type });
+      emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
     }
   }
   if (missedShow) { addStat("fans", -Math.min(getState().stats.fans || 0, 2 * missedShow)); toast("You blew off a booked gig at The Dive. Word gets around.", "warn"); }

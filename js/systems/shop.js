@@ -21,7 +21,7 @@ import { giveItem } from "./inventory.js";
 import { advanceMinutes } from "./time.js";
 import { playCode, ensureAudio } from "./audio.js";
 import { deviceList, currentDevice, deviceIndex, ownDevice } from "./gear.js";
-import { openPerform, venueById, venueEligible, venueReqText } from "./shows.js";
+import { openPerform, venueById, venueEligible, venueReqText, venueStanding } from "./shows.js";
 import { openScheduler, findReady } from "./calendar.js";
 
 let overlay = null, currentShop = null, currentVenue = null, lastRenderKey = null;
@@ -143,7 +143,10 @@ function venuePanelBody() {
   if (!elig) bookBtn = `<p class="shop-note">Locked. Build up your standing and come back.</p>`;
   else if (!pk) bookBtn = `<p class="shop-note">Assemble a press kit first (BAND app), then book.</p>`;
   else bookBtn = `<button class="btn shop-btn" id="venue-book">Book a Show Here</button>`;
-  return `<p class="shop-note" style="font-size:13px;line-height:1.6">${esc(v && v.name)} — ${size}.</p>${reqLine}
+  const st = venueStanding(id);
+  const dots = "●".repeat(Math.min(5, Math.round(st.rep / 20))) + "○".repeat(Math.max(0, 5 - Math.round(st.rep / 20)));
+  const standLine = `<p class="shop-note">Your standing: <span style="color:var(--yellow)">${dots}</span> ${esc(st.name)}${st.payBonus > 0 ? ` · +${st.payBonus}% pay` : ""}</p>`;
+  return `<p class="shop-note" style="font-size:13px;line-height:1.6">${esc(v && v.name)} — ${size}.</p>${reqLine}${standLine}
     <div class="shop-section">TONIGHT</div>${playBtn}
     <div class="shop-section">BOOKING</div>${bookBtn}`;
 }

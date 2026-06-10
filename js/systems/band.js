@@ -22,7 +22,7 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
-import { songQuality, venueList, venueEligible, venueReqText } from "./shows.js";
+import { songQuality, venueList, venueEligible, venueReqText, addVenueRep } from "./shows.js";
 import { findReady, nextCommitment, complete, openScheduler, slotLabel } from "./calendar.js";
 import { writeSession } from "./songwriter.js";
 
@@ -345,6 +345,7 @@ function renderMusicians(view) {
   view.querySelectorAll("[data-mf]").forEach((b) => b.addEventListener("click", () => { mFilter = b.dataset.mf; mExpanded = null; renderMusicians(view); }));
   view.querySelectorAll(".m-row-head").forEach((h) => h.addEventListener("click", () => { const id = h.dataset.m; mExpanded = mExpanded === id ? null : id; renderMusicians(view); }));
   bindMusicianActions(view);
+  view.querySelectorAll("[data-negotiate]").forEach((b) => b.addEventListener("click", () => openNegotiate(b.dataset.negotiate)));
 }
 function musicianRow(m) {
   const st = STATUS[m.status] || STATUS.active;
@@ -370,6 +371,7 @@ function musicianRow(m) {
       <div class="m-buttons">
         ${m.bandId ? `<button class="btn band-mini" data-act="${m.status === "benched" ? "activate" : "bench"}" data-m="${m.id}">${m.status === "benched" ? "Activate" : "Bench"}</button>` : ""}
         ${m.bandId ? `<button class="btn band-mini" data-act="release" data-m="${m.id}">Release</button>` : ""}
+        ${m.bandId ? `<button class="btn band-mini" data-negotiate="${m.id}">Negotiate pay</button>` : ""}
         <button class="btn band-mini danger" data-act="retire" data-m="${m.id}">Retire</button>
       </div>`;
   const stats = m.stats || {};
@@ -430,7 +432,7 @@ function rehearse() {
 // ============================ HAPPINESS (event-driven) ============================
 function adjustHappiness(band, delta) { for (const m of bandMembers(band.id)) m.happiness = Math.max(0, Math.min(100, (m.happiness ?? 70) + delta)); }
 on("show:played", ({ bandId, quality }) => { const b = bandById(bandId); if (!b) return; adjustHappiness(b, H().show + Math.round((quality || 0) / (H().showQualityDiv || 20))); persist(); });
-on("commitment:missed", ({ bandId, type }) => { const b = bandById(bandId); if (!b) return; adjustHappiness(b, -(type === "show" ? H().missShow : H().missReh)); persist(); });
+on("commitment:missed", ({ bandId, type, venue }) => { const b = bandById(bandId); if (!b) return; adjustHappiness(b, -(type === "show" ? H().missShow : H().missReh)); if (type === "show" && venue) addVenueRep(venue, -((DATA.config.venueRep && DATA.config.venueRep.missPenalty) || 8)); persist(); });
 on("day:advanced", () => {
   ensureMusicianModel(); ensureContracts();
   const h = H(); const quits = [];
