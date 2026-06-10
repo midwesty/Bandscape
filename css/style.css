@@ -849,3 +849,4 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .sv-folders { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .sv-fchip { display: flex; align-items: center; gap: 5px; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px; font-family: var(--cond); font-size: 11px; color: var(--text); cursor: pointer; }
 .sv-go { width: 100%; margin-top: 4px; }
+.lib-open-hint { font-family: var(--mono); font-size: 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 1px 6px; }

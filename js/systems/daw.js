@@ -31,7 +31,7 @@ function ensurePatternIds() { (getState().patterns || []).forEach((p, i) => { if
 function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || null; }
 function clipBars(pat) { if (pat && pat.type === "audio") return Math.max(1, pat.bars || 2); return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
 function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000, volume: 1, pan: 0, mute: false, solo: false }; }
-function newDraft() { const nt = deviceTracks(); return { name: "Untitled Song", bpm: 110, lengthBars: deviceBars(), metroOn: false, tracks: Array.from({ length: nt }, () => []), fx: Array.from({ length: nt }, blankFX) }; }
+function newDraft() { const nt = deviceTracks(); return { _songId: null, name: "Untitled Song", bpm: 110, lengthBars: deviceBars(), metroOn: false, tracks: Array.from({ length: nt }, () => []), fx: Array.from({ length: nt }, blankFX) }; }
 function ensureFx() { const nt = deviceTracks(); draft.fx = draft.fx || []; for (let i = 0; i < nt; i++) draft.fx[i] = Object.assign(blankFX(), draft.fx[i] || {}); }
 function padDraft() { const nt = deviceTracks(); draft.tracks = draft.tracks || []; while (draft.tracks.length < nt) draft.tracks.push([]); ensureFx(); }
 function instName(id) { return DATA.instruments[id]?.name || id; }
@@ -45,6 +45,7 @@ export function openDAW(songId) {
   const sg = songId ? (getState().songs || []).find((x) => x.id === songId) : null;
   draft = sg ? JSON.parse(JSON.stringify(sg)) : (getState().songDraft || newDraft());
   if (!Array.isArray(draft.tracks)) draft = newDraft();
+  if (sg) draft._songId = sg.id;
   if (!draft.lengthBars) draft.lengthBars = deviceBars();
   padDraft();
   armed = null; selected = null;
@@ -77,6 +78,7 @@ function render() {
           <button class="btn daw-t" id="daw-stop">■ STOP</button>
           <button class="btn daw-t" id="daw-mixer">MIXER</button>
           <button class="btn daw-t" id="daw-save">SAVE</button>
+          <button class="btn daw-t" id="daw-saveas">SAVE AS</button>
           <select id="daw-load" class="daw-load"><option value="">Load song…</option>${songs.map((s, i) => `<option value="${i}">${esc(s.name)}</option>`).join("")}</select>
           <button class="btn daw-t" id="daw-new">NEW</button>
           <button class="phone-nav" id="daw-close">✕</button>
@@ -123,6 +125,7 @@ function bind() {
   q("#daw-stop").addEventListener("click", stop);
   q("#daw-mixer").addEventListener("click", openMixer);
   q("#daw-save").addEventListener("click", saveSong);
+  q("#daw-saveas").addEventListener("click", openSaveDialog);
   q("#daw-loadloop").addEventListener("click", openBrowser);
   q("#daw-new").addEventListener("click", () => { draft = newDraft(); selected = null; armed = null; persist(); render(); });
   q("#daw-load").addEventListener("change", (e) => { if (e.target.value !== "") loadSong(parseInt(e.target.value, 10)); });
@@ -245,7 +248,15 @@ function setKnob(el, v) {
 }
 
 // ---- save / load ----
-function saveSong() { openSaveDialog(); }
+function saveSong() {
+  const existing = draft._songId ? (getState().songs || []).find((x) => x.id === draft._songId) : null;
+  if (!existing) { openSaveDialog(); return; }   // brand-new draft -> Save As
+  existing.name = draft.name;
+  existing.bpm = draft.bpm; existing.lengthBars = draft.lengthBars; existing.metroOn = draft.metroOn;
+  existing.tracks = JSON.parse(JSON.stringify(draft.tracks));
+  existing.fx = JSON.parse(JSON.stringify(draft.fx));
+  persist(); emit("song:saved", { name: existing.name }); toast(`Updated "${existing.name}".`, "good"); render();
+}
 function openSaveDialog() {
   const s = getState();
   const musicians = allMusicians();
@@ -268,16 +279,27 @@ function openSaveDialog() {
     const bandId = sub.querySelector("#sv-band").value || null;
     const folderIds = Array.from(sub.querySelectorAll("[data-fld]:checked")).map((c) => c.dataset.fld);
     draft.name = name;
+    const songsArr = getState().songs = getState().songs || [];
+    const clash = songsArr.find((x) => (x.name || "") === name && x.id !== draft._songId);
+    if (clash && confirm(`A song named "${name}" already exists.\n\nOK = overwrite it  ·  Cancel = keep both`)) {
+      clash.name = name; clash.bpm = draft.bpm; clash.lengthBars = draft.lengthBars; clash.metroOn = draft.metroOn;
+      clash.tracks = JSON.parse(JSON.stringify(draft.tracks)); clash.fx = JSON.parse(JSON.stringify(draft.fx));
+      clash.artistId = artistId; clash.bandId = bandId; clash.folders = folderIds;
+      draft._songId = clash.id;
+      persist(); emit("song:saved", { name }); closeSub(); render(); toast(`Updated "${name}".`, "good"); return;
+    }
     const snap = JSON.parse(JSON.stringify(draft)); snap.id = "song_" + Date.now(); snap.createdAt = Date.now();
-    snap.artistId = artistId; snap.bandId = bandId; snap.folders = folderIds;
+    snap.artistId = artistId; snap.bandId = bandId; snap.folders = folderIds; delete snap._songId;
     stampItem(snap, "song", artistId, bandId);
-    getState().songs = getState().songs || []; getState().songs.push(snap);
+    songsArr.push(snap);
+    draft._songId = snap.id;
     persist(); emit("song:saved", { name }); closeSub(); render(); toast(`Saved "${name}".`, "good");
   });
 }
 function loadSong(i) {
   const song = (getState().songs || [])[i]; if (!song) return;
   draft = JSON.parse(JSON.stringify(song));
+  draft._songId = song.id;
   if (!Array.isArray(draft.tracks)) draft = newDraft();
   if (!draft.lengthBars) draft.lengthBars = deviceBars();
   padDraft(); selected = null; persist(); render(); toast(`Loaded "${song.name}".`, "info");

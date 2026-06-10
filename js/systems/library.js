@@ -117,13 +117,14 @@ function renderFolderManager() {
   const fs = folders();
   const rows = fs.length ? fs.map((f) => {
     const n = countInFolder(f.id);
-    return `<div class="lib-row"><div class="lib-info"><div class="lib-name">\u{1F5C2} ${esc(f.name)}</div><div class="lib-meta">${n} item${n === 1 ? "" : "s"}</div></div>
+    return `<div class="lib-row"><div class="lib-info" data-fopen="${esc(f.id)}"><div class="lib-name">\u{1F5C2} ${esc(f.name)} <span class="lib-open-hint">open \u25B8</span></div><div class="lib-meta">${n} item${n === 1 ? "" : "s"}</div></div>
       <div class="lib-actions"><button class="lib-mini" data-fren="${esc(f.id)}">Rename</button><button class="lib-mini danger" data-fdel="${esc(f.id)}">Delete</button></div></div>`;
   }).join("") : `<p class="muted" style="padding:14px 4px">No folders yet. Create one to start tagging tracks and songs.</p>`;
   cont.innerHTML = `<h2 class="app-title">FOLDERS</h2>
     <div class="lib-controls"><button class="lib-sel" id="fm-back">\u2039 Back to files</button><button class="lib-sel" id="fm-new">+ New folder</button></div>
     <div class="lib-list">${rows}</div>`;
   cont.querySelector("#fm-back").addEventListener("click", () => { view = "list"; rerender(); });
+  cont.querySelectorAll("[data-fopen]").forEach((b) => b.addEventListener("click", () => { fFolder = "tag:" + b.dataset.fopen; view = "list"; rerender(); }));
   cont.querySelector("#fm-new").addEventListener("click", () => { const nm = (prompt("Folder name:", "") || "").trim(); if (nm) { createFolder(nm); persist(); rerender(); } });
   cont.querySelectorAll("[data-fren]").forEach((b) => b.addEventListener("click", () => { const f = folders().find((x) => x.id === b.dataset.fren); const nm = (prompt("Rename folder:", f ? f.name : "") || "").trim(); if (nm) { renameFolder(b.dataset.fren, nm); persist(); rerender(); } }));
   cont.querySelectorAll("[data-fdel]").forEach((b) => b.addEventListener("click", () => { if (confirm("Delete this folder? Tracks stay; they're just un-tagged.")) { deleteFolder(b.dataset.fdel); persist(); toast("Folder deleted.", "info"); rerender(); } }));
