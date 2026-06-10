@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandById, performingMembers, playerFame } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -194,8 +194,13 @@ function playShow(setIds) {
   // player's personal clout (career-wide, smaller)
   addStat("fame", Math.max(1, Math.round(est.fameGain * (cfg.playerFameShare ?? 0.4))));
   addStat("fans", Math.round(est.fans * (cfg.playerFansShare ?? 0.25)));
-  // each performing musician gains individual fame
-  for (const m of performingMembers(band.id)) m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
+  // each performing musician gains individual fame + accrues their contracted cut (live + merch)
+  ensureContracts();
+  for (const m of performingMembers(band.id)) {
+    m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
+    accrueOwed(m, liveCut(m, est.pay));
+    accrueOwed(m, merchCut(m, merch.revenue));
+  }
   advanceMinutes(minutes);
   persist();
   if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }

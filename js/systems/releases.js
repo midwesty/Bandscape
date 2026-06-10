@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, bandById, playerFame } from "../engine/state.js";
+import { getState, addStat, bandById, playerFame, bandMembers, streamCutFrac, accrueOwed, ensureContracts } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -49,6 +49,7 @@ function fileToCover(file) {
 // ============================ DAILY ACCRUAL ============================
 function accrue() {
   const s = getState(); const rel = s.releases || []; if (!rel.length) return;
+  ensureContracts();
   const cfg = CFG(); let tStreams = 0, tFans = 0;
   s._streamBank = s._streamBank || 0;
   for (const r of rel) {
@@ -61,6 +62,8 @@ function accrue() {
     r.streams += ds; r.lastStreams = ds; r.fans += fans; r.revenue = (r.revenue || 0) + ds * cfg.payoutPerStream;
     if (band.id) { band.fans = (band.fans || 0) + fans; band.fame = (band.fame || 0) + Math.max(0, Math.round(fans * 0.2)); }
     tStreams += ds; tFans += fans; s._streamBank += ds * cfg.payoutPerStream;
+    // members' streaming cut accrues to what you owe them
+    if (band.id) { const royalty = ds * cfg.payoutPerStream; for (const m of bandMembers(band.id)) accrueOwed(m, royalty * streamCutFrac(m)); }
   }
   const dollars = Math.floor(s._streamBank); if (dollars > 0) { addStat("money", dollars); s._streamBank -= dollars; }
   persist();

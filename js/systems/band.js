@@ -15,7 +15,8 @@ import {
   getState, addStat, setFlag, activeBand, bandById, roleFromArchetype,
   ensureMusicianModel, allMusicians, musicianById, bandMembers, performingMembers,
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
-  musicianFromNpc, playerFame
+  musicianFromNpc, playerFame,
+  ensureContracts, totalOwed, payAllOwed, expectedLiveSplit, effectiveLiveSplit
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -194,7 +195,9 @@ function bindPicker(view, b) {
 }
 function renderBand(view) {
   const b = activeBand();
+  ensureContracts();
   const mem = bandMembers(b.id);
+  const money = getState().stats.money || 0; const owed = totalOwed(); const spend = money - owed;
   const maxChem = DATA.config.band?.maxChemistry || 100;
   const rehReady = findReady("rehearse", b.id);
   const nextReh = nextCommitment("rehearse", b.id);
@@ -209,6 +212,7 @@ function renderBand(view) {
       <div class="bd-portrait sm" style="background:${color(m.id)}">${esc(m.name[0])}</div>
       <div class="bm-info"><strong>${esc(m.name)}</strong> <span class="ovr">${musicianOVR(m)}</span>
         ${m.status === "benched" ? `<small style="color:${STATUS.benched.color}">benched</small>` : `<small>${ROLE_LABEL[m.role] || m.role} · fame ${m.fame || 0}</small>`}
+        <div class="bm-pay"><span class="bm-contract">💵 ${contractLabel(m)}</span>${(m.owed || 0) > 0 ? `<span class="bm-owed">owe $${m.owed}</span>` : ""}<button class="bm-negotiate" data-negotiate="${m.id}">Negotiate</button></div>
         <div class="bm-hap"><div class="bm-hap-bar"><div style="width:${Math.round(m.happiness ?? 70)}%;background:${hapColor(m.happiness ?? 70)}"></div></div></div>
       </div>
       <select class="bm-role" data-role-npc="${m.id}">${ROLES.map((r) => `<option value="${r}" ${m.role === r ? "selected" : ""}>${ROLE_LABEL[r]}</option>`).join("")}</select>
@@ -233,6 +237,12 @@ function renderBand(view) {
       <div><span>Renown</span><strong>${b.fame || 0}</strong></div>
       <div><span>Shows</span><strong>${b.showsPlayed || 0}</strong></div>
     </div>
+    <div class="band-fin">
+      <div><span>Cash</span><strong>$${money}</strong></div>
+      <div><span>Owed</span><strong class="${owed > 0 ? "bad" : ""}">$${owed}</strong></div>
+      <div><span>Spendable</span><strong class="good">$${spend}</strong></div>
+    </div>
+    ${owed > 0 ? `<button class="btn band-mini" id="band-payday">Payday — pay $${owed}</button>` : ""}
     <div class="bd-stat"><span>Chemistry</span><div class="bd-bar"><div style="width:${Math.round((b.chemistry || 0) / maxChem * 100)}%;background:#ffd23f"></div></div></div>
     <div class="band-roster">${youRow}${memberRows || (b.playerIn ? "" : `<p class="muted" style="padding:8px">No members — recruit at The Dive, or assign someone on the Musicians page.</p>`)}</div>
     ${!b.playerIn ? `<button class="btn band-mini" id="player-join">Join this band (you)</button>` : ""}
@@ -257,6 +267,8 @@ function renderBand(view) {
   const pl = view.querySelector("#player-leave"); if (pl) pl.addEventListener("click", () => playerJoin(b, false));
   view.querySelectorAll(".bm-role").forEach((sel) => sel.addEventListener("change", () => setRole(sel.dataset.roleNpc, sel.value)));
   view.querySelectorAll(".bm-kick[data-remove]").forEach((btn) => btn.addEventListener("click", () => releaseMember(btn.dataset.remove)));
+  view.querySelectorAll("[data-negotiate]").forEach((btn) => btn.addEventListener("click", () => openNegotiate(btn.dataset.negotiate)));
+  const pd = view.querySelector("#band-payday"); if (pd) pd.addEventListener("click", doPayday);
 }
 function editBand(b) {
   const nm = (prompt("Band name:", b.name || "") || "").trim(); if (nm) b.name = nm;
@@ -420,7 +432,7 @@ function adjustHappiness(band, delta) { for (const m of bandMembers(band.id)) m.
 on("show:played", ({ bandId, quality }) => { const b = bandById(bandId); if (!b) return; adjustHappiness(b, H().show + Math.round((quality || 0) / (H().showQualityDiv || 20))); persist(); });
 on("commitment:missed", ({ bandId, type }) => { const b = bandById(bandId); if (!b) return; adjustHappiness(b, -(type === "show" ? H().missShow : H().missReh)); persist(); });
 on("day:advanced", () => {
-  ensureMusicianModel();
+  ensureMusicianModel(); ensureContracts();
   const h = H(); const quits = [];
   const wrote = [];
   for (const b of bands()) {
@@ -428,6 +440,11 @@ on("day:advanced", () => {
     const decay = loyal ? h.idleDecayLoyal : h.idleDecay;
     for (const m of bandMembers(b.id)) {
       m.happiness = Math.max(0, Math.min(100, (m.happiness ?? 70) - decay));
+      const P = (DATA.config.economy && DATA.config.economy.pay) || {};
+      const gap = expectedLiveSplit(m) - effectiveLiveSplit(m);
+      if (gap > 0.02) m.happiness = Math.max(0, m.happiness - gap * (P.underPenalty || 22));
+      else m.happiness = Math.min(100, m.happiness + (P.fairBonus || 1));
+      if ((m.owed || 0) > (P.latePayThreshold || 250)) m.happiness = Math.max(0, m.happiness - (P.latePenalty || 3));
       if (!loyal && (m.happiness ?? 70) <= h.quitThreshold && Math.random() < h.quitChance) {
         setMusicianStatus(m.id, "free_agent"); quits.push({ name: m.name, band: b.name });
       }
@@ -485,4 +502,84 @@ function renderMerch(view) {
   view.innerHTML = `<p class="band-sub">Stock up, set prices, and sell at <strong>${esc(b.name)}</strong>'s shows. Bigger crowds and more fans buy more. Cash on hand: $${money}.</p>${rows}${lifetime}`;
   view.querySelectorAll("[data-price]").forEach((btn) => btn.addEventListener("click", () => setMerchPrice(btn.dataset.price, parseInt(btn.dataset.d, 10))));
   view.querySelectorAll("[data-order]").forEach((btn) => btn.addEventListener("click", () => orderMerch(btn.dataset.order, parseInt(btn.dataset.qty, 10))));
+}
+
+// ---------------------------- CONTRACTS / PAYDAY (Step 17.1) ----------------------------
+function contractLabel(m) {
+  const c = m.contract || {};
+  const fmt = (sc) => !sc ? null : sc.type === "split" ? `${Math.round((sc.value || 0) * 100)}%` : sc.type === "fee" ? `$${sc.value || 0}/gig` : null;
+  const parts = [];
+  const l = fmt(c.live); if (l) parts.push(`live ${l}`);
+  const me = fmt(c.merch); if (me) parts.push(`merch ${me}`);
+  const st = fmt(c.streaming); if (st) parts.push(`streams ${st}`);
+  return parts.length ? parts.join(" · ") : "volunteer";
+}
+function doPayday() {
+  const r = payAllOwed();
+  if (r.total <= 0) { toast("Nobody's owed anything right now.", "info"); return; }
+  for (const m of (getState().musicians || [])) if (m.bandId) m.happiness = Math.min(100, (m.happiness ?? 70) + (r.full ? 2 : 1));
+  persist();
+  toast(r.full ? `Payday! Paid out $${r.paid}.` : `Paid $${r.paid} of $${r.total} owed — you came up short.`, r.full ? "good" : "warn");
+  refresh();
+}
+function openNegotiate(id) {
+  const m = musicianById(id); if (!m) return;
+  ensureContracts();
+  const c = m.contract;
+  const P = (DATA.config.economy && DATA.config.economy.pay) || {};
+  const feeRef = P.feeRefShow || 120;
+  const insult = P.insultFactor || 0.5;
+  const exp = expectedLiveSplit(m);
+  const liveSplitOf = (f) => f.type === "split" ? f.raw / 100 : f.type === "fee" ? Math.min(0.5, f.raw / feeRef) : 0;
+  const scrim = document.createElement("div"); scrim.className = "modal-scrim"; scrim.id = "neg-scrim";
+  const row = (key, label, allowFee) => {
+    const sc = c[key] || { type: "none", value: 0 };
+    const val = sc.type === "split" ? Math.round((sc.value || 0) * 100) : (sc.value || 0);
+    return `<div class="neg-row"><div class="neg-label">${label}</div>
+      <select class="neg-type" data-k="${key}">
+        <option value="none" ${sc.type === "none" ? "selected" : ""}>None</option>
+        <option value="split" ${sc.type === "split" ? "selected" : ""}>Split %</option>
+        ${allowFee ? `<option value="fee" ${sc.type === "fee" ? "selected" : ""}>Fee $</option>` : ""}
+      </select>
+      <input class="neg-val" data-k="${key}" type="number" min="0" value="${val}" ${sc.type === "none" ? "disabled" : ""}></div>`;
+  };
+  scrim.innerHTML = `<div class="neg-card">
+    <div class="neg-head"><span>NEGOTIATE · ${esc(m.name)}</span><button id="neg-x">✕</button></div>
+    <p class="neg-ask">${esc(m.name)} figures they're worth about <strong>${Math.round(exp * 100)}%</strong> of the door. Splits are a % of that stream; fees are flat per gig.</p>
+    ${row("live", "Live shows", true)}
+    ${row("merch", "Merch sales", false)}
+    ${row("streaming", "Streaming", false)}
+    <div class="neg-react" id="neg-react"></div>
+    <div class="neg-acts"><button class="btn" id="neg-offer">Offer deal</button></div>
+  </div>`;
+  document.body.appendChild(scrim);
+  const close = () => scrim.remove();
+  scrim.addEventListener("click", (e) => { if (e.target === scrim) close(); });
+  scrim.querySelector("#neg-x").addEventListener("click", close);
+  const readForm = () => {
+    const out = {};
+    scrim.querySelectorAll(".neg-type").forEach((sel) => {
+      const k = sel.dataset.k; const valEl = scrim.querySelector(`.neg-val[data-k="${k}"]`);
+      valEl.disabled = (sel.value === "none");
+      out[k] = { type: sel.value, raw: parseFloat(valEl.value) || 0 };
+    });
+    return out;
+  };
+  const updateReact = () => {
+    const ls = liveSplitOf(readForm().live); const react = scrim.querySelector("#neg-react");
+    if (ls >= exp) react.innerHTML = `<span class="good">They're happy with this.</span>`;
+    else if (ls >= exp * insult) react.innerHTML = `<span class="warn-c">They'll grumble, but take it.</span>`;
+    else react.innerHTML = `<span class="bad">Insulting — they'll walk.</span>`;
+  };
+  scrim.querySelectorAll(".neg-type, .neg-val").forEach((el) => el.addEventListener("input", updateReact));
+  updateReact();
+  scrim.querySelector("#neg-offer").addEventListener("click", () => {
+    const f = readForm();
+    const ls = liveSplitOf(f.live);
+    if (ls < exp * insult) { toast(`${m.name} scoffs and walks away.`, "warn"); return; }
+    const toC = (x) => x.type === "split" ? { type: "split", value: Math.max(0, x.raw / 100) } : x.type === "fee" ? { type: "fee", value: Math.max(0, Math.round(x.raw)) } : { type: "none", value: 0 };
+    m.contract = { live: toC(f.live), merch: toC(f.merch), streaming: toC(f.streaming) };
+    m.happiness = Math.min(100, Math.max(0, (m.happiness ?? 70) + (ls >= exp ? 4 : -2)));
+    persist(); close(); toast(`${m.name} signed the deal.`, "good"); refresh();
+  });
 }

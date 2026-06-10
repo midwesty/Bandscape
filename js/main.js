@@ -5,7 +5,7 @@
 // ============================================================
 
 import { loadAllData, DATA } from "./engine/data.js";
-import { newGameState, setState, getState, ensureLibraryMeta } from "./engine/state.js";
+import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { on, emit } from "./engine/bus.js";
 
@@ -107,6 +107,7 @@ function enterGame(isNew) {
   $("game").classList.remove("hidden");
 
   ensureLibraryMeta();   // Step 16: backfill library metadata on older saves
+  ensureContracts();     // Step 17.1: default contracts + owed balances
   initObjectives();
   initPhone();
   initInventory();

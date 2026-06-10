@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.17.0 (Step 17.0: merch)",
+  "version": "0.17.1 (Step 17.1: contracts & payroll)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -26,6 +26,18 @@
       "tipMax": 14,
       "moodGain": 3,
       "fameChancePct": 35
+    },
+    "pay": {
+      "expectBase": 0.05,
+      "expectSkill": 0.12,
+      "expectFame": 0.08,
+      "expectMax": 0.3,
+      "insultFactor": 0.5,
+      "feeRefShow": 120,
+      "fairBonus": 1,
+      "underPenalty": 22,
+      "latePayThreshold": 250,
+      "latePenalty": 3
     }
   },
   "inventory": {

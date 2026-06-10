@@ -150,6 +150,47 @@ export function freeAgents() { ensureMusicianModel(); return getState().musician
 export function retiredMusicians() { ensureMusicianModel(); return getState().musicians.filter((m) => m.status === "retired"); }
 export function musicianOVR(m) { const s = (m && m.stats) || {}; return Math.round(0.4 * (s.musicianship || 0) + 0.25 * (s.stagePresence || 0) + 0.25 * (s.songwriting || 0) + 0.1 * (s.reliability || 0)); }
 export function playerFame() { return getState()?.stats?.fame || 0; }
+
+// ---- contracts & payroll (Step 17.1) ----
+// contract = { live:{type,value}, merch:{type,value}, streaming:{type,value} }
+//   type ∈ "none"|"split"|"fee"; value = fraction (split) or dollars (fee)
+export function ensureContracts() {
+  const s = getState(); if (!s) return;
+  for (const m of (s.musicians || [])) {
+    if (!m.contract) m.contract = { live: { type: "none", value: 0 }, merch: { type: "none", value: 0 }, streaming: { type: "none", value: 0 } };
+    for (const k of ["live", "merch", "streaming"]) if (!m.contract[k]) m.contract[k] = { type: "none", value: 0 };
+    if (typeof m.owed !== "number") m.owed = 0;
+  }
+}
+export function liveCut(m, pay) { const c = m.contract && m.contract.live; if (!c) return 0; if (c.type === "split") return Math.round(pay * (c.value || 0)); if (c.type === "fee") return Math.round(c.value || 0); return 0; }
+export function merchCut(m, rev) { const c = m.contract && m.contract.merch; if (!c || c.type !== "split") return 0; return Math.round(rev * (c.value || 0)); }
+export function streamCutFrac(m) { const c = m.contract && m.contract.streaming; return (c && c.type === "split") ? (c.value || 0) : 0; }
+export function accrueOwed(m, amount) { if (m && amount > 0) m.owed = (m.owed || 0) + Math.round(amount); }
+export function totalOwed() { return (getState().musicians || []).reduce((a, m) => a + (m.owed || 0), 0); }
+export function spendable() { return (getState().stats.money || 0) - totalOwed(); }
+export function payAllOwed() {
+  const s = getState(); const cash = s.stats.money || 0;
+  const debts = (s.musicians || []).filter((m) => (m.owed || 0) > 0);
+  const total = debts.reduce((a, m) => a + m.owed, 0);
+  if (total <= 0) return { paid: 0, total: 0, full: true };
+  let paid = 0;
+  if (cash >= total) { for (const m of debts) { paid += m.owed; m.owed = 0; } }
+  else { const ratio = cash / total; for (const m of debts) { const p = Math.floor(m.owed * ratio); m.owed -= p; paid += p; } }
+  addStat("money", -paid);
+  return { paid, total, full: paid >= total };
+}
+export function expectedLiveSplit(m) {
+  const cfg = (DATA.config.economy && DATA.config.economy.pay) || {};
+  const ovr = musicianOVR(m) / 100; const fameW = Math.min(1, (m.fame || 0) / 60);
+  const v = (cfg.expectBase ?? 0.05) + ovr * (cfg.expectSkill ?? 0.12) + fameW * (cfg.expectFame ?? 0.08);
+  return Math.min(cfg.expectMax ?? 0.30, Math.max(0.02, v));
+}
+export function effectiveLiveSplit(m) {
+  const c = m.contract && m.contract.live; if (!c) return 0;
+  if (c.type === "split") return c.value || 0;
+  if (c.type === "fee") { const ref = (DATA.config.economy && DATA.config.economy.pay && DATA.config.economy.pay.feeRefShow) || 120; return Math.min(0.5, (c.value || 0) / ref); }
+  return 0;
+}
 export function setMusicianStatus(id, status) {
   const m = musicianById(id); if (!m) return;
   m.status = status;
