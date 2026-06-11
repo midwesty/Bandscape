@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.18.4 (Step 18.4: Maps app \u2014 shows by city, calendar-linked)",
+  "version": "0.18.5 (Step 18.5: show reminders + daily digest)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
