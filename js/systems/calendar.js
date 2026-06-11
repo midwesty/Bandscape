@@ -39,6 +39,8 @@ function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 function bookedAt(day, slot) { return list().some((c) => c.status === "booked" && c.day === day && c.slot === slot); }
+function bandBusyAt(bandId, day, slot) { return list().some((c) => c.status === "booked" && c.bandId === bandId && c.day === day && c.slot === slot); }
+function venueBusyAt(venueId, day, slot) { return list().some((c) => c.status === "booked" && c.type === "show" && c.venue === venueId && c.day === day && c.slot === slot); }
 function venueOpen(day) { return (((day * 2654435761) >>> 0) % 3) !== 0; }
 function bandAvailableCount(slot) {
   const npcs = DATA.npcs.npcs || []; const ab = activeBand(); const mem = ab ? bandMembers(ab.id) : [];
@@ -55,14 +57,20 @@ export function complete(id) { const c = list().find((x) => x.id === id); if (c)
 
 function availableSlots(type) {
   const out = []; const horizon = cfg().horizonDays || 7; const ni = nowIndex();
-  const ab = activeBand(); const mem = (ab ? bandMembers(ab.id) : []).length;
+  const ab = activeBand() || {}; const mem = (ab.id ? bandMembers(ab.id) : []).length;
   for (let d = today(); d <= today() + horizon; d++) {
     for (const sl of slots()) {
       const idx = d * nUnits() + slotIndex(sl.id);
       if (idx < ni) continue;
-      if (bookedAt(d, sl.id)) continue;
-      if (type === "show") { if (sl.id !== (cfg().showSlot || "evening")) continue; if (!venueOpen(d)) continue; }
-      else if (type === "rehearse") { if (!mem) continue; if (bandAvailableCount(sl.id) < Math.ceil(mem / 2)) continue; }
+      if (ab.id && bandBusyAt(ab.id, d, sl.id)) continue;                       // never double-book the SAME band
+      if (type === "show") {
+        if (sl.id !== (cfg().showSlot || "evening")) continue;
+        if (!venueOpen(d)) continue;
+        if (schedVenue && venueBusyAt(schedVenue, d, sl.id)) continue;          // this venue is taken that night
+      } else if (type === "rehearse") {
+        if (!mem) continue;
+        if (bandAvailableCount(sl.id) < Math.ceil(mem / 2)) continue;
+      }
       out.push({ day: d, slot: sl.id, label: sl.label });
       if (out.length >= 16) return out;
     }
@@ -106,6 +114,8 @@ function book(type, day, slot) {
   const venueId = type === "show" ? (schedVenue || "thedive") : null;
   const vName = (DATA.venues && DATA.venues.venues && DATA.venues.venues[venueId] && DATA.venues.venues[venueId].name) || "the venue";
   const title = type === "show" ? `Show · ${band.name || "your band"} @ ${vName}` : `Rehearsal · ${band.name || "your band"}`;
+  if (band.id && bandBusyAt(band.id, day, slot)) { toast(`${band.name || "That band"} is already booked then.`, "warn"); return; }
+  if (type === "show" && venueId && venueBusyAt(venueId, day, slot)) { toast("That venue's already taken that night.", "warn"); return; }
   list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, bandId: band.id, venue: venueId });
   persist();
   emit("calendar:booked", { type, day, slot });
