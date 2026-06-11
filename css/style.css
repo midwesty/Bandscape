@@ -899,3 +899,7 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 
 /* Step 18.0: settings note */
 .set-note { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.5; margin: 6px 2px 0; }
+
+/* Step 18.1: burn-to-tape buttons */
+.lib-burn, .rel-burn { width: 100%; margin-top: 6px; border-color: var(--yellow); color: var(--yellow); }
+.rel-burn { width: auto; margin-top: 4px; font-size: 11px; padding: 3px 8px; }

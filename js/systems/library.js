@@ -23,6 +23,8 @@ import { songQuality } from "./shows.js";
 import { schedulePattern, stopPattern, ensureAudio, armAudio } from "./audio.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
+import { countItem, takeItem } from "./inventory.js";
+import { burnTape } from "./tape.js";
 
 let cont = null, OPTS = {};
 let q = "", fType = "all", fBand = "all", fFolder = "all", sortBy = "new";
@@ -102,6 +104,7 @@ function detailHTML(i) {
       <button class="lib-mini" data-dup="${esc(i.id)}">Duplicate</button>
       <button class="lib-mini danger" data-del="${esc(i.id)}" data-kind="${i.kind}" data-rel="${i.released ? 1 : 0}">Delete</button>
     </div>
+    <button class="lib-mini lib-burn" data-burn="${esc(i.id)}" data-bkind="${i.kind}">▣ Burn to tape</button>
   </div>`;
 }
 
@@ -223,5 +226,13 @@ function bind() {
     const released = b.dataset.rel === "1";
     const msg = released ? "Delete this released song? It stays released and keeps earning streams, but the recording leaves your library." : "Delete this " + (b.dataset.kind === "song" ? "song" : "loop") + "? This can't be undone.";
     if (confirm(msg)) { stopPattern(); previewId = null; deleteLibItem(b.dataset.del); expandedId = null; persist(); toast("Deleted.", "info"); rerender(); }
+  }));
+  cont.querySelectorAll("[data-burn]").forEach((b) => b.addEventListener("click", async () => {
+    if (countItem("blank_tape") < 1) { toast("You need a blank tape — grab one at the pawn shop.", "warn"); return; }
+    const res = await burnTape(b.dataset.bkind, b.dataset.burn);
+    if (!res.ok) { toast(res.err || "Couldn't burn that.", "bad"); return; }
+    takeItem("blank_tape", 1); persist();
+    toast(`Burned "${res.title}" to tape. ${countItem("blank_tape")} left.`, "good");
+    rerender();
   }));
 }

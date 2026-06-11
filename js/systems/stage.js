@@ -175,6 +175,8 @@ function onHover(e) {
   if (next !== hovered) { hovered = next; canvas.style.cursor = obj ? "pointer" : "default"; requestRender(); }
 }
 function onKey(e) {
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return; // don't steal keystrokes while typing
   if (document.getElementById("game").classList.contains("hidden")) return;
   if (!document.getElementById("phone").classList.contains("hidden")) return;
   if (arranging) return;

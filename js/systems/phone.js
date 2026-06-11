@@ -16,6 +16,7 @@ import { renderLibrary } from "./library.js";
 import { openDAW } from "./daw.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, exportFull, importFull, saveToSlot } from "../engine/storage.js";
+import { loadTape } from "./tape.js";
 import { toast } from "../ui/toast.js";
 
 const APP_META = {
@@ -183,6 +184,7 @@ function renderSettings() {
       <label class="btn btn-file">Import Save<input type="file" id="set-import" accept="application/json" hidden></label>
       <button class="btn" id="set-backup">Back Up Everything (incl. audio)</button>
       <p class="set-note">A full backup bundles your save and all recordings into one file. Use it to move between devices or guard against the browser clearing local data.</p>
+      <label class="btn btn-file">Load a Tape (add to library)<input type="file" id="set-loadtape" accept="application/json" hidden></label>
     </div>
     <div class="set-block">
       <div class="set-label">Game</div>
@@ -202,6 +204,16 @@ function renderSettings() {
   document.getElementById("set-backup").addEventListener("click", async () => {
     try { await exportFull(s); emit("save:exported"); toast("Full backup saved (save + audio).", "good"); }
     catch { toast("Backup failed.", "bad"); }
+  });
+  document.getElementById("set-loadtape").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const r = await loadTape(f);
+      saveToSlot(s.meta.slot, s); emit("renderAll");
+      const bits = [r.songs ? `${r.songs} song${r.songs > 1 ? "s" : ""}` : "", r.loops ? `${r.loops} loop${r.loops > 1 ? "s" : ""}` : ""].filter(Boolean).join(" + ");
+      toast(`Loaded tape from ${r.artist}: ${bits || "nothing new"}.`, "good");
+    } catch { toast("That file didn't read as a tape.", "warn"); }
+    e.target.value = "";
   });
   document.getElementById("set-import").addEventListener("change", async (e) => {
     const f = e.target.files[0];

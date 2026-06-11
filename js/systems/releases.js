@@ -15,6 +15,8 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { songQuality } from "./shows.js";
+import { countItem, takeItem } from "./inventory.js";
+import { burnTape } from "./tape.js";
 
 let appEl = null, view = "list", draft = null, lastRenderedView = null;
 
@@ -94,6 +96,7 @@ function renderList() {
         <strong>${esc(r.title)}</strong>
         <small>${esc(band?.name || "—")} · ${r.type} · Q${r.quality}</small>
         <div class="rel-stats"><span>▷ ${fmt(r.streams)}</span><span>♥ ${fmt(r.fans)}</span><span>$${Math.round(r.revenue || 0)}</span>${r.lastStreams ? `<span class="rel-trend">+${fmt(r.lastStreams)}/day</span>` : ""}</div>
+        <button class="lib-mini rel-burn" data-burnrel="${r.id}">▣ Burn to tape</button>
       </div>
     </div>`;
   }).join("");
@@ -103,6 +106,14 @@ function renderList() {
       <button class="btn" id="rel-new">+ New Release</button></div>
     ${rel.length ? `<div class="rel-list">${rows}</div>` : `<div class="stub"><div class="stub-glyph">▷</div><p>No releases yet.</p><p class="muted">Finish a song in the DAW, then drop it here under one of your bands and watch the streams roll in.</p></div>`}`;
   appEl.querySelector("#rel-new").addEventListener("click", () => { draft = { bandId: bandsAll()[0]?.id || null, songIds: [], title: "", cover: null }; view = "new"; renderStreamsApp(appEl); });
+  appEl.querySelectorAll("[data-burnrel]").forEach((b) => b.addEventListener("click", async () => {
+    if (countItem("blank_tape") < 1) { toast("You need a blank tape — grab one at the pawn shop.", "warn"); return; }
+    const res = await burnTape("release", b.dataset.burnrel);
+    if (!res.ok) { toast(res.err || "Couldn't burn that.", "bad"); return; }
+    takeItem("blank_tape", 1);
+    try { saveToSlot(getState().meta.slot, getState()); } catch {}
+    toast(`Burned "${res.title}" to tape. ${countItem("blank_tape")} left.`, "good");
+  }));
 }
 
 function renderBuilder() {

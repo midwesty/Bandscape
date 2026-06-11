@@ -289,3 +289,15 @@ function onCancel() {
   cleanup();
   press = null; dragging = false;
 }
+
+// ---- Step 18.1: count / consume a specific item (used by cassettes) ----
+export function countItem(itemId, key = "inventory") {
+  return containerRef(key).reduce((a, st) => a + (st.item === itemId ? st.qty : 0), 0);
+}
+export function takeItem(itemId, qty = 1, key = "inventory") {
+  const arr = containerRef(key); let need = qty;
+  for (let i = arr.length - 1; i >= 0 && need > 0; i--) {
+    if (arr[i].item === itemId) { const t = Math.min(arr[i].qty, need); arr[i].qty -= t; need -= t; if (arr[i].qty <= 0) arr.splice(i, 1); }
+  }
+  return qty - need; // number actually taken
+}

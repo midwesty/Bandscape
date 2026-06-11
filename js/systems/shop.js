@@ -94,8 +94,12 @@ function pawnBody() {
   const gearRows = `<div class="shop-section">RECORDING GEAR</div>
     <div class="shop-row"><div><strong>Current: ${esc(cur.name)}</strong><small>${cur.tracks} tracks · fidelity ${Math.round((cur.fidelity || 0) * 100)}</small></div></div>
     ${upgrades.length ? upgrades.map((d) => `<div class="shop-row"><div><strong>${esc(d.name)}</strong><small>${d.tracks} tracks · ${esc(d.desc)}</small></div><div><span class="shop-price">$${d.price}</span> <button class="btn shop-btn" data-buy-device="${d.id}">Buy</button></div></div>`).join("") : `<p class="shop-note">Top of the line — nothing better in stock.</p>`}`;
+  const stock = (DATA.shops[currentShop] && DATA.shops[currentShop].stock) || [];
+  const mk = (DATA.shops[currentShop] && DATA.shops[currentShop].markup) || 1;
+  const supplyRows = stock.length ? `<div class="shop-section">SUPPLIES</div>` + stock.map((id) => `<div class="shop-row"><div><strong>${esc(item(id)?.name || id)}</strong><small>${esc(item(id)?.desc || "")}</small></div><div><span class="shop-price">$${priceOf(id, mk)}</span> <button class="btn shop-btn" data-buy="${id}">Buy</button></div></div>`).join("") : "";
   return `
-    ${isDebtShop ? `<div class="shop-debt">Pawn debt: $${debt}</div><div class="shop-pay">${payBtns}</div>` : `<p class="shop-note">Rocktroit's finest secondhand gear emporium. No tab — cash on the barrel.</p>`}
+    ${isDebtShop ? `<div class="shop-debt">Pawn debt: $${debt}</div><div class="shop-pay">${payBtns}</div>` : `<p class="shop-note">Rocktroit\'s finest secondhand gear emporium. No tab — cash on the barrel.</p>`}
+    ${supplyRows}
     ${gearRows}
     <div class="shop-section">SELL FROM POCKETS (½ value)</div>
     ${sellRows}
@@ -184,7 +188,7 @@ function sellItem(idx) {
   render();
 }
 function buyItem(id) {
-  const price = priceOf(id, DATA.shops.grocery.markup || 1);
+  const price = priceOf(id, (DATA.shops[currentShop] && DATA.shops[currentShop].markup) || DATA.shops.grocery.markup || 1);
   if (money() < price) { toast("You can't afford that.", "warn"); return; }
   const leftover = giveItem("inventory", id, 1);
   if (leftover > 0) { toast("Your pockets are full.", "warn"); return; }

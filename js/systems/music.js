@@ -152,6 +152,11 @@ async function startMicRecord() {
   micState = "idle"; renderMusicApp(screenEl);
 }
 async function saveVocalClip(blob, ms, recSec) {
+  const cap = DATA.config.dawCap || {};                     // Step 18.1: tape-machine scarcity (disabled for now)
+  if (cap.enabled) {
+    const used = (getState().patterns || []).filter((p) => p.type === "audio").length;
+    if (used >= (cap.maxClips || 24)) { toast("The machine is full \u2014 burn a clip to a tape to free a slot.", "warn"); return; }
+  }
   let dataURL, duration = recSec;
   try { dataURL = await blobToDataURL(blob); } catch { toast("Couldn't process the recording.", "bad"); return; }
   try { const buf = await decodeDataURL(dataURL); duration = buf.duration; } catch {}
