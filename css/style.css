@@ -903,3 +903,22 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 /* Step 18.1: burn-to-tape buttons */
 .lib-burn, .rel-burn { width: 100%; margin-top: 6px; border-color: var(--yellow); color: var(--yellow); }
 .rel-burn { width: auto; margin-top: 4px; font-size: 11px; padding: 3px 8px; }
+
+/* ---- Step 18.2: Calendar v2 (tappable multi-band slots) ---- */
+.cal-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font: inherit; color: var(--text); position: relative; }
+.cal-cell.sel { outline: 2px solid var(--yellow); outline-offset: -2px; }
+.cal-cell-n { font-family: var(--display); font-size: 13px; line-height: 1; background: var(--pink); color: #1a1018; border-radius: 8px; padding: 1px 6px; }
+.cal-detail { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 10px; margin-top: 10px; }
+.cal-detail-h { display: flex; justify-content: space-between; align-items: center; font-family: var(--display); font-size: 14px; letter-spacing: 1px; color: var(--text); margin-bottom: 8px; }
+.cal-d-x { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; }
+.cal-d-row { display: flex; align-items: center; gap: 9px; padding: 6px 0; border-top: 1px solid var(--line); }
+.cal-d-ic { font-size: 17px; flex: 0 0 22px; text-align: center; }
+.cal-d-info { flex: 1; display: flex; flex-direction: column; }
+.cal-d-info strong { font-family: var(--cond); font-size: 14px; color: var(--text); }
+.cal-d-info small { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.cal-tag { font-family: var(--mono); font-size: 9px; letter-spacing: .5px; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; border: 1px solid; }
+.cal-tag.mine { color: var(--green); border-color: var(--green); }
+.cal-tag.mgr { color: var(--muted); border-color: var(--line); }
+.cal-conflict { font-family: var(--cond); font-size: 12px; color: var(--pink); margin-top: 8px; }
+.cal-where { font-family: var(--cond); font-size: 12px; color: var(--green); margin-top: 8px; }
+.cal-where.muted { color: var(--muted); }

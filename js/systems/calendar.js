@@ -14,7 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandMembers } from "../engine/state.js";
+import { getState, addStat, activeBand, bandMembers, bandById } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -115,16 +115,45 @@ function book(type, day, slot) {
 }
 
 // ---- calendar app (read view) ----
+let calSel = null;  // {day, slot} of the tapped cell
+
+function venueNameOf(id) { const v = DATA.venues && DATA.venues.venues && DATA.venues.venues[id]; return v ? v.name : null; }
+
+function calDetailHTML(sel) {
+  const cs = list().filter((x) => x.status !== "missed" && x.day === sel.day && x.slot === sel.slot);
+  const head = `<div class="cal-detail-h">Day ${sel.day} · ${slotLabel(sel.slot)} <button class="cal-d-x" data-calclose="1">\u2715</button></div>`;
+  if (!cs.length) return `<div class="cal-detail">${head}<p class="shop-note">Nothing booked this slot — it's free.</p></div>`;
+  const rows = cs.map((c) => {
+    const b = bandById(c.bandId); const bn = b ? (b.name || "Unnamed band") : "\u2014";
+    const mine = !!(b && b.playerIn);
+    const where = c.type === "show" ? (venueNameOf(c.venue) || "a venue") : "rehearsal space";
+    const tag = mine ? `<span class="cal-tag mine">be there</span>` : `<span class="cal-tag mgr">you manage</span>`;
+    return `<div class="cal-d-row"><span class="cal-d-ic">${c.type === "show" ? "\uD83C\uDFA4" : "\u266C"}</span><div class="cal-d-info"><strong>${esc(bn)}</strong><small>${c.type === "show" ? "Show" : "Rehearsal"} · ${esc(where)}</small></div>${tag}</div>`;
+  }).join("");
+  const mineCount = cs.filter((c) => { const b = bandById(c.bandId); return b && b.playerIn; }).length;
+  let summary;
+  if (mineCount > 1) summary = `<p class="cal-conflict">\u26A0 Conflict — you're in ${mineCount} acts booked this slot. You can only be one place.</p>`;
+  else if (mineCount === 1) summary = `<p class="cal-where">You're in one of these — be there to play.</p>`;
+  else summary = `<p class="cal-where muted">You manage these; none are bands you're in.</p>`;
+  return `<div class="cal-detail">${head}${rows}${summary}</div>`;
+}
+
 export function renderCalendarApp(container) {
   const horizon = Math.min(cfg().horizonDays || 7, 6);
   const cur = currentSlot();
+  const cmtsAt = (d, slid) => list().filter((x) => x.status !== "missed" && x.day === d && x.slot === slid);
   const rows = [];
   for (let d = today(); d <= today() + horizon; d++) {
     const cells = slots().map((sl) => {
-      const c = list().find((x) => x.status !== "missed" && x.day === d && x.slot === sl.id);
+      const cs = cmtsAt(d, sl.id);
       const isNow = d === today() && sl.id === cur;
-      const cls = c ? (c.type === "show" ? "cal-cell show" : "cal-cell reh") : "cal-cell";
-      return `<div class="${cls} ${isNow ? "now" : ""}"><span class="cal-cell-sl">${sl.label.slice(0, 3)}</span>${c ? `<span class="cal-cell-t">${c.type === "show" ? "🎤" : "♬"}</span>` : ""}</div>`;
+      const isSel = calSel && calSel.day === d && calSel.slot === sl.id;
+      const hasShow = cs.some((c) => c.type === "show");
+      const cls = "cal-cell" + (cs.length ? (hasShow ? " show" : " reh") : "") + (isNow ? " now" : "") + (isSel ? " sel" : "");
+      let mark = "";
+      if (cs.length === 1) mark = `<span class="cal-cell-t">${cs[0].type === "show" ? "\uD83C\uDFA4" : "\u266C"}</span>`;
+      else if (cs.length > 1) mark = `<span class="cal-cell-n">${cs.length}</span>`;
+      return `<button class="${cls}" data-day="${d}" data-slot="${sl.id}"><span class="cal-cell-sl">${sl.label.slice(0, 3)}</span>${mark}</button>`;
     }).join("");
     rows.push(`<div class="cal-row"><div class="cal-row-d">Day ${d}${d === today() ? " ·now" : ""}</div><div class="cal-row-cells">${cells}</div></div>`);
   }
@@ -133,7 +162,14 @@ export function renderCalendarApp(container) {
     <h2 class="app-title">CALENDAR</h2>
     <p class="muted cal-note">Today is <strong>Day ${today()}</strong>, ${slotLabel(cur)}. ${next ? `Next up: ${esc(next.title)} — Day ${next.day}, ${slotLabel(next.slot)}.` : "Nothing booked. Schedule rehearsals & shows from the BAND app."}</p>
     <div class="cal-grid">${rows.join("")}</div>
-    <p class="muted cal-legend">♬ rehearsal · 🎤 show (be at The Dive). Book from the BAND app.</p>`;
+    ${calSel ? calDetailHTML(calSel) : `<p class="muted cal-legend">Tap any slot to see everything booked then. \u266C rehearsal · \uD83C\uDFA4 show.</p>`}`;
+  container.querySelectorAll("[data-day][data-slot]").forEach((b) => b.addEventListener("click", () => {
+    const d = parseInt(b.dataset.day, 10), sl = b.dataset.slot;
+    calSel = (calSel && calSel.day === d && calSel.slot === sl) ? null : { day: d, slot: sl };
+    renderCalendarApp(container);
+  }));
+  const x = container.querySelector("[data-calclose]");
+  if (x) x.addEventListener("click", () => { calSel = null; renderCalendarApp(container); });
 }
 
 // ---- missed sweep ----

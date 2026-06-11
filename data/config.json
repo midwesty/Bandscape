@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.18.1 (Step 18.1: cassettes \u2014 burn/share audio)",
+  "version": "0.18.2 (Step 18.2: Calendar v2 \u2014 tappable multi-band slots)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
