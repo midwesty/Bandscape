@@ -17,6 +17,7 @@ import { toast } from "../ui/toast.js";
 import { playCode, playNote, schedulePattern, stopPattern, ensureAudio, armAudio, click, decodeDataURL, playAudioBuffer } from "./audio.js";
 import { currentDevice } from "./gear.js";
 import { ensureMic, recordClip, cancelClip, releaseMic, blobToDataURL, micSupported } from "./micrec.js";
+import { putAudio, getAudio, deleteAudio } from "../engine/audiostore.js";
 import { midiOf, noteLength, patternNotes } from "./notes.js";
 
 const NOTE_ORDER = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -155,18 +156,25 @@ async function saveVocalClip(blob, ms, recSec) {
   try { dataURL = await blobToDataURL(blob); } catch { toast("Couldn't process the recording.", "bad"); return; }
   try { const buf = await decodeDataURL(dataURL); duration = buf.duration; } catch {}
   const name = (prompt("Name this clip:", "Vocal " + ((getState().patterns?.length || 0) + 1)) || "Untitled").trim();
-  const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", audio: dataURL, duration, bpm: ms.bpm, bars: ms.bars, createdAt: Date.now() };
+  const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", duration, bpm: ms.bpm, bars: ms.bars, createdAt: Date.now() };
   getState().patterns = getState().patterns || [];
   stampItem(pat, "loop");
+  try { await putAudio(pat.id, dataURL); } catch { toast("Couldn't store the recording.", "bad"); return; }
+  audioBufCache.delete(pat.id);
   getState().patterns.push(pat);
-  if (!persistSafe()) { getState().patterns.pop(); toast("Save is full — delete some loops to free space, then try again.", "bad"); return; }
+  if (!persistSafe()) { getState().patterns.pop(); await deleteAudio(pat.id); toast("Save failed — try again.", "bad"); return; }
   emit("pattern:recorded", { name }); toast(`Saved "${name}".`, "good"); tab = "library";
 }
 function persistSafe() { const s = getState(); return saveToSlot(s.meta.slot, s); }
 async function playAudioPattern(pat) {
   try {
     let buf = audioBufCache.get(pat.id);
-    if (!buf) { buf = await decodeDataURL(pat.audio); audioBufCache.set(pat.id, buf); }
+    if (!buf) {
+      let src = pat.audio;                                   // legacy inline (pre-migration)
+      if (!src) { try { src = await getAudio(pat.id); } catch {} }
+      if (!src) { toast("Audio for this clip wasn't found.", "bad"); return; }
+      buf = await decodeDataURL(src); audioBufCache.set(pat.id, buf);
+    }
     ensureAudio(); playAudioBuffer(buf, 0); toast(`Playing "${pat.name}".`, "info");
   } catch { toast("Couldn't play that clip.", "bad"); }
 }
@@ -264,7 +272,7 @@ function renderLibrary(body) {
     const i = parseInt(b.dataset.i, 10);
     if (b.dataset.act === "play") playLoop(getState().patterns[i]);
     else if (b.dataset.act === "edit") openEditor(i);
-    else { getState().patterns.splice(i, 1); persist(); renderMusicApp(screenEl); }
+    else { const dp = getState().patterns[i]; if (dp && dp.type === "audio") { deleteAudio(dp.id); audioBufCache.delete(dp.id); } getState().patterns.splice(i, 1); persist(); renderMusicApp(screenEl); }
   }));
 }
 function bindCompose(body) { const c = body.querySelector("#pr-compose"); if (c) c.addEventListener("click", openCompose);

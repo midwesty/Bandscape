@@ -7,6 +7,7 @@
 import { loadAllData, DATA } from "./engine/data.js";
 import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
+import { putAudio } from "./engine/audiostore.js";
 import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock, initTimeControls } from "./systems/time.js";
@@ -101,6 +102,19 @@ function loadSlot(slot) {
 // ---- enter the running game ----
 let wired = false;
 
+// Step 18.0: relocate legacy inline audio (data-URLs saved in localStorage) into
+// IndexedDB, then strip it from the save so the 5MB quota stops rejecting recordings.
+async function migrateInlineAudio() {
+  const s = getState(); if (!s || !Array.isArray(s.patterns)) return;
+  let moved = 0;
+  for (const p of s.patterns) {
+    if (p && p.type === "audio" && typeof p.audio === "string" && p.audio) {
+      try { await putAudio(p.id, p.audio); delete p.audio; moved++; } catch {}
+    }
+  }
+  if (moved > 0) { try { saveToSlot(s.meta.slot, s); } catch {} }
+}
+
 function enterGame(isNew) {
   $("boot").classList.add("hidden");
   $("charcreate").classList.add("hidden");
@@ -108,6 +122,7 @@ function enterGame(isNew) {
 
   ensureLibraryMeta();   // Step 16: backfill library metadata on older saves
   ensureContracts();     // Step 17.1: default contracts + owed balances
+  migrateInlineAudio();  // Step 18.0: move any inline audio into IndexedDB (off the localStorage quota)
   initObjectives();
   initPhone();
   initInventory();

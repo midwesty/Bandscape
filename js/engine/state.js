@@ -4,6 +4,7 @@
 // ============================================================
 
 import { DATA } from "./data.js";
+import { deleteAudio, copyAudio } from "./audiostore.js";
 
 export let STATE = null;
 
@@ -252,7 +253,7 @@ export function toggleItemFolder(id, folderId) {
 export function renameLibItem(id, name) { const hit = libItemById(id); if (hit) hit.item.name = (name || hit.item.name).trim() || hit.item.name; }
 export function deleteLibItem(id) {
   const s = getState(); const hit = libItemById(id); if (!hit) return;
-  if (hit.kind === "loop") s.patterns = (s.patterns || []).filter((x) => x.id !== id);
+  if (hit.kind === "loop") { if (hit.item && hit.item.type === "audio") deleteAudio(id); s.patterns = (s.patterns || []).filter((x) => x.id !== id); }
   else s.songs = (s.songs || []).filter((x) => x.id !== id);
 }
 export function duplicateLibItem(id) {
@@ -262,7 +263,7 @@ export function duplicateLibItem(id) {
   copy.name = (hit.item.name || "Untitled") + " (copy)";
   copy.createdAt = Date.now(); copy.createdDay = s.time?.day || 1;
   copy.folders = Array.isArray(hit.item.folders) ? hit.item.folders.slice() : [];
-  if (hit.kind === "loop") (s.patterns = s.patterns || []).push(copy); else (s.songs = s.songs || []).push(copy);
+  if (hit.kind === "loop") { (s.patterns = s.patterns || []).push(copy); if (hit.item && hit.item.type === "audio") copyAudio(id, copy.id); } else (s.songs = s.songs || []).push(copy);
   return copy.id;
 }
 

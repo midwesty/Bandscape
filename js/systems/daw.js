@@ -14,6 +14,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { DATA } from "../engine/data.js";
 import { playCode, playNote, click, ensureAudio, audioNow, buildFXChain, EQ_FREQS, decodeDataURL, playAudioBuffer } from "./audio.js";
+import { getAudio } from "../engine/audiostore.js";
 import { deviceTracks, deviceBars, deviceEffects, currentDevice } from "./gear.js";
 import { patternNotes } from "./notes.js";
 
@@ -336,7 +337,7 @@ async function play() {
 async function prepareAudio() {
   const ids = new Set();
   draft.tracks.forEach((t) => t.forEach((c) => { const p = patternById(c.patternId); if (p && p.type === "audio") ids.add(p.id); }));
-  for (const id of ids) { if (!dawAudioBuf.has(id)) { const p = patternById(id); try { dawAudioBuf.set(id, await decodeDataURL(p.audio)); } catch { dawAudioBuf.set(id, null); } } }
+  for (const id of ids) { if (!dawAudioBuf.has(id)) { const p = patternById(id); let src = p && p.audio; if (!src) { try { src = await getAudio(id); } catch {} } try { dawAudioBuf.set(id, src ? await decodeDataURL(src) : null); } catch { dawAudioBuf.set(id, null); } } }
 }
 function scheduler() {
   if (!playing) return;

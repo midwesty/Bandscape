@@ -3,6 +3,8 @@
 // export/import a save file (your jump-drive / multi-device flow).
 // ============================================================
 
+import { allAudio, putAudio } from "./audiostore.js";
+
 const KEY = (slot) => `bandscape.save.v1.slot${slot}`;
 
 export function saveToSlot(slot, state) {
@@ -67,4 +69,30 @@ export function importSave(file) {
     reader.onerror = () => reject(reader.error);
     reader.readAsText(file);
   });
+}
+
+// ---- full backup (save + audio), free, for personal cross-device safety ----
+export async function exportFull(state) {
+  let audio = {};
+  try { audio = await allAudio(); } catch {}
+  const payload = { _bandscapeBackup: 1, savedAt: Date.now(), state, audio };
+  const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `bandscape-BACKUP-${(state.player?.name || "save").replace(/\s+/g, "_")}-day${state.time?.day || 1}-${stamp}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Restore either a full backup (restores audio too) or a plain save file. Returns the state.
+export async function importFull(file) {
+  const text = await file.text();
+  const data = JSON.parse(text);
+  if (data && data._bandscapeBackup && data.state) {
+    if (data.audio) { for (const id in data.audio) { try { await putAudio(id, data.audio[id]); } catch {} } }
+    return data.state;
+  }
+  return data; // plain save (old format)
 }

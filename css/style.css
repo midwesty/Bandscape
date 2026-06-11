@@ -896,3 +896,6 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .show-cuts > div:not(.show-cuts-h) { display: flex; justify-content: space-between; font-family: var(--cond); font-size: 13px; color: var(--text); padding: 2px 0; }
 .show-cuts-total { border-top: 1px solid var(--line); margin-top: 5px; padding-top: 5px !important; }
 .show-cuts-total strong.bad { color: var(--pink); }
+
+/* Step 18.0: settings note */
+.set-note { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.5; margin: 6px 2px 0; }

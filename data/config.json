@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.17.2 (Step 17.2: venue reputation \u2014 Step 17 complete)",
+  "version": "0.18.0 (Step 18.0: IndexedDB audio + full backup)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
