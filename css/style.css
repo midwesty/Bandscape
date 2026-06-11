@@ -922,3 +922,13 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .cal-conflict { font-family: var(--cond); font-size: 12px; color: var(--pink); margin-top: 8px; }
 .cal-where { font-family: var(--cond); font-size: 12px; color: var(--green); margin-top: 8px; }
 .cal-where.muted { color: var(--muted); }
+
+/* ---- Step 18.3: delegated auto-resolve report ---- */
+.ar-card { max-width: 380px; }
+.ar-row { border-top: 1px solid var(--line); padding: 8px 0; }
+.ar-h { display: flex; justify-content: space-between; align-items: baseline; }
+.ar-h strong { font-family: var(--cond); font-size: 15px; color: var(--text); }
+.ar-h small { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.ar-stats { display: flex; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text); margin-top: 3px; }
+.ar-stats .good { color: var(--green); }
+.ar-owed { font-family: var(--mono); font-size: 10px; color: var(--pink); margin-top: 3px; }

@@ -110,18 +110,19 @@ export function closeShow() {
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 
-function estimate(setIds, band) {
+function estimate(setIds, band, venueId) {
   band = band || perfBand || activeBand() || {};
   const cfg = DATA.config.shows;
+  const vId = venueId || perfVenueId;
   const mem = band.id ? performingMembers(band.id) : [];
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
-  const vm = (DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].drawMult) || 1;
+  const vm = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId] && DATA.venues.venues[vId].drawMult) || 1;
   const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm);
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
-  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(perfVenueId));
+  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId));
   const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
   const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
   return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
@@ -185,6 +186,7 @@ function playShow(setIds) {
   const s = getState(); const cfg = DATA.config.shows;
   const band = perfBand || activeBand() || {};
   const est = estimate(new Set(setIds), band);
+  if (!band.playerIn) { const bst = cfg.attendBoost || 1.15; est.pay = Math.round(est.pay * bst); est.fans = Math.round(est.fans * bst); est.fameGain = Math.round(est.fameGain * bst); est._boosted = bst; }
   const energy = (cfg.energyCost || 25) + (setIds.length - 1) * 5;
   const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
 
@@ -227,6 +229,7 @@ function playShow(setIds) {
       <div class="show-body show-report">
         <div class="report-head">${esc(head)}</div>
         <p class="shop-note">${esc(sub)}</p>
+        ${est._boosted ? `<p class="shop-note" style="color:var(--green)">You showed up to manage — the band raised their game (+${Math.round((est._boosted - 1) * 100)}%).</p>` : ""}
         <div class="show-est">
           <div><span>Crowd</span><strong>${est.draw}</strong></div>
           <div><span>Earned</span><strong class="good">$${est.pay}</strong></div>
@@ -246,4 +249,72 @@ function playShow(setIds) {
   overlay.querySelector("#show-close2").addEventListener("click", closeShow);
   overlay.querySelector("#show-done").addEventListener("click", closeShow);
   toast(`Show done — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans${cutTotal > 0 ? ` · $${cutTotal} owed to band` : ""}.`, "good");
+}
+
+// ============================================================
+// Delegated auto-resolve (Step 18.3) — bands the player ISN'T in
+// play their booked nights on their own. Same money/fame/fans/
+// merch/owed/venue-rep as a real gig, minus the player's personal
+// energy/time/clout (they weren't on stage). Called from the
+// calendar's day-advance sweep.
+// ============================================================
+function autoSetlist(band) {
+  const s = getState();
+  const relIds = new Set();
+  (s.releases || []).filter((r) => r.bandId === band.id).forEach((r) => (r.songIds || []).forEach((id) => relIds.add(id)));
+  let pool = (s.songs || []).filter((sg) => relIds.has(sg.id));
+  if (!pool.length) pool = (s.songs || []).filter((sg) => sg.bandId === band.id);
+  if (!pool.length) pool = (s.songs || []).slice();
+  pool = pool.sort((a, b) => songQuality(b, band) - songQuality(a, band)).slice(0, 3);
+  return pool.map((sg) => sg.id);
+}
+
+export function autoResolveShow(commitment) {
+  const s = getState(); const cfg = DATA.config.shows;
+  const band = bandById(commitment.bandId); if (!band) return null;
+  const venueId = commitment.venue || "thedive";
+  const setIds = autoSetlist(band); if (!setIds.length) return null;
+  const est = estimate(new Set(setIds), band, venueId);
+  addStat("money", est.pay);
+  const merch = sellMerchAtShow(band, est.draw);
+  if (merch.revenue > 0) { addStat("money", merch.revenue); band.merchSold = (band.merchSold || 0) + merch.revenue; }
+  const maxChem = (DATA.config.band && DATA.config.band.maxChemistry) || 100;
+  band.fans = (band.fans || 0) + est.fans;
+  band.fame = (band.fame || 0) + est.fameGain;
+  band.chemistry = Math.min(maxChem, (band.chemistry || 0) + (cfg.chemistryGain || 5));
+  band.showsPlayed = (band.showsPlayed || 0) + 1;
+  const vmeta = (DATA.venues && DATA.venues.venues && DATA.venues.venues[venueId]) || null;
+  if (vmeta && vmeta.town) { s.showsByTown = s.showsByTown || {}; s.showsByTown[vmeta.town] = (s.showsByTown[vmeta.town] || 0) + 1; }
+  const repGain = Math.max(-2, (DATA.config.venueRep && DATA.config.venueRep.gainBase != null ? DATA.config.venueRep.gainBase : 2) + Math.round((est.avgQ - 60) / 12));
+  addVenueRep(venueId, repGain);
+  ensureContracts();
+  const cutLines = []; let cutTotal = 0;
+  for (const m of performingMembers(band.id)) {
+    m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
+    const cut = liveCut(m, est.pay) + merchCut(m, merch.revenue);
+    if (cut > 0) { accrueOwed(m, cut); cutLines.push({ name: m.name, cut }); cutTotal += cut; }
+  }
+  emit("show:played", { bandId: band.id, pay: est.pay, merch: merch.revenue, fame: est.fameGain, fans: est.fans, quality: est.avgQ, auto: true });
+  return { band: band.name || "Your band", venue: (vmeta && vmeta.name) || "a venue", pay: est.pay, merch: merch.revenue, fans: est.fans, fame: est.fameGain, quality: est.avgQ, cutTotal };
+}
+
+export function showAutoReport(results) {
+  if (!results || !results.length) return;
+  const rows = results.map((r) => `<div class="ar-row">
+    <div class="ar-h"><strong>${esc(r.band)}</strong><small>@ ${esc(r.venue)} · Q${r.quality}</small></div>
+    <div class="ar-stats"><span class="good">$${r.pay}${r.merch ? " +$" + r.merch + " merch" : ""}</span><span>+${r.fans} fans</span><span>+${r.fame} fame</span></div>
+    ${r.cutTotal ? `<div class="ar-owed">$${r.cutTotal} owed to the band</div>` : ""}
+  </div>`).join("");
+  const scrim = document.createElement("div"); scrim.className = "modal-scrim"; scrim.id = "ar-scrim";
+  scrim.innerHTML = `<div class="neg-card ar-card">
+    <div class="neg-head"><span>WHILE YOU WERE OUT</span><button id="ar-x">\u2715</button></div>
+    <p class="neg-ask">Your other acts played their booked nights without you. You banked the gross; settle the band's cut on Payday.</p>
+    ${rows}
+    <div class="neg-acts"><button class="btn" id="ar-ok">Nice</button></div>
+  </div>`;
+  document.body.appendChild(scrim);
+  const close = () => scrim.remove();
+  scrim.addEventListener("click", (e) => { if (e.target === scrim) close(); });
+  scrim.querySelector("#ar-x").addEventListener("click", close);
+  scrim.querySelector("#ar-ok").addEventListener("click", close);
 }

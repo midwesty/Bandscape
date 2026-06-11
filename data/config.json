@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.18.2a (booking fix: multiple bands can play different venues the same night)",
+  "version": "0.18.3 (Step 18.3: delegated auto-resolve + attend boost)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -112,7 +112,8 @@
     "starDrawFactor": 0.4,
     "playerFameShare": 0.4,
     "playerFansShare": 0.25,
-    "memberFameShare": 0.3
+    "memberFameShare": 0.3,
+    "attendBoost": 1.15
   },
   "calendar": {
     "slots": [

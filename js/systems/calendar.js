@@ -18,6 +18,7 @@ import { getState, addStat, activeBand, bandMembers, bandById } from "../engine/
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
+import { autoResolveShow, showAutoReport } from "./shows.js";
 
 let overlay = null, schedVenue = null;
 
@@ -137,14 +138,14 @@ function calDetailHTML(sel) {
     const b = bandById(c.bandId); const bn = b ? (b.name || "Unnamed band") : "\u2014";
     const mine = !!(b && b.playerIn);
     const where = c.type === "show" ? (venueNameOf(c.venue) || "a venue") : "rehearsal space";
-    const tag = mine ? `<span class="cal-tag mine">be there</span>` : `<span class="cal-tag mgr">you manage</span>`;
+    const tag = mine ? `<span class="cal-tag mine">be there</span>` : `<span class="cal-tag mgr">auto-plays</span>`;
     return `<div class="cal-d-row"><span class="cal-d-ic">${c.type === "show" ? "\uD83C\uDFA4" : "\u266C"}</span><div class="cal-d-info"><strong>${esc(bn)}</strong><small>${c.type === "show" ? "Show" : "Rehearsal"} · ${esc(where)}</small></div>${tag}</div>`;
   }).join("");
   const mineCount = cs.filter((c) => { const b = bandById(c.bandId); return b && b.playerIn; }).length;
   let summary;
   if (mineCount > 1) summary = `<p class="cal-conflict">\u26A0 Conflict — you're in ${mineCount} acts booked this slot. You can only be one place.</p>`;
   else if (mineCount === 1) summary = `<p class="cal-where">You're in one of these — be there to play.</p>`;
-  else summary = `<p class="cal-where muted">You manage these; none are bands you're in.</p>`;
+  else summary = `<p class="cal-where muted">These play on their own \u2014 your report lands the next morning. Show up anyway for a performance boost.</p>`;
   return `<div class="cal-detail">${head}${rows}${summary}</div>`;
 }
 
@@ -184,17 +185,29 @@ export function renderCalendarApp(container) {
 
 // ---- missed sweep ----
 function sweepMissed() {
-  const ni = nowIndex(); let missedShow = 0, missedReh = 0;
+  const ni = nowIndex(); let missedShow = 0, missedReh = 0; const autoResults = [];
   for (const c of list()) {
-    if (c.status === "booked" && cmtIndex(c) < ni) {
-      c.status = "missed";
-      if (c.type === "show") missedShow++; else missedReh++;
+    if (c.status !== "booked" || cmtIndex(c) >= ni) continue;
+    if (c.type === "show") {
+      const b = bandById(c.bandId);
+      if (b && !b.playerIn) {                       // delegated: the band plays it themselves
+        const res = autoResolveShow(c);
+        c.status = "done";
+        if (res) autoResults.push(res);
+        continue;
+      }
+      c.status = "missed"; missedShow++;
+      emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
+    } else {
+      c.status = "missed"; missedReh++;
       emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
     }
   }
-  if (missedShow) { addStat("fans", -Math.min(getState().stats.fans || 0, 2 * missedShow)); toast("You blew off a booked gig at The Dive. Word gets around.", "warn"); }
+  if (missedShow) { addStat("fans", -Math.min(getState().stats.fans || 0, 2 * missedShow)); toast("You blew off a booked gig. Word gets around.", "warn"); }
   if (missedReh) toast("Your band showed up to rehearse and you didn't. They're not thrilled.", "warn");
-  if (missedShow || missedReh) { persist(); emit("renderAll"); }
+  if (autoResults.length) toast(`${autoResults.length} of your act${autoResults.length > 1 ? "s" : ""} played without you.`, "good");
+  if (missedShow || missedReh || autoResults.length) { persist(); emit("renderAll"); }
+  if (autoResults.length) showAutoReport(autoResults);
 }
 
 export function initCalendar() { on("day:advanced", sweepMissed); }
