@@ -932,3 +932,26 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .ar-stats { display: flex; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--text); margin-top: 3px; }
 .ar-stats .good { color: var(--green); }
 .ar-owed { font-family: var(--mono); font-size: 10px; color: var(--pink); margin-top: 3px; }
+
+/* ---- Step 18.4: Maps app ---- */
+.mp-next { border-radius: 4px; padding: 9px 11px; margin: 8px 0; font-family: var(--cond); font-size: 13px; color: var(--text); border-left: 3px solid var(--muted); background: var(--bg); }
+.mp-next.u-now { border-left-color: var(--pink); }
+.mp-next.u-soon { border-left-color: var(--yellow); }
+.mp-next.u-later { border-left-color: #4fc3f7; }
+.mp-legend { font-family: var(--mono); font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin: 4px 0 10px; }
+.mp-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; }
+.mp-dot.u-now { background: var(--pink); }
+.mp-dot.u-soon { background: var(--yellow); }
+.mp-dot.u-later { background: #4fc3f7; }
+.mp-town { border: 1px solid var(--line); border-radius: 4px; padding: 9px; margin-bottom: 10px; }
+.mp-town.here { border-color: var(--green); }
+.mp-town-h { font-family: var(--display); font-size: 14px; letter-spacing: 1px; color: var(--text); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; }
+.mp-here { font-family: var(--mono); font-size: 9px; letter-spacing: .5px; color: var(--green); border: 1px solid var(--green); border-radius: 3px; padding: 1px 5px; }
+.mp-venue { padding: 6px 0; border-top: 1px solid var(--line); }
+.mp-venue:first-of-type { border-top: none; }
+.mp-venue-h { display: flex; justify-content: space-between; align-items: center; font-family: var(--cond); font-size: 13px; color: var(--text); }
+.mp-lock { font-family: var(--mono); font-size: 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; }
+.mp-evt { display: flex; align-items: center; gap: 7px; padding: 3px 0 3px 4px; font-family: var(--mono); font-size: 11px; color: var(--text); }
+.mp-evt-band { flex: 1; font-family: var(--cond); font-size: 12px; }
+.mp-evt-when { color: var(--muted); }
+.mp-empty { color: var(--muted); font-style: italic; padding-left: 16px; }

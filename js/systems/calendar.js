@@ -54,6 +54,8 @@ export function nextCommitment(type, bandId) {
   const ni = nowIndex();
   return list().filter((c) => c.status === "booked" && (!type || c.type === type) && (!bandId || c.bandId === bandId) && cmtIndex(c) >= ni).sort((a, b) => cmtIndex(a) - cmtIndex(b))[0] || null;
 }
+export function bookedCommitments() { return list().filter((c) => c.status === "booked").sort((a, b) => cmtIndex(a) - cmtIndex(b)); }
+export function currentDay() { return today(); }
 export function complete(id) { const c = list().find((x) => x.id === id); if (c) { c.status = "done"; persist(); emit("calendar:updated"); } }
 
 function availableSlots(type) {
