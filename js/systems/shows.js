@@ -16,7 +16,7 @@ import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
-import { deviceFidelity } from "./gear.js";
+import { deviceFidelity, instrumentQuality } from "./gear.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 
@@ -25,6 +25,16 @@ function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const songById = (id) => (getState().songs || []).find((s) => s.id === id) || null;
 
 // ---- quality ----
+function songGearQuality(song) {
+  const pats = getState().patterns || [];
+  const types = new Set();
+  (song.tracks || []).forEach((tr) => (tr || []).forEach((c) => {
+    if (c && c.patternId) { const p = pats.find((x) => x.id === c.patternId); if (p && p.instrument) types.add(p.instrument); }
+  }));
+  if (!types.size) return null;
+  let sum = 0, n = 0; types.forEach((t) => { sum += instrumentQuality(t); n++; });
+  return n ? sum / n : null;
+}
 export function songQuality(song, band) {
   if (!song) return 0;
   band = band || activeBand() || {};
@@ -39,7 +49,9 @@ export function songQuality(song, band) {
   if (band.playerIn) perf.push({ mus: ps.musicianship || 55, wri: ps.songwriting || 55 });
   const skill = perf.length ? perf.reduce((a, x) => a + (0.6 * x.mus + 0.4 * x.wri) / 100, 0) / perf.length : 0;
   const fid = deviceFidelity();
-  const q = 100 * (0.30 * content + 0.25 * chem + 0.20 * skill + 0.25 * fid);
+  const gq = songGearQuality(song);
+  const production = gq == null ? fid : (0.6 * fid + 0.4 * gq);   // recorder + instrument tier
+  const q = 100 * (0.30 * content + 0.25 * chem + 0.20 * skill + 0.25 * production);
   return Math.round(Math.max(0, Math.min(100, q)));
 }
 function tierFlavor(q) {

@@ -8,6 +8,7 @@ import { loadAllData, DATA } from "./engine/data.js";
 import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { putAudio } from "./engine/audiostore.js";
+import { ensureGear } from "./systems/gear.js";
 import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock, initTimeControls } from "./systems/time.js";
@@ -123,6 +124,7 @@ function enterGame(isNew) {
 
   ensureLibraryMeta();   // Step 16: backfill library metadata on older saves
   ensureContracts();     // Step 17.1: default contracts + owed balances
+  ensureGear();          // Step 19.0: default instrument tiers
   migrateInlineAudio();  // Step 18.0: move any inline audio into IndexedDB (off the localStorage quota)
   initObjectives();
   initPhone();

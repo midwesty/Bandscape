@@ -23,3 +23,19 @@ export function deviceBars() { return currentDevice().maxBars || 16; }
 export function deviceFidelity() { const d = currentDevice(); return d.fidelity != null ? d.fidelity : (DATA.config.gear?.fidelity ?? 0.5); }
 export function deviceEffects() { return currentDevice().effects || ["eq", "reverb", "lowpass"]; }
 export function ownDevice(id) { const s = getState(); s.gear = s.gear || {}; s.gear.device = id; }
+
+// ---- instrument tiers (Step 19.0) — owned tier per instrument type feeds song quality ----
+export function instrumentTiers(type) {
+  const inst = (DATA.instruments && DATA.instruments[type]) || {};
+  return inst.tiers || [{ id: "starter", name: inst.name || type, quality: 0.5, price: 0 }];
+}
+export function ownedInstrumentTier(type) { const s = getState(); return (s && s.gear && s.gear.instruments && s.gear.instruments[type]) || "starter"; }
+export function instrumentTierObj(type) { const id = ownedInstrumentTier(type); return instrumentTiers(type).find((t) => t.id === id) || instrumentTiers(type)[0]; }
+export function instrumentQuality(type) { const t = instrumentTierObj(type); return t && t.quality != null ? t.quality : 0.5; }
+export function ownInstrumentTier(type, tierId) { const s = getState(); s.gear = s.gear || {}; s.gear.instruments = s.gear.instruments || {}; s.gear.instruments[type] = tierId; }
+export function ensureGear() {
+  const s = getState(); if (!s) return;
+  s.gear = s.gear || {}; if (!s.gear.device) s.gear.device = "sp400";
+  s.gear.instruments = s.gear.instruments || {};
+  for (const type of Object.keys((DATA.instruments) || {})) { if (!s.gear.instruments[type]) s.gear.instruments[type] = "starter"; }
+}

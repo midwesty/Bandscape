@@ -1,7 +1,27 @@
 {
-  "_comment": "Functioning microphone. Vocal/audio recording arrives in the next build.",
-  "id": "microphone",
-  "name": "Functioning Microphone",
-  "kind": "audio",
-  "audioFolder": "assets/audio/vocals/"
+ "_comment": "Functioning microphone. Vocal/audio recording arrives in the next build.",
+ "id": "microphone",
+ "name": "Functioning Microphone",
+ "kind": "audio",
+ "audioFolder": "assets/audio/vocals/",
+ "tiers": [
+  {
+   "id": "starter",
+   "name": "Functioning Microphone",
+   "quality": 0.5,
+   "price": 0
+  },
+  {
+   "id": "pro",
+   "name": "Cardioid Condenser",
+   "quality": 0.75,
+   "price": 300
+  },
+  {
+   "id": "boutique",
+   "name": "Ribbon Studio Mic",
+   "quality": 1.0,
+   "price": 1300
+  }
+ ]
 }

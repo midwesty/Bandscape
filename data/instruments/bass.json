@@ -1,68 +1,88 @@
 {
-  "_comment": "Starter bass guitar. Lower + rounder than the guitar.",
-  "id": "bass",
-  "name": "Starter Bass",
-  "kind": "melodic",
-  "audioFolder": "assets/audio/bass/",
-  "synth": {
-    "wave": "sawtooth",
-    "octaveOffset": -2,
-    "release": 0.6
+ "_comment": "Starter bass guitar. Lower + rounder than the guitar.",
+ "id": "bass",
+ "name": "Starter Bass",
+ "kind": "melodic",
+ "audioFolder": "assets/audio/bass/",
+ "synth": {
+  "wave": "sawtooth",
+  "octaveOffset": -2,
+  "release": 0.6
+ },
+ "samples": {
+  "chord_C": "chord_C.mp3",
+  "chord_Cs": "chord_Cs.mp3",
+  "chord_D": "chord_D.mp3",
+  "chord_Ds": "chord_Ds.mp3",
+  "chord_E": "chord_E.mp3",
+  "chord_F": "chord_F.mp3",
+  "chord_Fs": "chord_Fs.mp3",
+  "chord_G": "chord_G.mp3",
+  "chord_Gs": "chord_Gs.mp3",
+  "chord_A": "chord_A.mp3",
+  "chord_As": "chord_As.mp3",
+  "chord_B": "chord_B.mp3",
+  "note_C": "note_C.mp3",
+  "note_Cs": "note_Cs.mp3",
+  "note_D": "note_D.mp3",
+  "note_Ds": "note_Ds.mp3",
+  "note_E": "note_E.mp3",
+  "note_F": "note_F.mp3",
+  "note_Fs": "note_Fs.mp3",
+  "note_G": "note_G.mp3",
+  "note_Gs": "note_Gs.mp3",
+  "note_A": "note_A.mp3",
+  "note_As": "note_As.mp3",
+  "note_B": "note_B.mp3"
+ },
+ "ui": {
+  "leftKeys": [
+   "q",
+   "w",
+   "e",
+   "r",
+   "a",
+   "s",
+   "d",
+   "f",
+   "z",
+   "x",
+   "c",
+   "v"
+  ],
+  "rightKeys": [
+   "u",
+   "i",
+   "o",
+   "p",
+   "j",
+   "k",
+   "l",
+   ";",
+   "m",
+   ",",
+   ".",
+   "/"
+  ]
+ },
+ "tiers": [
+  {
+   "id": "starter",
+   "name": "Starter Bass",
+   "quality": 0.5,
+   "price": 0
   },
-  "samples": {
-    "chord_C": "chord_C.mp3",
-    "chord_Cs": "chord_Cs.mp3",
-    "chord_D": "chord_D.mp3",
-    "chord_Ds": "chord_Ds.mp3",
-    "chord_E": "chord_E.mp3",
-    "chord_F": "chord_F.mp3",
-    "chord_Fs": "chord_Fs.mp3",
-    "chord_G": "chord_G.mp3",
-    "chord_Gs": "chord_Gs.mp3",
-    "chord_A": "chord_A.mp3",
-    "chord_As": "chord_As.mp3",
-    "chord_B": "chord_B.mp3",
-    "note_C": "note_C.mp3",
-    "note_Cs": "note_Cs.mp3",
-    "note_D": "note_D.mp3",
-    "note_Ds": "note_Ds.mp3",
-    "note_E": "note_E.mp3",
-    "note_F": "note_F.mp3",
-    "note_Fs": "note_Fs.mp3",
-    "note_G": "note_G.mp3",
-    "note_Gs": "note_Gs.mp3",
-    "note_A": "note_A.mp3",
-    "note_As": "note_As.mp3",
-    "note_B": "note_B.mp3"
+  {
+   "id": "pro",
+   "name": "Active 5-String",
+   "quality": 0.75,
+   "price": 520
   },
-  "ui": {
-    "leftKeys": [
-      "q",
-      "w",
-      "e",
-      "r",
-      "a",
-      "s",
-      "d",
-      "f",
-      "z",
-      "x",
-      "c",
-      "v"
-    ],
-    "rightKeys": [
-      "u",
-      "i",
-      "o",
-      "p",
-      "j",
-      "k",
-      "l",
-      ";",
-      "m",
-      ",",
-      ".",
-      "/"
-    ]
+  {
+   "id": "boutique",
+   "name": "Vintage Jazz Bass",
+   "quality": 1.0,
+   "price": 1900
   }
+ ]
 }

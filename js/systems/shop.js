@@ -20,7 +20,7 @@ import { toast } from "../ui/toast.js";
 import { giveItem } from "./inventory.js";
 import { advanceMinutes } from "./time.js";
 import { playCode, ensureAudio } from "./audio.js";
-import { deviceList, currentDevice, deviceIndex, ownDevice } from "./gear.js";
+import { deviceList, currentDevice, deviceIndex, ownDevice, instrumentTiers, ownedInstrumentTier, ownInstrumentTier } from "./gear.js";
 import { openPerform, venueById, venueEligible, venueReqText, venueStanding } from "./shows.js";
 import { openScheduler, findReady } from "./calendar.js";
 
@@ -94,6 +94,12 @@ function pawnBody() {
   const gearRows = `<div class="shop-section">RECORDING GEAR</div>
     <div class="shop-row"><div><strong>Current: ${esc(cur.name)}</strong><small>${cur.tracks} tracks · fidelity ${Math.round((cur.fidelity || 0) * 100)}</small></div></div>
     ${upgrades.length ? upgrades.map((d) => `<div class="shop-row"><div><strong>${esc(d.name)}</strong><small>${d.tracks} tracks · ${esc(d.desc)}</small></div><div><span class="shop-price">$${d.price}</span> <button class="btn shop-btn" data-buy-device="${d.id}">Buy</button></div></div>`).join("") : `<p class="shop-note">Top of the line — nothing better in stock.</p>`}`;
+  const instrRows = `<div class="shop-section">INSTRUMENTS</div>` + Object.keys((DATA.instruments) || {}).map((type) => {
+    const tiers = instrumentTiers(type);
+    const ownedIdx = Math.max(0, tiers.findIndex((t) => t.id === ownedInstrumentTier(type)));
+    const owned = tiers[ownedIdx]; const next = tiers[ownedIdx + 1];
+    return `<div class="shop-row"><div><strong>${esc(owned.name)}</strong><small>${next ? "next: " + esc(next.name) + " · quality " + Math.round(next.quality * 100) : "top tier owned"}</small></div>${next ? `<div><span class="shop-price">$${next.price}</span> <button class="btn shop-btn" data-buy-instr="${type}:${next.id}">Buy</button></div>` : ""}</div>`;
+  }).join("");
   const stock = (DATA.shops[currentShop] && DATA.shops[currentShop].stock) || [];
   const mk = (DATA.shops[currentShop] && DATA.shops[currentShop].markup) || 1;
   const supplyRows = stock.length ? `<div class="shop-section">SUPPLIES</div>` + stock.map((id) => `<div class="shop-row"><div><strong>${esc(item(id)?.name || id)}</strong><small>${esc(item(id)?.desc || "")}</small></div><div><span class="shop-price">$${priceOf(id, mk)}</span> <button class="btn shop-btn" data-buy="${id}">Buy</button></div></div>`).join("") : "";
@@ -101,6 +107,7 @@ function pawnBody() {
     ${isDebtShop ? `<div class="shop-debt">Pawn debt: $${debt}</div><div class="shop-pay">${payBtns}</div>` : `<p class="shop-note">Rocktroit\'s finest secondhand gear emporium. No tab — cash on the barrel.</p>`}
     ${supplyRows}
     ${gearRows}
+    ${instrRows}
     <div class="shop-section">SELL FROM POCKETS (½ value)</div>
     ${sellRows}
     <p class="shop-note" style="margin-top:12px">${isDebtShop ? "The clerk doesn't make eye contact. Pay it down and your gear's safe." : "The clerk's seen better decades. So has the inventory."}</p>`;
@@ -161,6 +168,7 @@ function bind() {
   overlay.querySelectorAll("[data-sell]").forEach((b) => b.addEventListener("click", () => sellItem(parseInt(b.dataset.sell, 10))));
   overlay.querySelectorAll("[data-buy]").forEach((b) => b.addEventListener("click", () => buyItem(b.dataset.buy)));
   overlay.querySelectorAll("[data-buy-device]").forEach((b) => b.addEventListener("click", () => buyDevice(b.dataset.buyDevice)));
+  overlay.querySelectorAll("[data-buy-instr]").forEach((b) => b.addEventListener("click", () => buyInstrument(b.dataset.buyInstr)));
 }
 
 // ---- transactions ----
@@ -203,6 +211,15 @@ function buyDevice(id) {
   addStat("money", -d.price); ownDevice(id);
   persist(); emit("renderAll");
   toast(`Upgraded to ${d.name}! More tracks, better fidelity.`, "good");
+  render();
+}
+function buyInstrument(spec) {
+  const [type, tierId] = String(spec).split(":");
+  const t = instrumentTiers(type).find((x) => x.id === tierId); if (!t) return;
+  if (money() < t.price) { toast("Can't afford that yet.", "warn"); return; }
+  addStat("money", -t.price); ownInstrumentTier(type, tierId);
+  persist(); emit("renderAll");
+  toast(`Bought the ${t.name}! Your recordings on it just got better.`, "good");
   render();
 }
 

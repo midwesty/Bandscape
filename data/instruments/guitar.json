@@ -1,67 +1,87 @@
 {
-  "_comment": "Melodic instrument. samples map a note/chord code to a file; missing files are synthesized (wave/octaveOffset). ui.leftKeys play chords, ui.rightKeys play notes.",
-  "id": "guitar",
-  "name": "Crappy Guitar",
-  "audioFolder": "assets/audio/guitar/",
-  "samples": {
-    "chord_C": "chord_C.mp3",
-    "chord_Cs": "chord_Cs.mp3",
-    "chord_D": "chord_D.mp3",
-    "chord_Ds": "chord_Ds.mp3",
-    "chord_E": "chord_E.mp3",
-    "chord_F": "chord_F.mp3",
-    "chord_Fs": "chord_Fs.mp3",
-    "chord_G": "chord_G.mp3",
-    "chord_Gs": "chord_Gs.mp3",
-    "chord_A": "chord_A.mp3",
-    "chord_As": "chord_As.mp3",
-    "chord_B": "chord_B.mp3",
-    "note_C": "note_C.mp3",
-    "note_Cs": "note_Cs.mp3",
-    "note_D": "note_D.mp3",
-    "note_Ds": "note_Ds.mp3",
-    "note_E": "note_E.mp3",
-    "note_F": "note_F.mp3",
-    "note_Fs": "note_Fs.mp3",
-    "note_G": "note_G.mp3",
-    "note_Gs": "note_Gs.mp3",
-    "note_A": "note_A.mp3",
-    "note_As": "note_As.mp3",
-    "note_B": "note_B.mp3"
+ "_comment": "Melodic instrument. samples map a note/chord code to a file; missing files are synthesized (wave/octaveOffset). ui.leftKeys play chords, ui.rightKeys play notes.",
+ "id": "guitar",
+ "name": "Crappy Guitar",
+ "audioFolder": "assets/audio/guitar/",
+ "samples": {
+  "chord_C": "chord_C.mp3",
+  "chord_Cs": "chord_Cs.mp3",
+  "chord_D": "chord_D.mp3",
+  "chord_Ds": "chord_Ds.mp3",
+  "chord_E": "chord_E.mp3",
+  "chord_F": "chord_F.mp3",
+  "chord_Fs": "chord_Fs.mp3",
+  "chord_G": "chord_G.mp3",
+  "chord_Gs": "chord_Gs.mp3",
+  "chord_A": "chord_A.mp3",
+  "chord_As": "chord_As.mp3",
+  "chord_B": "chord_B.mp3",
+  "note_C": "note_C.mp3",
+  "note_Cs": "note_Cs.mp3",
+  "note_D": "note_D.mp3",
+  "note_Ds": "note_Ds.mp3",
+  "note_E": "note_E.mp3",
+  "note_F": "note_F.mp3",
+  "note_Fs": "note_Fs.mp3",
+  "note_G": "note_G.mp3",
+  "note_Gs": "note_Gs.mp3",
+  "note_A": "note_A.mp3",
+  "note_As": "note_As.mp3",
+  "note_B": "note_B.mp3"
+ },
+ "ui": {
+  "leftKeys": [
+   "q",
+   "w",
+   "e",
+   "r",
+   "a",
+   "s",
+   "d",
+   "f",
+   "z",
+   "x",
+   "c",
+   "v"
+  ],
+  "rightKeys": [
+   "u",
+   "i",
+   "o",
+   "p",
+   "j",
+   "k",
+   "l",
+   ";",
+   "m",
+   ",",
+   ".",
+   "/"
+  ]
+ },
+ "kind": "melodic",
+ "synth": {
+  "wave": "triangle",
+  "octaveOffset": 0
+ },
+ "tiers": [
+  {
+   "id": "starter",
+   "name": "Crappy Guitar",
+   "quality": 0.5,
+   "price": 0
   },
-  "ui": {
-    "leftKeys": [
-      "q",
-      "w",
-      "e",
-      "r",
-      "a",
-      "s",
-      "d",
-      "f",
-      "z",
-      "x",
-      "c",
-      "v"
-    ],
-    "rightKeys": [
-      "u",
-      "i",
-      "o",
-      "p",
-      "j",
-      "k",
-      "l",
-      ";",
-      "m",
-      ",",
-      ".",
-      "/"
-    ]
+  {
+   "id": "pro",
+   "name": "Roadworn Player",
+   "quality": 0.75,
+   "price": 480
   },
-  "kind": "melodic",
-  "synth": {
-    "wave": "triangle",
-    "octaveOffset": 0
+  {
+   "id": "boutique",
+   "name": "Custom Shop Axe",
+   "quality": 1.0,
+   "price": 1800
   }
+ ]
 }

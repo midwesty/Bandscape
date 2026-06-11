@@ -1,68 +1,88 @@
 {
-  "_comment": "Malfunctioning piano. A bit out of tune in spirit, fully playable.",
-  "id": "piano",
-  "name": "Malfunctioning Piano",
-  "kind": "melodic",
-  "audioFolder": "assets/audio/piano/",
-  "synth": {
-    "wave": "triangle",
-    "octaveOffset": 0,
-    "release": 1.1
+ "_comment": "Malfunctioning piano. A bit out of tune in spirit, fully playable.",
+ "id": "piano",
+ "name": "Malfunctioning Piano",
+ "kind": "melodic",
+ "audioFolder": "assets/audio/piano/",
+ "synth": {
+  "wave": "triangle",
+  "octaveOffset": 0,
+  "release": 1.1
+ },
+ "samples": {
+  "chord_C": "chord_C.mp3",
+  "chord_Cs": "chord_Cs.mp3",
+  "chord_D": "chord_D.mp3",
+  "chord_Ds": "chord_Ds.mp3",
+  "chord_E": "chord_E.mp3",
+  "chord_F": "chord_F.mp3",
+  "chord_Fs": "chord_Fs.mp3",
+  "chord_G": "chord_G.mp3",
+  "chord_Gs": "chord_Gs.mp3",
+  "chord_A": "chord_A.mp3",
+  "chord_As": "chord_As.mp3",
+  "chord_B": "chord_B.mp3",
+  "note_C": "note_C.mp3",
+  "note_Cs": "note_Cs.mp3",
+  "note_D": "note_D.mp3",
+  "note_Ds": "note_Ds.mp3",
+  "note_E": "note_E.mp3",
+  "note_F": "note_F.mp3",
+  "note_Fs": "note_Fs.mp3",
+  "note_G": "note_G.mp3",
+  "note_Gs": "note_Gs.mp3",
+  "note_A": "note_A.mp3",
+  "note_As": "note_As.mp3",
+  "note_B": "note_B.mp3"
+ },
+ "ui": {
+  "leftKeys": [
+   "q",
+   "w",
+   "e",
+   "r",
+   "a",
+   "s",
+   "d",
+   "f",
+   "z",
+   "x",
+   "c",
+   "v"
+  ],
+  "rightKeys": [
+   "u",
+   "i",
+   "o",
+   "p",
+   "j",
+   "k",
+   "l",
+   ";",
+   "m",
+   ",",
+   ".",
+   "/"
+  ]
+ },
+ "tiers": [
+  {
+   "id": "starter",
+   "name": "Malfunctioning Piano",
+   "quality": 0.5,
+   "price": 0
   },
-  "samples": {
-    "chord_C": "chord_C.mp3",
-    "chord_Cs": "chord_Cs.mp3",
-    "chord_D": "chord_D.mp3",
-    "chord_Ds": "chord_Ds.mp3",
-    "chord_E": "chord_E.mp3",
-    "chord_F": "chord_F.mp3",
-    "chord_Fs": "chord_Fs.mp3",
-    "chord_G": "chord_G.mp3",
-    "chord_Gs": "chord_Gs.mp3",
-    "chord_A": "chord_A.mp3",
-    "chord_As": "chord_As.mp3",
-    "chord_B": "chord_B.mp3",
-    "note_C": "note_C.mp3",
-    "note_Cs": "note_Cs.mp3",
-    "note_D": "note_D.mp3",
-    "note_Ds": "note_Ds.mp3",
-    "note_E": "note_E.mp3",
-    "note_F": "note_F.mp3",
-    "note_Fs": "note_Fs.mp3",
-    "note_G": "note_G.mp3",
-    "note_Gs": "note_Gs.mp3",
-    "note_A": "note_A.mp3",
-    "note_As": "note_As.mp3",
-    "note_B": "note_B.mp3"
+  {
+   "id": "pro",
+   "name": "Stage Piano 88",
+   "quality": 0.75,
+   "price": 700
   },
-  "ui": {
-    "leftKeys": [
-      "q",
-      "w",
-      "e",
-      "r",
-      "a",
-      "s",
-      "d",
-      "f",
-      "z",
-      "x",
-      "c",
-      "v"
-    ],
-    "rightKeys": [
-      "u",
-      "i",
-      "o",
-      "p",
-      "j",
-      "k",
-      "l",
-      ";",
-      "m",
-      ",",
-      ".",
-      "/"
-    ]
+  {
+   "id": "boutique",
+   "name": "Concert Grand",
+   "quality": 1.0,
+   "price": 2600
   }
+ ]
 }

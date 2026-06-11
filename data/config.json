@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.18.5 (Step 18.5: show reminders + daily digest)",
+  "version": "0.19.0 (Step 19.0: instrument tiers feed song quality)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
