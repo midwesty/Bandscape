@@ -988,3 +988,10 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .prop-card.locked { opacity: .55; filter: grayscale(.5); }
 .prop-card.locked .prop-photo-glyph, .prop-card.locked .prop-photo-tag { opacity: .8; }
 .prop-locked-note { font-size: 12px; color: #8c93a0; font-style: italic; padding-top: 2px; }
+
+/* ---- Music store (Step 19.5a) ---- */
+.store-cat { width: 100%; text-align: left; cursor: pointer; }
+.store-chev { color: #8c93a0; font-size: 18px; }
+.store-acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.shop-back { background: none; border: none; color: #9ab4ff; font-size: 13px; padding: 6px 2px 10px; cursor: pointer; }
+.shop-btn.ghost { background: transparent; border: 1px solid #3a3450; color: #cdd3da; }

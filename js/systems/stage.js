@@ -594,6 +594,7 @@ function drawProc(o, cx, cy) {
     case "door":   doorway(cx, cy); break;
     case "pawn":    building(cx, cy, C.yellow); break;
     case "grocery": building(cx, cy, C.green); break;
+    case "musicstore": building(cx, cy, C.purple || C.blue); break;
     case "venue":   building(cx, cy, C.pink); break;
     case "busk":    buskSpot(cx, cy); break;
     case "home":    homeDoor(cx, cy); break;

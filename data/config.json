@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.4b (Step 19.4b: browse all cities (locked until visited) + Rocktroit listing + recurring rent)",
+  "version": "0.19.5a (Step 19.5a: Music store \u2014 buy all tiers by category, carry/send, trade-in; pawn buys instruments)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -100,7 +100,8 @@
     "device": "SoundPound 400",
     "maxTracks": 4,
     "fidelity": 0.5,
-    "phoneQuality": 0.3
+    "phoneQuality": 0.3,
+    "tradeInRate": 0.4
   },
   "shows": {
     "baseAudience": 8,

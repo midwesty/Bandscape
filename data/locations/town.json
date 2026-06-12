@@ -83,6 +83,17 @@
         "y": 7
       },
       "solid": true
+    },
+    {
+      "id": "musicstore",
+      "name": "Music Store",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "interact": "shop",
+      "shopId": "musicstore",
+      "solid": true
     }
   ]
 }
