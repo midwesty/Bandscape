@@ -34,7 +34,7 @@ const FILES = {
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];
-const LOCATIONS = ["apartment", "town", "venue", "rocktroit", "rocktroit_bar", "arcade", "loft", "rock_loft"];
+const LOCATIONS = ["apartment", "town", "venue", "rocktroit", "rocktroit_bar", "arcade", "loft", "rock_loft", "musicstore"];
 
 async function fetchJSON(path) {
   const res = await fetch(path + "?v=" + Date.now()); // cache-bust (GitHub Pages caches hard)

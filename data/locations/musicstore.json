@@ -1,0 +1,62 @@
+{
+  "_comment": "Sound City music store showroom (Step 19.5b). Display instruments (interact 'storecat') open that category in the store menu; the clerk (interact 'storeclerk') opens the full store. The exit (interact 'storeexit') returns you to whichever city you entered from. Displays are not pickable — they're showroom models.",
+  "id": "musicstore",
+  "name": "Sound City",
+  "size": {
+    "w": 12,
+    "h": 8
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "disp_guitar",
+      "name": "Guitars",
+      "tile": { "x": 2, "y": 1 },
+      "instrumentId": "guitar",
+      "interact": "storecat"
+    },
+    {
+      "id": "disp_bass",
+      "name": "Basses",
+      "tile": { "x": 4, "y": 1 },
+      "instrumentId": "bass",
+      "interact": "storecat"
+    },
+    {
+      "id": "disp_piano",
+      "name": "Keys",
+      "tile": { "x": 6, "y": 1 },
+      "instrumentId": "piano",
+      "interact": "storecat"
+    },
+    {
+      "id": "disp_drums",
+      "name": "Drums",
+      "tile": { "x": 8, "y": 1 },
+      "instrumentId": "drums",
+      "interact": "storecat"
+    },
+    {
+      "id": "disp_mic",
+      "name": "Microphones",
+      "tile": { "x": 10, "y": 1 },
+      "instrumentId": "microphone",
+      "interact": "storecat"
+    },
+    {
+      "id": "clerk",
+      "name": "Store Clerk",
+      "tile": { "x": 6, "y": 4 },
+      "interact": "storeclerk"
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit",
+      "name": "Exit",
+      "tile": { "x": 6, "y": 7 },
+      "interact": "storeexit",
+      "solid": true
+    }
+  ]
+}

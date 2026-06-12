@@ -91,9 +91,13 @@
         "x": 3,
         "y": 1
       },
-      "interact": "shop",
-      "shopId": "musicstore",
-      "solid": true
+      "interact": "enter",
+      "solid": true,
+      "to": "musicstore",
+      "spawn": {
+        "x": 6,
+        "y": 6
+      }
     }
   ]
 }

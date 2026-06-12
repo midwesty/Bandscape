@@ -20,7 +20,7 @@ import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
 import { instrItemId, parseInstrItem } from "./gear.js";
 import { openDAW } from "./daw.js";
-import { openShop, busk, openVenue } from "./shop.js";
+import { openShop, busk, openVenue, openStore, openStoreCategory } from "./shop.js";
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
 
@@ -238,6 +238,7 @@ function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function travel(to, spawn) {
   const s = getState();
   if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
+  if (to === "musicstore") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
   s.location = to;
   if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
@@ -348,6 +349,17 @@ function interact(obj) {
     case "enter":
       travel(obj.to, obj.spawn);
       break;
+    case "storecat":
+      openStoreCategory(obj.instrumentId);
+      break;
+    case "storeclerk":
+      openStore();
+      break;
+    case "storeexit": {
+      const ret = (getState().flags && getState().flags.storeReturn) || { to: "town", spawn: null };
+      travel(ret.to, ret.spawn);
+      break;
+    }
     case "talk":
       openRecruit(obj.npcId);
       break;
@@ -564,7 +576,7 @@ function drawObject(o) {
   if (hovered === o.id && !arranging) outlineObject(c.x, c.y);
 }
 function drawProc(o, cx, cy) {
-  if (o.interact === "talk") return npcFigure(cx, cy, o);
+  if (o.interact === "talk" || o.interact === "storeclerk") return npcFigure(cx, cy, o);
   if (o.interact === "stage") return stageShape(cx, cy);
   if (o.instrumentId) {
     switch (o.instrumentId) {

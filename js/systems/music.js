@@ -58,7 +58,7 @@ function roomInstruments() {
     const q = instrumentTierQuality(type, tier || "starter");
     if (!best[type] || q > best[type].q) best[type] = { instrumentId: type, tier: tier || "starter", q };
   };
-  for (const o of objs) { if (o && o.instrumentId) consider(o.instrumentId, o.tier); }      // placed in this room
+  for (const o of objs) { if (o && o.instrumentId && o.interact !== "storecat") consider(o.instrumentId, o.tier); }      // placed in this room (skip store displays)
   for (const st of (s.inventory || [])) { const p = parseInstrItem(st.item); if (p) consider(p.type, p.tier); } // carried on you
   return Object.values(best);
 }

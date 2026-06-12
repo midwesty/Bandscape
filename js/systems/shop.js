@@ -241,7 +241,7 @@ export function busk() {
   if (s.equipped && s.equipped.instrumentId) avail.add(s.equipped.instrumentId);
   for (const st of (s.inventory || [])) { const ip = parseInstrItem(st.item); if (ip) avail.add(ip.type); }
   const here = (s.placedObjects && s.placedObjects[s.location]) || (DATA.locations[s.location] && DATA.locations[s.location].objects) || [];
-  for (const o of here) if (o && o.instrumentId) avail.add(o.instrumentId);
+  for (const o of here) if (o && o.instrumentId && o.interact !== "storecat") avail.add(o.instrumentId);
   const melodic = [...avail].filter((id) => DATA.instruments[id] && DATA.instruments[id].kind !== "audio");
   if (!melodic.length) {
     toast(avail.size ? "Singing a cappella on the corner? Grab a melodic instrument." : "You need an instrument to busk. Carry one in your pocket.", "warn");
@@ -334,12 +334,14 @@ function storeSend(type, tierId) {
       <p class="shop-note">You don't have a place to send it to yet. Rent or buy somewhere in the Properties app first \u2014 or just Carry it.</p>`;
   }
   const rows = props.map((p) => {
-    const has = placedAt(p.location).some((o) => o && o.instrumentId === type);
-    const acts = has
+    const existing = placedAt(p.location).find((o) => o && o.instrumentId === type);
+    const exName = existing ? (existing.name || (instrumentTiers(type).find((x) => x.id === (existing.tier || "starter")) || {}).name || type) : "";
+    const sub = existing ? "has " + esc(exName) + " \u2014 trade in or add" : "no " + esc(type) + " here yet";
+    const acts = existing
       ? `<button class="btn shop-btn" data-store-place="${type}:${tierId}:${p.id}:replace">Trade in</button>
          <button class="btn shop-btn ghost" data-store-place="${type}:${tierId}:${p.id}:add">Add</button>`
       : `<button class="btn shop-btn" data-store-place="${type}:${tierId}:${p.id}:add">Deliver</button>`;
-    return `<div class="shop-row"><div><strong>${esc(p.name)}</strong><small>${has ? "already has a " + esc(DATA.instruments[type].name) : "no " + esc(DATA.instruments[type].name) + " here yet"}</small></div><div class="store-acts">${acts}</div></div>`;
+    return `<div class="shop-row"><div><strong>${esc(p.name)}</strong><small>${sub}</small></div><div class="store-acts">${acts}</div></div>`;
   }).join("");
   return `<button class="shop-back" data-store-back="tiers">\u2039 Back</button>
     <div class="shop-section">SEND \u2014 ${esc(t.name).toUpperCase()}</div>${rows}`;
@@ -407,4 +409,11 @@ function sellInstrument(itemId) {
   persist(); emit("renderAll");
   toast(`Sold your ${t ? t.name : "instrument"} for $${num(payout)}.`, "good");
   render();
+}
+
+// Showroom entry points (Step 19.5b): walk up to a display → that category; clerk → full store.
+export function openStore() { openShop("musicstore"); }
+export function openStoreCategory(type) {
+  openShop("musicstore");
+  if (DATA.instruments && DATA.instruments[type]) { storeView = { stage: "tiers", type, tierId: null }; render(); }
 }
