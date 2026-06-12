@@ -369,6 +369,13 @@ function interact(obj) {
 }
 
 // ---- dropped items on the floor ----
+function spriteForType(type) {
+  for (const loc in DATA.locations) {
+    const objs = (DATA.locations[loc] && DATA.locations[loc].objects) || [];
+    for (const o of objs) { if (o.instrumentId === type && o.sprite) return o.sprite; }
+  }
+  return "assets/img/objects/" + type + ".png";
+}
 function placeFloorItem(d) {
   const tile = { x: Math.round(player.x), y: Math.round(player.y) };
   const ip = parseInstrItem(d.item);
@@ -376,7 +383,7 @@ function placeFloorItem(d) {
     furniture.push({
       id: "instr_" + Math.random().toString(36).slice(2, 8),
       instrumentId: ip.type, tier: ip.tier, name: d.name || ip.type,
-      interact: "equip", tile
+      sprite: spriteForType(ip.type), interact: "equip", tile
     });
   } else {
     furniture.push({

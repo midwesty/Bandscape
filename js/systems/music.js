@@ -11,7 +11,7 @@
 
 import { DATA } from "../engine/data.js";
 import { getState, stampItem } from "../engine/state.js";
-import { instrumentTiers, instrumentTierQuality } from "./gear.js";
+import { instrumentTiers, instrumentTierQuality, parseInstrItem } from "./gear.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -53,11 +53,13 @@ function roomInstruments() {
   const s = getState();
   const objs = (s.placedObjects && s.placedObjects[s.location]) || (DATA.locations[s.location] && DATA.locations[s.location].objects) || [];
   const best = {};
-  for (const o of objs) {
-    if (!o || !o.instrumentId) continue;
-    const tier = o.tier || "starter"; const q = instrumentTierQuality(o.instrumentId, tier);
-    if (!best[o.instrumentId] || q > best[o.instrumentId].q) best[o.instrumentId] = { instrumentId: o.instrumentId, tier, q };
-  }
+  const consider = (type, tier) => {
+    if (!type) return;
+    const q = instrumentTierQuality(type, tier || "starter");
+    if (!best[type] || q > best[type].q) best[type] = { instrumentId: type, tier: tier || "starter", q };
+  };
+  for (const o of objs) { if (o && o.instrumentId) consider(o.instrumentId, o.tier); }      // placed in this room
+  for (const st of (s.inventory || [])) { const p = parseInstrItem(st.item); if (p) consider(p.type, p.tier); } // carried on you
   return Object.values(best);
 }
 function currentGearQ() {
