@@ -979,3 +979,12 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .prop-acts { display: flex; flex-wrap: wrap; gap: 8px; }
 .prop-act { flex: 1 1 auto; min-width: 44%; }
 .btn.ghost { background: transparent; border: 1px solid #3a3450; color: #c7ccd2; }
+
+/* ---- Properties: city sections + locked (Step 19.4b) ---- */
+.prop-city { margin-bottom: 6px; }
+.prop-city-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 14px 10px; font-weight: 800; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; color: #cdd3da; }
+.prop-lock { font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0; color: #8c93a0; }
+.prop-city.is-locked .prop-city-head { color: #7c828c; }
+.prop-card.locked { opacity: .55; filter: grayscale(.5); }
+.prop-card.locked .prop-photo-glyph, .prop-card.locked .prop-photo-tag { opacity: .8; }
+.prop-locked-note { font-size: 12px; color: #8c93a0; font-style: italic; padding-top: 2px; }

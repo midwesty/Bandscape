@@ -19,6 +19,7 @@ import { initInventory } from "./systems/inventory.js";
 import { initDAW } from "./systems/daw.js";
 import { initCalendar } from "./systems/calendar.js";
 import { initReminders } from "./systems/reminders.js";
+import { initRentSchedule } from "./systems/properties.js";
 import { initObjectives } from "./systems/objectives.js";
 import { startCharCreate } from "./systems/charcreate.js";
 import { toast } from "./ui/toast.js";
@@ -131,7 +132,7 @@ function enterGame(isNew) {
   initInventory();
   initDAW();
   initCalendar();
-  initReminders();
+  initReminders(); initRentSchedule();
   renderHUD();
   renderStage();
 

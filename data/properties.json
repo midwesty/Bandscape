@@ -14,7 +14,12 @@
       "gearSlots": 6,
       "startsControlled": "owned",
       "photo": "",
-      "amenities": ["Bed", "Mini fridge", "Storage crate", "Hand-me-down laptop"],
+      "amenities": [
+        "Bed",
+        "Mini fridge",
+        "Storage crate",
+        "Hand-me-down laptop"
+      ],
       "blurb": "A cramped one-room walkup. The radiator clanks all night. It's home \u2014 for now."
     },
     {
@@ -30,8 +35,36 @@
       "gearSlots": 12,
       "startsControlled": "none",
       "photo": "",
-      "amenities": ["Queen bed", "Full kitchen", "Big closet", "Pro laptop / DAW", "Space for a full kit"],
+      "amenities": [
+        "Queen bed",
+        "Full kitchen",
+        "Big closet",
+        "Pro laptop / DAW",
+        "Space for a full kit"
+      ],
       "blurb": "High ceilings, big windows, and floor space for a whole band's worth of gear. The kind of place that makes you feel like you've finally arrived."
+    },
+    {
+      "id": "apt_rock",
+      "name": "Warehouse Unit 7",
+      "tagline": "Rocktroit, baby",
+      "location": "rock_loft",
+      "city": "rocktroit",
+      "tier": "nice",
+      "buyPrice": 7000,
+      "rentPrice": 550,
+      "sellValue": 5000,
+      "gearSlots": 12,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Mattress",
+        "Beat-up fridge",
+        "Gear shelving",
+        "Laptop / DAW",
+        "Industrial square footage"
+      ],
+      "blurb": "A raw warehouse unit in the heart of Rocktroit. Loud neighbors who don't mind loud music. A real base in the big city."
     }
   ]
 }

@@ -1,15 +1,17 @@
 // ============================================================
 // properties.js — the Properties phone app (Step 19.4). A
-// real-estate browser: tappable dwelling listings for the city
-// you're standing in, with rent / buy / sell / buy-out and an
-// Enter action for places you control. Full home bases: sleep,
-// arrange & store gear, record. Photos are placeholders for now
-// (swap in art later via each listing's "photo" path).
+// real-estate browser grouped by city. Cities you've unlocked
+// show live listings (rent / buy / sell / buy-out / enter);
+// cities you haven't visited show greyed, non-selectable cards.
+// Dwellings are full home bases: sleep, store/arrange gear,
+// record. Rent comes due on a cadence (Step 19.4b).
+// Photos are placeholders for now (swap art via "photo").
 // ============================================================
 
 import { DATA } from "../engine/data.js";
 import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
+import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
 import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
@@ -18,13 +20,18 @@ import { currentDay } from "./calendar.js";
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const money = (n) => "$" + Math.round(n || 0).toLocaleString();
 
-const LOC_CITY = { apartment: "yourtown", loft: "yourtown", town: "yourtown", venue: "yourtown", thedive: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit" };
 const CITY_NAME = { yourtown: "Your Town", rocktroit: "Rocktroit" };
+const LOC_CITY = { apartment: "yourtown", loft: "yourtown", town: "yourtown", venue: "yourtown", thedive: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit", rock_loft: "rocktroit" };
 const TIER_TINT = { crappy: "#6e5a3a", nice: "#3a5a6e", lux: "#5a3a6e" };
 
 function rentPeriod() { return (DATA.config.dwellings && DATA.config.dwellings.rentPeriodDays) || 30; }
 function currentCity() { return LOC_CITY[getState().location] || "yourtown"; }
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
+function cityUnlocked(city) {
+  if (city === "yourtown") return true;
+  const s = getState();
+  return !!(s.flags && s.flags[city + "_unlocked"]);
+}
 
 let screenEl = null;
 
@@ -38,7 +45,7 @@ function photoHTML(p) {
   if (p.photo) return `<div class="prop-photo"><img src="${esc(p.photo)}" alt=""/></div>`;
   const tint = TIER_TINT[p.tier] || "#4a4458";
   return `<div class="prop-photo placeholder" style="background:linear-gradient(135deg,${tint},#1a1620)">
-    <span class="prop-photo-glyph">\u2302</span><span class="prop-photo-tag">${esc(p.name)}</span></div>`;
+    <span class="prop-photo-glyph">&#8962;</span><span class="prop-photo-tag">${esc(p.name)}</span></div>`;
 }
 
 function actionsHTML(p, status) {
@@ -54,27 +61,45 @@ function actionsHTML(p, status) {
     <button class="btn prop-act" data-act="buy" data-id="${p.id}">Buy ${money(p.buyPrice)}</button>`;
 }
 
-function cardHTML(p) {
+function cardHTML(p, unlocked) {
   const status = propertyStatus(p.id);
   const amen = (p.amenities || []).map((a) => `<span class="prop-chip">${esc(a)}</span>`).join("");
-  return `<div class="prop-card">
+  const acts = unlocked
+    ? `<div class="prop-acts">${actionsHTML(p, status)}</div>`
+    : `<div class="prop-locked-note">Locked &mdash; visit this city to rent or buy here.</div>`;
+  return `<div class="prop-card ${unlocked ? "" : "locked"}">
     ${photoHTML(p)}
     <div class="prop-body">
       <div class="prop-head"><div><div class="prop-name">${esc(p.name)}</div><div class="prop-tag">${esc(p.tagline || "")}</div></div>${badge(status)}</div>
       <div class="prop-blurb">${esc(p.blurb || "")}</div>
       <div class="prop-chips">${amen}</div>
-      <div class="prop-acts">${actionsHTML(p, status)}</div>
+      ${acts}
     </div></div>`;
+}
+
+function citiesWithListings() {
+  const seen = [];
+  for (const p of propDefs()) { const c = p.city || "yourtown"; if (!seen.includes(c)) seen.push(c); }
+  const cur = currentCity();
+  return seen.sort((a, b) => (a === cur ? -1 : b === cur ? 1 : 0));
+}
+
+function citySection(city) {
+  const listings = propDefs().filter((p) => (p.city || "yourtown") === city);
+  if (!listings.length) return "";
+  const unlocked = cityUnlocked(city);
+  const lock = unlocked ? "" : `<span class="prop-lock">&#128274; visit to unlock</span>`;
+  const cards = listings.map((p) => cardHTML(p, unlocked)).join("");
+  return `<div class="prop-city ${unlocked ? "" : "is-locked"}">
+    <div class="prop-city-head">${esc(CITY_NAME[city] || city)}${lock}</div>${cards}</div>`;
 }
 
 export function renderPropertiesApp(container) {
   screenEl = container;
-  const city = currentCity();
-  const listings = propDefs().filter((p) => (p.city || "yourtown") === city);
-  const cards = listings.length ? listings.map(cardHTML).join("") : `<p class="muted" style="padding:16px">No listings in ${esc(CITY_NAME[city] || city)} yet.</p>`;
+  const sections = citiesWithListings().map(citySection).join("");
   screenEl.innerHTML = `<h2 class="app-title">Properties</h2>
-    <div class="prop-sub">${esc(CITY_NAME[city] || city)} \u00b7 ${money(spendable())} to spend</div>
-    <div class="prop-list">${cards}</div>`;
+    <div class="prop-sub">${money(spendable())} to spend</div>
+    <div class="prop-list">${sections || `<p class="muted" style="padding:16px">No listings yet.</p>`}</div>`;
   bind();
 }
 
@@ -89,7 +114,7 @@ function bind() {
       toast(`You bought ${p.name}!`, "good");
     } else if (act === "rent") {
       if (spendable() < p.rentPrice) { toast("Can't cover the first month's rent.", "warn"); return; }
-      addStat("money", -p.rentPrice); setPropertyStatus(p.id, "rented", { nextRentDay: currentDay() + rentPeriod() });
+      addStat("money", -p.rentPrice); setPropertyStatus(p.id, "rented", { nextRentDay: currentDay() + rentPeriod(), behind: false });
       toast(`You signed a lease on ${p.name}.`, "good");
     } else if (act === "sell") {
       addStat("money", p.sellValue); setPropertyStatus(p.id, "none");
@@ -101,4 +126,32 @@ function bind() {
     persist();
     renderPropertiesApp(screenEl);
   }));
+}
+
+// ---- recurring rent (Step 19.4b) ----
+export function initRentSchedule() {
+  on("day:advanced", () => chargeDueRent());
+}
+function chargeDueRent() {
+  const s = getState();
+  const day = currentDay();
+  let changed = false;
+  for (const p of propDefs()) {
+    const rec = s.properties && s.properties[p.id];
+    if (!rec || rec.status !== "rented") continue;
+    if (rec.nextRentDay == null) { rec.nextRentDay = day + rentPeriod(); changed = true; continue; }
+    if (day >= rec.nextRentDay) {
+      if ((s.stats.money || 0) >= p.rentPrice) {
+        addStat("money", -p.rentPrice);
+        rec.nextRentDay = day + rentPeriod();
+        rec.behind = false;
+        toast(`Rent due: \u2212${money(p.rentPrice)} for ${p.name}.`, "info");
+      } else {
+        rec.behind = true;
+        toast(`You're short on rent for ${p.name}. Pay up soon.`, "warn");
+      }
+      changed = true;
+    }
+  }
+  if (changed) persist();
 }

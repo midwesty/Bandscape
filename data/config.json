@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.4a.1 (Step 19.4a fix: enable Properties app)",
+  "version": "0.19.4b (Step 19.4b: browse all cities (locked until visited) + Rocktroit listing + recurring rent)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

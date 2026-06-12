@@ -1,0 +1,58 @@
+{
+  "_comment": "Warehouse Unit 7 (Step 19.4b) — a Rocktroit dwelling / practice space. Its own container ids so storage is separate; a DAW; no pre-placed instruments. Entered via the Properties app once Rocktroit is unlocked; the door exits to the Rocktroit street.",
+  "id": "rock_loft",
+  "name": "Unit 7",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bed",
+      "name": "Mattress on the Floor",
+      "tile": { "x": 1, "y": 1 },
+      "sprite": "assets/img/objects/bed.png",
+      "interact": "sleep"
+    },
+    {
+      "id": "fridge",
+      "name": "Beat-up Fridge",
+      "tile": { "x": 8, "y": 1 },
+      "sprite": "assets/img/objects/fridge.png",
+      "interact": "container",
+      "containerId": "rock_fridge"
+    },
+    {
+      "id": "crate",
+      "name": "Gear Shelving",
+      "tile": { "x": 8, "y": 5 },
+      "sprite": "assets/img/objects/crate.png",
+      "interact": "container",
+      "containerId": "rock_storage"
+    },
+    {
+      "id": "laptop",
+      "name": "Battered Laptop",
+      "tile": { "x": 4, "y": 5 },
+      "sprite": "assets/img/objects/laptop.png",
+      "interact": "daw"
+    },
+    {
+      "id": "couch",
+      "name": "Old Couch",
+      "tile": { "x": 2, "y": 5 },
+      "interact": "flavor",
+      "flavor": "A couch that's seen things. Stuffing optional."
+    }
+  ],
+  "exits": [
+    {
+      "id": "door",
+      "name": "Loading Door",
+      "tile": { "x": 5, "y": 6 },
+      "to": "rocktroit",
+      "spawn": { "x": 5, "y": 6 }
+    }
+  ]
+}
