@@ -1024,3 +1024,36 @@ body:has(.modal-scrim) #log { display: none; }
   font-size: 11px; color: var(--muted); margin-bottom: 4px; }
 .adm-btns { display: flex; flex-wrap: wrap; gap: 5px; }
 .adm-cheat { flex: 0 0 auto; font-size: 12px; padding: 6px 9px; }
+
+/* ---- Bank app (Step 20.1) ---- */
+.bank-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+.bank-tab { flex: 1; padding: 7px 4px; font-family: var(--cond); font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; font-size: 12px; background: var(--panel); border: 1px solid var(--line);
+  color: var(--muted); border-radius: 4px; cursor: pointer; }
+.bank-tab.on { color: #06120a; background: var(--green); border-color: var(--green); }
+.bank-body { display: flex; flex-direction: column; gap: 8px; }
+.bank-card { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+.bank-card.big { padding: 16px; }
+.bank-card-label { font-family: var(--cond); text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-size: 13px; }
+.bank-card-amt { font-family: var(--mono); font-size: 26px; font-weight: 700; }
+.bank-sect { font-family: var(--cond); text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.bank-row { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; font-size: 14px; }
+.bank-row strong { font-family: var(--mono); }
+.bank-mini { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.bank-mini > div { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 2px; }
+.bank-mini strong { font-family: var(--mono); color: var(--text); }
+.bank-pick { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.bank-back { background: none; border: none; color: var(--muted); font-family: var(--mono); font-size: 13px; cursor: pointer; padding: 2px 0; text-align: left; }
+.bank-amt-row { display: flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+.bank-amt-pre { font-family: var(--mono); color: var(--muted); }
+.bank-amt { flex: 1; background: none; border: none; color: var(--text); font-family: var(--mono); font-size: 16px; padding: 6px 2px; }
+.bank-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bank-ledger { display: flex; flex-direction: column; gap: 5px; }
+.bank-tx { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 7px 9px; }
+.bank-tx-main { display: flex; justify-content: space-between; align-items: baseline; }
+.bank-tx-note { font-size: 13px; color: var(--text); }
+.bank-tx-amt { font-family: var(--mono); font-weight: 700; }
+.bank-tx-sub { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
+
+.warn { color: var(--pink); }

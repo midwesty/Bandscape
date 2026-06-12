@@ -337,3 +337,74 @@ export function setPropertyStatus(id, status, extra) {
 export function controlledProperties() { return propDefs().filter((p) => { const st = propertyStatus(p.id); return st === "owned" || st === "rented"; }); }
 // scene ids the player can send gear to / enter
 export function controlledLocations() { return controlledProperties().map((p) => p.location); }
+
+// ---- Bank: band accounts, owner equity/loans, transaction ledger (Step 20.1) ----
+export function ensureBankAccounts() {
+  const s = getState(); if (!s) return;
+  s.ledger = s.ledger || [];
+  for (const b of (s.bands || [])) {
+    if (b.account == null) b.account = 0;
+    if (b.ownerEquity == null) b.ownerEquity = 0;
+    if (b.ownerLoan == null) b.ownerLoan = 0;
+  }
+}
+export function bandBalance(id) { const b = bandById(id); return b ? (b.account || 0) : 0; }
+export function walletBalance() { return (getState().stats && getState().stats.money) || 0; }
+
+const LEDGER_MAX = 500;
+export function logTx({ account = "wallet", band = null, amount = 0, category = "misc", note = "" } = {}) {
+  const s = getState(); if (!s) return;
+  s.ledger = s.ledger || [];
+  s.ledger.unshift({
+    id: "tx_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    day: (s.time && s.time.day) || 1, account, band, amount: Math.round(amount), category, note,
+  });
+  if (s.ledger.length > LEDGER_MAX) s.ledger.length = LEDGER_MAX;
+}
+export function ledgerEntries(filter) {
+  const s = getState(); let arr = (s && s.ledger) || [];
+  if (filter && filter.account) arr = arr.filter((e) => e.account === filter.account);
+  if (filter && filter.band) arr = arr.filter((e) => e.band === filter.band);
+  return arr;
+}
+function bandNm(b) { return (b && b.name) || "your band"; }
+
+// Move money between the player wallet and a band account. Each returns { ok, msg? }.
+export function bankContribute(bandId, amt) {
+  amt = Math.floor(amt); const b = bandById(bandId); if (!b) return { ok: false, msg: "No band." };
+  if (!(amt > 0)) return { ok: false, msg: "Enter an amount." };
+  if (walletBalance() < amt) return { ok: false, msg: "Not enough in your wallet." };
+  addStat("money", -amt); b.account = (b.account || 0) + amt; b.ownerEquity = (b.ownerEquity || 0) + amt;
+  logTx({ account: "wallet", band: bandId, amount: -amt, category: "contribution", note: `Funded ${bandNm(b)}` });
+  logTx({ account: bandId, band: bandId, amount: amt, category: "contribution", note: "Owner contribution" });
+  return { ok: true };
+}
+export function bankWithdraw(bandId, amt) {
+  amt = Math.floor(amt); const b = bandById(bandId); if (!b) return { ok: false, msg: "No band." };
+  if (!(amt > 0)) return { ok: false, msg: "Enter an amount." };
+  if ((b.account || 0) < amt) return { ok: false, msg: "The band doesn't have that much." };
+  b.account -= amt; b.ownerEquity = Math.max(0, (b.ownerEquity || 0) - amt); addStat("money", amt);
+  logTx({ account: bandId, band: bandId, amount: -amt, category: "withdrawal", note: "Owner withdrawal" });
+  logTx({ account: "wallet", band: bandId, amount: amt, category: "withdrawal", note: `Withdrew from ${bandNm(b)}` });
+  return { ok: true };
+}
+export function bankBorrow(bandId, amt) {
+  amt = Math.floor(amt); const b = bandById(bandId); if (!b) return { ok: false, msg: "No band." };
+  if (!(amt > 0)) return { ok: false, msg: "Enter an amount." };
+  if ((b.account || 0) < amt) return { ok: false, msg: "The band can't lend that much." };
+  b.account -= amt; b.ownerLoan = (b.ownerLoan || 0) + amt; addStat("money", amt);
+  logTx({ account: bandId, band: bandId, amount: -amt, category: "loan", note: "Loan to owner" });
+  logTx({ account: "wallet", band: bandId, amount: amt, category: "loan", note: `Borrowed from ${bandNm(b)}` });
+  return { ok: true };
+}
+export function bankRepay(bandId, amt) {
+  amt = Math.floor(amt); const b = bandById(bandId); if (!b) return { ok: false, msg: "No band." };
+  if (!(amt > 0)) return { ok: false, msg: "Enter an amount." };
+  const owe = b.ownerLoan || 0; if (owe <= 0) return { ok: false, msg: "No loan to repay." };
+  amt = Math.min(amt, owe, walletBalance());
+  if (!(amt > 0)) return { ok: false, msg: "Not enough in your wallet." };
+  addStat("money", -amt); b.account = (b.account || 0) + amt; b.ownerLoan = owe - amt;
+  logTx({ account: "wallet", band: bandId, amount: -amt, category: "repayment", note: `Repaid ${bandNm(b)}` });
+  logTx({ account: bandId, band: bandId, amount: amt, category: "repayment", note: "Loan repayment" });
+  return { ok: true, paid: amt };
+}

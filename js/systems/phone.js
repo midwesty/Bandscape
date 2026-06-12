@@ -15,6 +15,7 @@ import { renderStreamsApp } from "./releases.js";
 import { renderLibrary } from "./library.js";
 import { renderMapsApp } from "./maps.js";
 import { renderPropertiesApp } from "./properties.js";
+import { renderBankApp } from "./bank.js";
 import { openDAW } from "./daw.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, exportFull, importFull, saveToSlot } from "../engine/storage.js";
@@ -53,7 +54,7 @@ export function initPhone() {
   // typed in). The real-time clock fires renderAll every game-minute, and
   // rebuilding the DOM would dismiss an open dropdown / drop input focus.
   on("renderAll", () => {
-    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr" || currentApp === "files" || currentApp === "maps" || currentApp === "properties") return;
+    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr" || currentApp === "files" || currentApp === "maps" || currentApp === "properties" || currentApp === "bank") return;
     const ae = document.activeElement;
     if (ae && /^(SELECT|INPUT|TEXTAREA)$/.test(ae.tagName)) return;
     renderApp(currentApp);
@@ -102,6 +103,7 @@ function renderApp(app) {
   if (app === "files") return renderLibrary(screenEl, { mode: "all", showFolders: true, onOpenSong: (id) => { closePhone(); openDAW(id); } });
   if (app === "maps") return renderMapsApp(screenEl);
   if (app === "properties") return renderPropertiesApp(screenEl);
+  if (app === "bank") return renderBankApp(screenEl);
   return renderStub(app);
 }
 

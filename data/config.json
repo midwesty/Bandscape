@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.7 (Step 19.7: admin cheats + session log history in Settings)",
+  "version": "0.20.1 (Step 20.1: Bank app \u2014 band accounts, ledger, contribute/withdraw/borrow/repay)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -53,7 +53,7 @@
     "settings": true,
     "music": true,
     "maps": true,
-    "bank": false,
+    "bank": true,
     "contacts": false,
     "streamr": true,
     "band": true,
