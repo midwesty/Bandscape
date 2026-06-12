@@ -145,6 +145,7 @@ function estimate(setIds, band, venueId) {
 function renderBooking(selected) {
   const s = getState(); const songs = s.songs || [];
   const est = estimate(selected, perfBand);
+  const _sl = overlay.querySelector(".set-list"); const _sly = _sl ? _sl.scrollTop : 0;
   overlay.innerHTML = `
     <div class="show-modal">
       <div class="shop-head"><span class="shop-title">BOOK A SHOW</span><button class="phone-nav" id="show-close">✕</button></div>
@@ -168,6 +169,7 @@ function renderBooking(selected) {
       </div>
     </div>`;
   overlay.querySelector("#show-close").addEventListener("click", closeShow);
+  const _nsl = overlay.querySelector(".set-list"); if (_nsl) _nsl.scrollTop = _sly;
   overlay.querySelectorAll("[data-song]").forEach((cb) => cb.addEventListener("change", () => {
     cb.checked ? selected.add(cb.dataset.song) : selected.delete(cb.dataset.song);
     renderBooking(selected);

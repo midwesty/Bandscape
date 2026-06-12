@@ -603,7 +603,7 @@ function drawProc(o, cx, cy) {
     case "piano":  pianoShape(cx, cy); break;
     case "drums":  drumsShape(cx, cy); break;
     case "mic":    micShape(cx, cy); break;
-    case "door":   doorway(cx, cy); break;
+    case "door": case "out": case "exit":   doorway(cx, cy); break;
     case "pawn":    building(cx, cy, C.yellow); break;
     case "grocery": building(cx, cy, C.green); break;
     case "musicstore": building(cx, cy, C.purple || C.blue); break;

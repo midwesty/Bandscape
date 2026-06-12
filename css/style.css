@@ -996,3 +996,14 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .shop-back { display: inline-flex; align-items: center; gap: 4px; background: #262030; border: 1px solid #3a3450; color: #cdd3da; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 999px; margin-bottom: 10px; cursor: pointer; }
 .shop-back:active { background: #2e2840; }
 .shop-btn.ghost { background: transparent; border: 1px solid #3a3450; color: #cdd3da; }
+
+/* ---- Polish pass (Step 19.6) ---- */
+/* Hide the floating message log whenever a menu/overlay is open (was bleeding through) */
+body.modal-open #log,
+body:has(#inventory.open) #log,
+body:has(.modal-scrim) #log { display: none; }
+
+/* Inventory: smaller slots so everything fits on mobile/landscape without cropping */
+.inv-grid { grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)) !important; }
+.inv-modal { max-height: 88vh; }
+.inv-body { max-height: 62vh; }

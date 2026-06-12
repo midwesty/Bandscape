@@ -68,6 +68,8 @@ function render() {
   const pats = getState().patterns || [];
   const recent = pats.slice(-PALETTE_RECENT).reverse();
   const songs = getState().songs || [];
+  const _wrap = overlay.querySelector(".daw-timeline-wrap");
+  const _sx = _wrap ? _wrap.scrollLeft : 0, _sy = _wrap ? _wrap.scrollTop : 0;
   overlay.innerHTML = `
     <div class="daw-modal">
       <div class="daw-head">
@@ -104,6 +106,7 @@ function render() {
       <div id="daw-sub" class="hidden"></div>
     </div>`;
   bind();
+  const _nw = overlay.querySelector(".daw-timeline-wrap"); if (_nw) { _nw.scrollLeft = _sx; _nw.scrollTop = _sy; }
 }
 function chipHTML(p) {
   const col = TRACK_COLORS[0];
