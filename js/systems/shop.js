@@ -377,7 +377,13 @@ function buyAndSend(spec) {
       const rate = (DATA.config.gear && DATA.config.gear.tradeInRate) || 0.4;
       const credit = Math.round((oldT ? oldT.price : 0) * rate);
       arr.splice(idx, 1);
-      if (credit > 0) { addStat("money", credit); creditMsg = ` Traded in your old ${old.name || DATA.instruments[type].name} for $${num(credit)}.`; }
+      // ensure the room-init merge-back never resurrects the traded-in original
+      s.removedObjects = s.removedObjects || {};
+      s.removedObjects[loc] = s.removedObjects[loc] || [];
+      if (old.id && !s.removedObjects[loc].includes(old.id)) s.removedObjects[loc].push(old.id);
+      const oldName = old.name || (DATA.instruments[type] && DATA.instruments[type].name) || "instrument";
+      if (credit > 0) { addStat("money", credit); creditMsg = ` Traded in your old ${oldName} for $${num(credit)}.`; }
+      else { creditMsg = ` Traded in your old ${oldName} (no cash value).`; }
     }
   }
   const sprite = storeSprite(type);
