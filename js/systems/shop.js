@@ -28,6 +28,8 @@ let overlay = null, currentShop = null, currentVenue = null, lastRenderKey = nul
 let storeView = { stage: "cats", type: null, tierId: null };
 
 const money = () => getState().stats.money || 0;
+const num = (n) => Math.round(n || 0).toLocaleString();
+const CAT_LABEL = { guitar: "Guitars", bass: "Basses", piano: "Keys", drums: "Drums", microphone: "Microphones" };
 const item = (id) => DATA.items.items[id] || null;
 const priceOf = (id, markup = 1) => Math.max(1, Math.ceil((item(id)?.value || 1) * markup));
 const sellOf = (id, rate) => Math.max(1, Math.floor((item(id)?.value || 1) * rate));
@@ -101,7 +103,7 @@ function pawnBody() {
   const instrSellRows = instrSell.length ? `<div class="shop-section">SELL YOUR INSTRUMENTS (${Math.round(rate * 100)}% value)</div>` + instrSell.map((st) => {
     const ip = parseInstrItem(st.item); const t = instrumentTiers(ip.type).find((x) => x.id === ip.tier);
     const payout = Math.round((t ? t.price : 0) * rate);
-    return `<div class="shop-row"><div><strong>${esc(t ? t.name : st.item)}</strong> <small>x${st.qty}</small></div><div><span class="shop-price">+$${money(payout)}</span> <button class="btn shop-btn" data-sell-instr="${st.item}">Sell 1</button></div></div>`;
+    return `<div class="shop-row"><div><strong>${esc(t ? t.name : st.item)}</strong> <small>x${st.qty}</small></div><div><span class="shop-price">+$${num(payout)}</span> <button class="btn shop-btn" data-sell-instr="${st.item}">Sell 1</button></div></div>`;
   }).join("") : "";
   const stock = (DATA.shops[currentShop] && DATA.shops[currentShop].stock) || [];
   const mk = (DATA.shops[currentShop] && DATA.shops[currentShop].markup) || 1;
@@ -306,7 +308,7 @@ function storeCats() {
     const inst = DATA.instruments[type]; const tiers = instrumentTiers(type);
     const from = Math.min.apply(null, tiers.map((x) => x.price));
     return `<button class="shop-row store-cat" data-store-cat="${type}">
-      <div><strong>${esc(inst.name)}</strong><small>${tiers.length} models \u00b7 from $${money(from)}</small></div>
+      <div><strong>${esc(CAT_LABEL[type] || inst.name)}</strong><small>${tiers.length} models \u00b7 from $${num(from)}</small></div>
       <span class="store-chev">\u203a</span></button>`;
   }).join("");
   return `<p class="shop-note">Walk the floor. Pick a category to see every model \u2014 buy to carry, or have it delivered to a place you own.</p>${rows}`;
@@ -315,13 +317,13 @@ function storeCats() {
 function storeTiers(type) {
   const inst = DATA.instruments[type];
   const rows = instrumentTiers(type).map((t) => `<div class="shop-row">
-    <div><strong>${esc(t.name)}</strong><small>quality ${Math.round(t.quality * 100)} \u00b7 $${money(t.price)}</small></div>
+    <div><strong>${esc(t.name)}</strong><small>quality ${Math.round(t.quality * 100)} \u00b7 $${num(t.price)}</small></div>
     <div class="store-acts">
       <button class="btn shop-btn" data-store-carry="${type}:${t.id}">Carry</button>
       <button class="btn shop-btn ghost" data-store-send="${type}:${t.id}">Send\u2026</button>
     </div></div>`).join("");
   return `<button class="shop-back" data-store-back="cats">\u2039 All categories</button>
-    <div class="shop-section">${esc(inst.name).toUpperCase()}</div>${rows}`;
+    <div class="shop-section">${esc(CAT_LABEL[type] || inst.name).toUpperCase()}</div>${rows}`;
 }
 
 function storeSend(type, tierId) {
@@ -375,7 +377,7 @@ function buyAndSend(spec) {
       const rate = (DATA.config.gear && DATA.config.gear.tradeInRate) || 0.4;
       const credit = Math.round((oldT ? oldT.price : 0) * rate);
       arr.splice(idx, 1);
-      if (credit > 0) { addStat("money", credit); creditMsg = ` Traded in your old ${old.name || DATA.instruments[type].name} for $${money(credit)}.`; }
+      if (credit > 0) { addStat("money", credit); creditMsg = ` Traded in your old ${old.name || DATA.instruments[type].name} for $${num(credit)}.`; }
     }
   }
   const sprite = storeSprite(type);
@@ -397,6 +399,6 @@ function sellInstrument(itemId) {
   takeItem(itemId, 1);
   addStat("money", payout);
   persist(); emit("renderAll");
-  toast(`Sold your ${t ? t.name : "instrument"} for $${money(payout)}.`, "good");
+  toast(`Sold your ${t ? t.name : "instrument"} for $${num(payout)}.`, "good");
   render();
 }

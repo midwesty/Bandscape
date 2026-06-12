@@ -993,5 +993,6 @@ body.paused #hud-clock .hud-time::after { content: " ⏸"; color: var(--yellow);
 .store-cat { width: 100%; text-align: left; cursor: pointer; }
 .store-chev { color: #8c93a0; font-size: 18px; }
 .store-acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-.shop-back { background: none; border: none; color: #9ab4ff; font-size: 13px; padding: 6px 2px 10px; cursor: pointer; }
+.shop-back { display: inline-flex; align-items: center; gap: 4px; background: #262030; border: 1px solid #3a3450; color: #cdd3da; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 999px; margin-bottom: 10px; cursor: pointer; }
+.shop-back:active { background: #2e2840; }
 .shop-btn.ghost { background: transparent; border: 1px solid #3a3450; color: #cdd3da; }

@@ -1,18 +1,124 @@
 {
-  "_comment": "Rocktroit — the big city, reached by the one-time bus pass from your block. Storefront venues (interact 'venue') open a booking/performance panel gated by venues.json req. The Foundry (open mic) and the Arcade are enterable interiors. Rust Belt Pawn is a second pawn shop (gear + sell, no debt). 'flavor' hotspots just print color text for now.",
+  "_comment": "Rocktroit \u2014 the big city, reached by the one-time bus pass from your block. Storefront venues (interact 'venue') open a booking/performance panel gated by venues.json req. The Foundry (open mic) and the Arcade are enterable interiors. Rust Belt Pawn is a second pawn shop (gear + sell, no debt). 'flavor' hotspots just print color text for now.",
   "id": "rocktroit",
   "name": "Rocktroit",
-  "size": { "w": 13, "h": 9 },
+  "size": {
+    "w": 13,
+    "h": 9
+  },
   "ambient": "city_night",
   "objects": [],
   "exits": [
-    { "id": "bus",       "name": "Bus Stop",         "tile": { "x": 6, "y": 8 }, "interact": "bus",    "to": "town",         "spawn": { "x": 3, "y": 5 }, "solid": true },
-    { "id": "pawn2",     "name": "Rust Belt Pawn",   "tile": { "x": 2, "y": 1 }, "interact": "shop",   "shopId": "pawn2",    "solid": true },
-    { "id": "foundry",   "name": "The Foundry",      "tile": { "x": 5, "y": 1 }, "interact": "enter",  "to": "rocktroit_bar", "spawn": { "x": 5, "y": 6 }, "solid": true },
-    { "id": "steelroom", "name": "The Steel Room",   "tile": { "x": 8, "y": 1 }, "interact": "venue",  "venueId": "steelroom", "solid": true },
-    { "id": "apex",      "name": "Apex Hall",        "tile": { "x": 11, "y": 1 }, "interact": "venue", "venueId": "apex",    "solid": true },
-    { "id": "arcade",    "name": "Quarter Bin Arcade", "tile": { "x": 2, "y": 4 }, "interact": "enter", "to": "arcade",      "spawn": { "x": 4, "y": 6 }, "solid": true },
-    { "id": "diner",     "name": "The All-Night Diner", "tile": { "x": 10, "y": 4 }, "interact": "flavor", "flavor": "The All-Night Diner. Coffee that could strip paint, pie that could save a life. (A real hangout in a later build.)", "solid": true },
-    { "id": "records",   "name": "Wax & Wane Records", "tile": { "x": 11, "y": 6 }, "interact": "flavor", "flavor": "Wax & Wane Records — dusty crates, a clerk who hates everything you like. (Consignment & launch boosts coming later.)", "solid": true }
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "tile": {
+        "x": 6,
+        "y": 8
+      },
+      "interact": "bus",
+      "to": "town",
+      "spawn": {
+        "x": 3,
+        "y": 5
+      },
+      "solid": true
+    },
+    {
+      "id": "pawn2",
+      "name": "Rust Belt Pawn",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "interact": "shop",
+      "shopId": "pawn2",
+      "solid": true
+    },
+    {
+      "id": "foundry",
+      "name": "The Foundry",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "interact": "enter",
+      "to": "rocktroit_bar",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "solid": true
+    },
+    {
+      "id": "steelroom",
+      "name": "The Steel Room",
+      "tile": {
+        "x": 8,
+        "y": 1
+      },
+      "interact": "venue",
+      "venueId": "steelroom",
+      "solid": true
+    },
+    {
+      "id": "apex",
+      "name": "Apex Hall",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "interact": "venue",
+      "venueId": "apex",
+      "solid": true
+    },
+    {
+      "id": "arcade",
+      "name": "Quarter Bin Arcade",
+      "tile": {
+        "x": 2,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "arcade",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "solid": true
+    },
+    {
+      "id": "diner",
+      "name": "The All-Night Diner",
+      "tile": {
+        "x": 10,
+        "y": 4
+      },
+      "interact": "flavor",
+      "flavor": "The All-Night Diner. Coffee that could strip paint, pie that could save a life. (A real hangout in a later build.)",
+      "solid": true
+    },
+    {
+      "id": "records",
+      "name": "Wax & Wane Records",
+      "tile": {
+        "x": 11,
+        "y": 6
+      },
+      "interact": "flavor",
+      "flavor": "Wax & Wane Records \u2014 dusty crates, a clerk who hates everything you like. (Consignment & launch boosts coming later.)",
+      "solid": true
+    },
+    {
+      "id": "musicstore",
+      "name": "Sound City",
+      "tile": {
+        "x": 5,
+        "y": 4
+      },
+      "interact": "shop",
+      "shopId": "musicstore",
+      "solid": true
+    }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.5a (Step 19.5a: Music store \u2014 buy all tiers by category, carry/send, trade-in; pawn buys instruments)",
+  "version": "0.19.5a.1 (Step 19.5a fixes: real prices, category names, prominent Back, store in both cities)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
