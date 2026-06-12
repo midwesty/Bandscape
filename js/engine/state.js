@@ -316,3 +316,24 @@ export function nowHourAbs() {
   if (!STATE) return 0;
   return (STATE.time.day - 1) * 24 + STATE.time.hour;
 }
+
+// ---- dwellings / properties (Step 19.4) ----
+export function propDefs() { return (DATA.properties && DATA.properties.properties) || []; }
+export function propDef(id) { return propDefs().find((p) => p.id === id) || null; }
+export function ensureProperties() {
+  const s = getState(); s.properties = s.properties || {};
+  for (const p of propDefs()) {
+    if (!s.properties[p.id]) s.properties[p.id] = { status: p.startsControlled || "none" };
+  }
+  return s.properties;
+}
+export function propertyStatus(id) { const s = getState(); return (s.properties && s.properties[id] && s.properties[id].status) || "none"; }
+export function setPropertyStatus(id, status, extra) {
+  const s = getState(); s.properties = s.properties || {};
+  s.properties[id] = Object.assign({}, s.properties[id], { status }, extra || {});
+  return s.properties[id];
+}
+// properties the player currently controls (owned or rented)
+export function controlledProperties() { return propDefs().filter((p) => { const st = propertyStatus(p.id); return st === "owned" || st === "rented"; }); }
+// scene ids the player can send gear to / enter
+export function controlledLocations() { return controlledProperties().map((p) => p.location); }

@@ -14,6 +14,7 @@ import { renderCalendarApp } from "./calendar.js";
 import { renderStreamsApp } from "./releases.js";
 import { renderLibrary } from "./library.js";
 import { renderMapsApp } from "./maps.js";
+import { renderPropertiesApp } from "./properties.js";
 import { openDAW } from "./daw.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, exportFull, importFull, saveToSlot } from "../engine/storage.js";
@@ -28,6 +29,7 @@ const APP_META = {
   band:     { label: "Band",    glyph: "♬",  accent: "#ff8a3d" },
   calendar: { label: "Calendar", glyph: "▦",  accent: "#4fc3f7" },
   maps:     { label: "Maps",    glyph: "⌖",  accent: "#4fc3f7" },
+  properties:{ label: "Properties", glyph: "⌂", accent: "#7bd88f" },
   bank:     { label: "Bank",    glyph: "$",  accent: "#7CFC9B" },
   contacts: { label: "People",  glyph: "☻",  accent: "#b388ff" },
   streamr:  { label: "Streamr", glyph: "▷",  accent: "#ff8a3d" },
@@ -50,7 +52,7 @@ export function initPhone() {
   // typed in). The real-time clock fires renderAll every game-minute, and
   // rebuilding the DOM would dismiss an open dropdown / drop input focus.
   on("renderAll", () => {
-    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr" || currentApp === "files" || currentApp === "maps") return;
+    if (!openState || currentApp === "home" || currentApp === "music" || currentApp === "streamr" || currentApp === "files" || currentApp === "maps" || currentApp === "properties") return;
     const ae = document.activeElement;
     if (ae && /^(SELECT|INPUT|TEXTAREA)$/.test(ae.tagName)) return;
     renderApp(currentApp);
@@ -98,12 +100,13 @@ function renderApp(app) {
   if (app === "streamr") return renderStreamsApp(screenEl);
   if (app === "files") return renderLibrary(screenEl, { mode: "all", showFolders: true, onOpenSong: (id) => { closePhone(); openDAW(id); } });
   if (app === "maps") return renderMapsApp(screenEl);
+  if (app === "properties") return renderPropertiesApp(screenEl);
   return renderStub(app);
 }
 
 function renderHome() {
   const s = getState();
-  const order = ["tasks", "status", "band", "calendar", "music", "files", "maps", "streamr", "bank", "contacts", "settings"];
+  const order = ["tasks", "status", "band", "calendar", "music", "files", "maps", "properties", "streamr", "bank", "contacts", "settings"];
   const grid = order.map((id) => {
     const m = APP_META[id];
     const enabled = DATA.config.apps[id];
@@ -137,6 +140,7 @@ function stubTease(app) {
   return ({
     music: "Play & record loops on your phone.",
     maps: "Get around town: venues, the pawn shop, the corner store.",
+    properties: "Rent, buy, or sell a place to call home.",
     bank: "Track your cash, your debt, and your bad decisions.",
     contacts: "Musicians you've met and can recruit.",
     streamr: "Upload your tracks. Earn royalties. Maybe."

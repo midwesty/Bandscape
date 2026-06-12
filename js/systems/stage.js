@@ -55,6 +55,7 @@ export function renderStage() {
   syncToState();
   requestRender();
 }
+export function travelTo(to, spawn) { travel(to, spawn); }
 export function pauseStage() { running = false; if (rafId) cancelAnimationFrame(rafId); rafId = null; }
 
 // ---- setup ----

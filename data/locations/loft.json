@@ -1,0 +1,58 @@
+{
+  "_comment": "The Loft (Step 19.4) — the 'nice' dwelling. Bigger grid than the starter apartment, its own container ids (loft_fridge / loft_storage) so storage is separate, a built-in DAW laptop, and no pre-placed instruments (the player brings/buys gear). Entered via the Properties app; the door exits to town.",
+  "id": "loft",
+  "name": "The Loft",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bed",
+      "name": "Queen Bed",
+      "tile": { "x": 1, "y": 1 },
+      "sprite": "assets/img/objects/bed.png",
+      "interact": "sleep"
+    },
+    {
+      "id": "fridge",
+      "name": "Kitchen",
+      "tile": { "x": 8, "y": 1 },
+      "sprite": "assets/img/objects/fridge.png",
+      "interact": "container",
+      "containerId": "loft_fridge"
+    },
+    {
+      "id": "crate",
+      "name": "Walk-in Closet",
+      "tile": { "x": 8, "y": 5 },
+      "sprite": "assets/img/objects/crate.png",
+      "interact": "container",
+      "containerId": "loft_storage"
+    },
+    {
+      "id": "laptop",
+      "name": "Pro Laptop",
+      "tile": { "x": 4, "y": 5 },
+      "sprite": "assets/img/objects/laptop.png",
+      "interact": "daw"
+    },
+    {
+      "id": "couch",
+      "name": "Comfy Couch",
+      "tile": { "x": 2, "y": 5 },
+      "interact": "flavor",
+      "flavor": "A big worn-in couch. Good for writing lyrics at 3am."
+    }
+  ],
+  "exits": [
+    {
+      "id": "door",
+      "name": "Front Door",
+      "tile": { "x": 5, "y": 6 },
+      "to": "town",
+      "spawn": { "x": 5, "y": 6 }
+    }
+  ]
+}

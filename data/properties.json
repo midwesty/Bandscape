@@ -1,0 +1,37 @@
+{
+  "_comment": "Dwellings the player can rent/buy/sell via the Properties phone app (Step 19.4). 'location' is the enterable scene id (data/locations/<id>.json). 'startsControlled' seeds the player's initial tenure (owned|rented|none). 'photo' is an optional image path; if absent/missing the app draws a placeholder card. Prices: buyPrice (one-time), rentPrice (per rent period), sellValue (cash back when sold).",
+  "properties": [
+    {
+      "id": "apt_crappy",
+      "name": "Apt 2B",
+      "tagline": "The Shoebox",
+      "location": "apartment",
+      "city": "yourtown",
+      "tier": "crappy",
+      "buyPrice": 1500,
+      "rentPrice": 200,
+      "sellValue": 1000,
+      "gearSlots": 6,
+      "startsControlled": "owned",
+      "photo": "",
+      "amenities": ["Bed", "Mini fridge", "Storage crate", "Hand-me-down laptop"],
+      "blurb": "A cramped one-room walkup. The radiator clanks all night. It's home \u2014 for now."
+    },
+    {
+      "id": "apt_nice",
+      "name": "The Loft",
+      "tagline": "Room to make noise",
+      "location": "loft",
+      "city": "yourtown",
+      "tier": "nice",
+      "buyPrice": 9000,
+      "rentPrice": 700,
+      "sellValue": 6500,
+      "gearSlots": 12,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": ["Queen bed", "Full kitchen", "Big closet", "Pro laptop / DAW", "Space for a full kit"],
+      "blurb": "High ceilings, big windows, and floor space for a whole band's worth of gear. The kind of place that makes you feel like you've finally arrived."
+    }
+  ]
+}
