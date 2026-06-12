@@ -560,6 +560,15 @@ function drawObject(o) {
 function drawProc(o, cx, cy) {
   if (o.interact === "talk") return npcFigure(cx, cy, o);
   if (o.interact === "stage") return stageShape(cx, cy);
+  if (o.instrumentId) {
+    switch (o.instrumentId) {
+      case "guitar": return stringed(cx, cy, C.orange);
+      case "bass":   return stringed(cx, cy, C.blue);
+      case "piano":  return pianoShape(cx, cy);
+      case "drums":  return drumsShape(cx, cy);
+      case "microphone": return micShape(cx, cy);
+    }
+  }
   switch (o.id) {
     case "bed":    cuboid(cx, cy, 26, 13, 14, "#3a2740", "#2a1c30", "#241828");
                    ctx.fillStyle = C.yellow; ctx.fillRect(cx - 10, cy - 14, 14, 7); break;

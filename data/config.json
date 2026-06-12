@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.3a (Step 19.3a: carried gear selectable in RECORD WITH + placed-instrument sprite fix)",
+  "version": "0.19.3b (Step 19.3b: placed instruments render by instrumentId \u2014 fixes purple box)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
