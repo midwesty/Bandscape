@@ -18,6 +18,7 @@ import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
+import { instrItemId, parseInstrItem } from "./gear.js";
 import { openDAW } from "./daw.js";
 import { openShop, busk, openVenue } from "./shop.js";
 import { openRecruit } from "./band.js";
@@ -323,16 +324,9 @@ function interact(obj) {
     case "sleep":
       if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep();
       break;
-    case "equip": {
-      const s = getState();
-      s.equipped = s.equipped || { instrumentId: null };
-      s.equipped.instrumentId = obj.instrumentId;
-      s.owned = s.owned || [];
-      if (!s.owned.includes(obj.instrumentId)) s.owned.push(obj.instrumentId);
-      emit("instrument:equipped", { id: obj.instrumentId });
-      toast("You pick up the " + (DATA.instruments[obj.instrumentId]?.name || "instrument") + ".", "good");
+    case "equip":
+      openInstrumentMenu(obj);
       break;
-    }
     case "container":
       openContainerView(obj.containerId || "storage");
       break;
@@ -377,14 +371,57 @@ function interact(obj) {
 // ---- dropped items on the floor ----
 function placeFloorItem(d) {
   const tile = { x: Math.round(player.x), y: Math.round(player.y) };
-  furniture.push({
-    id: "floor_" + Math.random().toString(36).slice(2, 8),
-    kind: "item", item: d.item, qty: d.qty, name: d.name, icon: d.icon,
-    interact: "pickup", tile
-  });
+  const ip = parseInstrItem(d.item);
+  if (ip) {
+    furniture.push({
+      id: "instr_" + Math.random().toString(36).slice(2, 8),
+      instrumentId: ip.type, tier: ip.tier, name: d.name || ip.type,
+      interact: "equip", tile
+    });
+  } else {
+    furniture.push({
+      id: "floor_" + Math.random().toString(36).slice(2, 8),
+      kind: "item", item: d.item, qty: d.qty, name: d.name, icon: d.icon,
+      interact: "pickup", tile
+    });
+  }
   rebuildBlocked();
   persist();
   requestRender();
+}
+
+// ---- instrument: play vs pick up ----
+function openInstrumentMenu(obj) {
+  const s = getState();
+  const name = obj.name || (DATA.instruments[obj.instrumentId] && DATA.instruments[obj.instrumentId].name) || "instrument";
+  const scrim = document.createElement("div"); scrim.className = "modal-scrim"; scrim.id = "instr-scrim";
+  scrim.innerHTML = `<div class="neg-card" style="max-width:300px">
+    <div class="neg-head"><span>${name.toUpperCase()}</span><button id="instr-x">✕</button></div>
+    <div class="neg-acts" style="flex-direction:column;gap:8px">
+      <button class="btn" id="instr-play">Play in studio</button>
+      <button class="btn" id="instr-pick">Pick up &amp; carry</button>
+    </div></div>`;
+  document.body.appendChild(scrim);
+  const close = () => scrim.remove();
+  scrim.addEventListener("click", (e) => { if (e.target === scrim) close(); });
+  scrim.querySelector("#instr-x").addEventListener("click", close);
+  scrim.querySelector("#instr-play").addEventListener("click", () => {
+    s.equipped = s.equipped || { instrumentId: null };
+    s.equipped.instrumentId = obj.instrumentId;
+    s.owned = s.owned || [];
+    if (!s.owned.includes(obj.instrumentId)) s.owned.push(obj.instrumentId);
+    emit("instrument:equipped", { id: obj.instrumentId });
+    toast("Ready to record on the " + name + ". Open the SOUND app.", "good");
+    close();
+  });
+  scrim.querySelector("#instr-pick").addEventListener("click", () => {
+    const left = giveItem("inventory", instrItemId(obj.instrumentId, obj.tier || "starter"), 1);
+    if (left > 0) { toast("Your pockets are full.", "warn"); close(); return; }
+    const idx = furniture.indexOf(obj); if (idx >= 0) furniture.splice(idx, 1);
+    rebuildBlocked(); persist(); requestRender();
+    toast("Picked up the " + name + ".", "good");
+    close();
+  });
 }
 function pickUpFloorItem(o) {
   const want = o.qty || 1;

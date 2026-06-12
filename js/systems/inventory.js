@@ -14,6 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
+import { parseInstrItem, instrItemName } from "./gear.js";
 import { getState, addStat, setFlag } from "../engine/state.js";
 import { addCondition, removeCondition } from "./conditions.js";
 import { emit, on } from "../engine/bus.js";
@@ -30,7 +31,11 @@ let isOpen = false;
 const CONTAINER_NAMES = { inventory: "Pockets", fridge: "Fridge", storage: "Storage Crate" };
 
 // ---- data helpers ----
-function itemDef(id) { return DATA.items.items[id] || null; }
+function itemDef(id) {
+  const ip = parseInstrItem(id);
+  if (ip) return { name: instrItemName(id), desc: "Instrument. Drop it in a room you own to record with it, or sell it at the pawn.", icon: (DATA.instruments[ip.type] && DATA.instruments[ip.type].icon) || null, _instr: ip };
+  return DATA.items.items[id] || null;
+}
 function containerRef(key) {
   const s = getState();
   if (key === "inventory") return s.inventory;
@@ -216,7 +221,7 @@ function actionBarHTML() {
       ${canUse ? `<button class="btn inv-act" data-act="use">Use</button>` : ""}
       ${st.qty > 1 ? `<button class="btn inv-act" data-act="split">Split</button>` : ""}
       ${moveTo ? `<button class="btn inv-act" data-act="move">→ ${CONTAINER_NAMES[moveTo]}</button>` : ""}
-      <button class="btn inv-act" data-act="drop">Drop</button>
+      <button class="btn inv-act" data-act="drop">${def._instr ? "Place here" : "Drop"}</button>
     </div>`;
 }
 

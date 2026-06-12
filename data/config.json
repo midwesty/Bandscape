@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.2 (Step 19.2: location-aware recording \u2014 instruments in the room + per-object tiers)",
+  "version": "0.19.3 (Step 19.3: pick up / carry / place instruments)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

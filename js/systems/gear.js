@@ -45,3 +45,15 @@ export function instrumentTierQuality(type, tierId) {
   const t = instrumentTiers(type).find((x) => x.id === tierId);
   return t && t.quality != null ? t.quality : 0.5;
 }
+
+// ---- carried-instrument item encoding (Step 19.3) ----
+export function instrItemId(type, tier) { return "instr:" + type + ":" + (tier || "starter"); }
+export function parseInstrItem(id) {
+  if (typeof id !== "string" || id.indexOf("instr:") !== 0) return null;
+  const parts = id.split(":"); return { type: parts[1], tier: parts[2] || "starter" };
+}
+export function instrItemName(id) {
+  const p = parseInstrItem(id); if (!p) return null;
+  const t = instrumentTiers(p.type).find((x) => x.id === p.tier);
+  return (t && t.name) || ((DATA.instruments[p.type] && DATA.instruments[p.type].name) || p.type);
+}
