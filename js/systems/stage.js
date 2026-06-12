@@ -91,9 +91,11 @@ function syncToState() {
     s.placedObjects[s.location] = JSON.parse(JSON.stringify(room.objects || []));
   }
   furniture = s.placedObjects[s.location];
-  // merge any objects added in an update (e.g. new instruments) into existing saves
+  // merge any objects added in an update (e.g. new instruments) into existing saves —
+  // but never resurrect originals the player intentionally removed (picked up / sold)
+  const removed = new Set((s.removedObjects && s.removedObjects[s.location]) || []);
   const haveIds = new Set(furniture.map((o) => o.id));
-  for (const o of (room.objects || [])) if (!haveIds.has(o.id)) furniture.push(JSON.parse(JSON.stringify(o)));
+  for (const o of (room.objects || [])) if (!haveIds.has(o.id) && !removed.has(o.id)) furniture.push(JSON.parse(JSON.stringify(o)));
   exits = room.exits || [];
   rebuildBlocked();
 
@@ -425,6 +427,9 @@ function openInstrumentMenu(obj) {
     const left = giveItem("inventory", instrItemId(obj.instrumentId, obj.tier || "starter"), 1);
     if (left > 0) { toast("Your pockets are full.", "warn"); close(); return; }
     const idx = furniture.indexOf(obj); if (idx >= 0) furniture.splice(idx, 1);
+    s.removedObjects = s.removedObjects || {};
+    s.removedObjects[s.location] = s.removedObjects[s.location] || [];
+    if (!s.removedObjects[s.location].includes(obj.id)) s.removedObjects[s.location].push(obj.id);
     rebuildBlocked(); persist(); requestRender();
     toast("Picked up the " + name + ".", "good");
     close();

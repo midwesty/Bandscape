@@ -88,10 +88,17 @@ function isAccent(b, mode) { return mode === "all" ? true : mode === "none" ? fa
 // ---- render ----
 export function renderMusicApp(container) {
   screenEl = container;
+  // Auto-equip an instrument that's in this room or in your pockets, so you can record
+  // without first walking up to it. (Phone scratch quality is still selectable in RECORD WITH.)
+  const avail = roomInstruments();
+  const st = getState();
+  st.equipped = st.equipped || { instrumentId: null };
+  const haveEquipped = st.equipped.instrumentId && DATA.instruments[st.equipped.instrumentId] && avail.find((o) => o.instrumentId === st.equipped.instrumentId);
+  if (!haveEquipped && avail.length) st.equipped.instrumentId = avail[0].instrumentId;
   const inst = activeInst();
   if (!inst) {
     screenEl.innerHTML = `<h2 class="app-title">SOUND</h2><div class="stub"><div class="stub-glyph">♪</div>
-      <p>You're not holding an instrument.</p><p class="muted">Pick one up in your apartment, then come back.</p></div>`;
+      <p>No instrument on hand.</p><p class="muted">Carry one in your pockets, or stand in a room with one, then come back.</p></div>`;
     return;
   }
   if (editPattern) { renderPianoRoll(container); return; }
