@@ -10,6 +10,9 @@
 
 let host = null;
 const MAX = 6;
+const HISTORY_MAX = 150;
+const history = [];
+export function logHistory() { return history.slice(); }
 
 function ensureHost() {
   if (host && document.body.contains(host)) return host;
@@ -23,6 +26,8 @@ function ensureHost() {
 }
 
 export function toast(msg, kind = "info") {
+  history.unshift({ msg, kind, t: Date.now() });
+  if (history.length > HISTORY_MAX) history.length = HISTORY_MAX;
   const h = ensureHost();
   const el = document.createElement("div");
   el.className = `log-entry log-${kind}`;

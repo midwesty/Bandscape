@@ -19,7 +19,8 @@ import { openDAW } from "./daw.js";
 import { activeConditions } from "./conditions.js";
 import { exportSave, importSave, exportFull, importFull, saveToSlot } from "../engine/storage.js";
 import { loadTape } from "./tape.js";
-import { toast } from "../ui/toast.js";
+import { toast, logHistory } from "../ui/toast.js";
+import { isAdminUnlocked, tryUnlock, adminPanelHTML, bindAdminPanel } from "./admin.js";
 
 const APP_META = {
   tasks:    { label: "Tasks",   glyph: "✓",  accent: "#ffd23f" },
@@ -179,6 +180,7 @@ function renderStatus() {
   `;
 }
 
+function _esc(str) { return String(str == null ? "" : str).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function renderSettings() {
   const s = getState();
   screenEl.innerHTML = `
@@ -195,6 +197,20 @@ function renderSettings() {
     <div class="set-block">
       <div class="set-label">Game</div>
       <button class="btn btn-danger" id="set-new">New Game</button>
+    </div>
+    <div class="set-block">
+      <div class="set-label">Log History</div>
+      <div class="log-hist">${(logHistory().length
+          ? logHistory().slice(0, 80).map((e) => `<div class="log-hist-row log-${e.kind}">${_esc(e.msg)}</div>`).join("")
+          : `<div class="set-note">No log entries yet this session.</div>`)}</div>
+    </div>
+    <div class="set-block">
+      <div class="set-label">Admin</div>
+      ${isAdminUnlocked()
+        ? adminPanelHTML()
+        : `<input class="adm-pw" id="adm-pw" type="password" placeholder="Password" autocomplete="off" autocapitalize="off">
+           <button class="btn" id="adm-unlock">Unlock</button>
+           <p class="set-note">Developer cheats for testing.</p>`}
     </div>
     <div class="set-meta muted">
       ${DATA.config.version}<br>
@@ -230,4 +246,15 @@ function renderSettings() {
   document.getElementById("set-new").addEventListener("click", () => {
     if (confirm("Start a new game? Save first if you care about this one.")) emit("game:requestNew");
   });
+
+  if (isAdminUnlocked()) {
+    bindAdminPanel(screenEl, () => renderSettings());
+  } else {
+    const ub = document.getElementById("adm-unlock");
+    if (ub) ub.addEventListener("click", () => {
+      const pw = (document.getElementById("adm-pw").value || "").trim();
+      if (tryUnlock(pw)) { toast("Admin unlocked.", "good"); renderSettings(); }
+      else toast("Wrong password.", "warn");
+    });
+  }
 }

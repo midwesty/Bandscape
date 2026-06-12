@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.6 (Step 19.6 polish: door sprites, log bleed-through, inventory crop, menu scroll-keep)",
+  "version": "0.19.7 (Step 19.7: admin cheats + session log history in Settings)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -232,5 +232,8 @@
   },
   "dwellings": {
     "rentPeriodDays": 30
+  },
+  "admin": {
+    "password": "Noodles77"
   }
 }
