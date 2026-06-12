@@ -1057,3 +1057,9 @@ body:has(.modal-scrim) #log { display: none; }
 .bank-tx-sub { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
 
 .warn { color: var(--pink); }
+
+/* ---- Bank 20.2: clickable rows + activity filters ---- */
+.bank-row-btn { cursor: pointer; width: 100%; text-align: left; font: inherit; }
+.bank-filters { display: flex; gap: 6px; }
+.bank-filter { flex: 1; min-width: 0; padding: 7px 6px; background: var(--bg); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 12px; border-radius: 4px; }
+.bank-search { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 13px; border-radius: 4px; }

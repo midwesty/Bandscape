@@ -21,6 +21,7 @@ import {
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
+import { payForBand } from "./bank.js";
 import { advanceMinutes } from "./time.js";
 import { songQuality, venueList, venueEligible, venueReqText, addVenueRep } from "./shows.js";
 import { findReady, nextCommitment, complete, openScheduler, slotLabel } from "./calendar.js";
@@ -470,10 +471,12 @@ function orderMerch(typeId, qty) {
   const b = activeBand(); if (!b) return;
   const t = merchTypes().find((x) => x.id === typeId); if (!t) return;
   const cost = (t.unitCost || 1) * qty;
-  if ((getState().stats.money || 0) < cost) { toast(`You need $${cost} to order ${qty}.`, "warn"); return; }
-  addStat("money", -cost);
+  const r = payForBand(b.id, cost, { category: "merch", label: `${qty} ${t.name}`, note: `Ordered ${qty} ${t.name}` });
+  if (!r.ok) return;
   merchSlot(b, t).stock += qty;
-  persist(); toast(`Ordered ${qty} ${t.name} for $${cost}.`, "good"); renderBandApp(appContainer);
+  persist();
+  toast(`Ordered ${qty} ${t.name} for $${cost}${r.contributed ? ` — you fronted $${r.contributed}` : ""}.`, "good");
+  renderBandApp(appContainer);
 }
 function setMerchPrice(typeId, delta) {
   const b = activeBand(); if (!b) return;

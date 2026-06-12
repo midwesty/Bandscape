@@ -10,6 +10,7 @@
 import {
   getState, walletBalance, ledgerEntries, ensureBankAccounts,
   bankContribute, bankWithdraw, bankBorrow, bankRepay,
+  bandById, bandSpend,
 } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -17,11 +18,35 @@ import { saveToSlot } from "../engine/storage.js";
 
 let tab = "overview";
 let selBand = null;
+let actBand = "all", actCat = "all", actSearch = "";
 
 function num(n) { return "$" + Math.round(n || 0).toLocaleString(); }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function bandName(b) { return b && b.name ? b.name : "Your band"; }
 function persist() { const s = getState(); if (s && s.meta) saveToSlot(s.meta.slot, s); }
+
+// Reusable "buy something for a band" flow. Defaults to the band's account; if it's
+// short, asks whether to cover the difference from your wallet (tracked as a
+// contribution). Other systems (merch now; studio rent / band gear later) call this.
+// Returns { ok, contributed } | { ok:false, cancelled? }.
+export function payForBand(bandId, amount, info = {}) {
+  amount = Math.floor(amount);
+  const b = bandById(bandId);
+  if (!b) { toast("No band selected.", "warn"); return { ok: false }; }
+  if (!(amount > 0)) return { ok: false };
+  const have = b.account || 0;
+  const short = Math.max(0, amount - have);
+  const nm = bandName(b);
+  if (short > 0) {
+    if (walletBalance() < short) { toast(`Neither ${nm} nor your wallet can cover ${num(amount)}.`, "warn"); return { ok: false }; }
+    const ok = confirm(`${nm} has ${num(have)} of the ${num(amount)} needed${info.label ? " for " + info.label : ""}.\n\nCover the ${num(short)} difference from your wallet? It's tracked as your contribution to ${nm} — you can withdraw it later.`);
+    if (!ok) return { ok: false, cancelled: true };
+  }
+  const r = bandSpend(bandId, amount, info.category || "misc", info.note || "");
+  if (r.ok) { persist(); emit("renderAll"); }
+  else toast(r.msg || "Couldn't complete that.", "warn");
+  return r;
+}
 
 export function renderBankApp(screenEl) {
   ensureBankAccounts();
@@ -46,7 +71,7 @@ function overviewHTML(bands) {
   const totalEquity = bands.reduce((a, b) => a + (b.ownerEquity || 0), 0);
   const totalLoan = bands.reduce((a, b) => a + (b.ownerLoan || 0), 0);
   const rows = bands.length
-    ? bands.map((b) => `<div class="bank-row"><span>${esc(bandName(b))}</span><strong>${num(b.account)}</strong></div>`).join("")
+    ? bands.map((b) => `<button class="bank-row bank-row-btn" data-open="${b.id}"><span>${esc(bandName(b))}</span><strong>${num(b.account)}</strong></button>`).join("")
     : `<div class="set-note">No bands yet.</div>`;
   return `
     <div class="bank-card big"><span class="bank-card-label">Your wallet</span><span class="bank-card-amt good">${num(walletBalance())}</span></div>
@@ -83,10 +108,32 @@ function bandsHTML(bands) {
 }
 
 function activityHTML(s) {
-  const entries = ledgerEntries();
-  if (!entries.length) return `<div class="set-note">No transactions yet. Move some money in the Bands tab.</div>`;
+  const all = ledgerEntries();
+  if (!all.length) return `<div class="set-note">No transactions yet. Move some money in the Bands tab.</div>`;
+  const bands = s.bands || [];
+  const cats = Array.from(new Set(all.map((e) => e.category))).sort();
+  const bandOpts = `<option value="all">All accounts</option>` + bands.map((b) => `<option value="${b.id}" ${actBand === b.id ? "selected" : ""}>${esc(bandName(b))}</option>`).join("");
+  const catOpts = `<option value="all">All types</option>` + cats.map((c) => `<option value="${c}" ${actCat === c ? "selected" : ""}>${esc(c[0].toUpperCase() + c.slice(1))}</option>`).join("");
+  return `
+    <div class="bank-filters">
+      <select id="act-band" class="bank-filter">${bandOpts}</select>
+      <select id="act-cat" class="bank-filter">${catOpts}</select>
+    </div>
+    <input id="act-search" class="bank-search" type="text" placeholder="Search transactions…" value="${esc(actSearch)}">
+    <div id="bank-ledger-list">${listHTML(s)}</div>`;
+}
+
+function listHTML(s) {
+  const q = actSearch.trim().toLowerCase();
+  const entries = ledgerEntries().filter((e) => {
+    if (actBand !== "all" && e.band !== actBand) return false;
+    if (actCat !== "all" && e.category !== actCat) return false;
+    if (q && !(`${e.note || ""} ${e.category || ""}`.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if (!entries.length) return `<div class="set-note">No matching transactions.</div>`;
   const label = (e) => e.account === "wallet" ? "Wallet" : bandLabel(s, e.band);
-  return `<div class="bank-ledger">${entries.slice(0, 120).map((e) => {
+  return `<div class="bank-ledger">${entries.slice(0, 150).map((e) => {
     const pos = e.amount >= 0;
     return `<div class="bank-tx">
       <div class="bank-tx-main"><span class="bank-tx-note">${esc(e.note || e.category)}</span><span class="bank-tx-amt ${pos ? "good" : "warn"}">${pos ? "+" : "−"}${num(Math.abs(e.amount))}</span></div>
@@ -96,13 +143,26 @@ function activityHTML(s) {
 }
 function bandLabel(s, id) { const b = (s.bands || []).find((x) => x.id === id); return b ? bandName(b) : "Band"; }
 
+function refreshList(root) {
+  const list = root.querySelector("#bank-ledger-list");
+  if (list) list.innerHTML = listHTML(getState());
+}
+
 function bind(root) {
   root.querySelectorAll(".bank-tab").forEach((t) => t.addEventListener("click", () => {
     tab = t.dataset.tab; if (tab !== "bands") selBand = null; renderBankApp(root);
   }));
+  root.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => { selBand = b.dataset.open; tab = "bands"; renderBankApp(root); }));
   root.querySelectorAll(".bank-pick").forEach((p) => p.addEventListener("click", () => { selBand = p.dataset.band; renderBankApp(root); }));
   const back = root.querySelector("[data-back]");
   if (back) back.addEventListener("click", () => { selBand = null; renderBankApp(root); });
+
+  const bandSel = root.querySelector("#act-band");
+  if (bandSel) bandSel.addEventListener("change", () => { actBand = bandSel.value; refreshList(root); });
+  const catSel = root.querySelector("#act-cat");
+  if (catSel) catSel.addEventListener("change", () => { actCat = catSel.value; refreshList(root); });
+  const search = root.querySelector("#act-search");
+  if (search) search.addEventListener("input", () => { actSearch = search.value; refreshList(root); });
   root.querySelectorAll(".bank-actions [data-act]").forEach((btn) => btn.addEventListener("click", () => {
     const input = root.querySelector("#bank-amt");
     const amt = Math.floor(Number(input && input.value) || 0);

@@ -408,3 +408,24 @@ export function bankRepay(bandId, amt) {
   logTx({ account: bandId, band: bandId, amount: amt, category: "repayment", note: "Loan repayment" });
   return { ok: true, paid: amt };
 }
+
+// Pay an expense ON BEHALF of a band. The band account pays the full amount; if it's
+// short, the difference is first auto-contributed from the player's wallet (recorded as
+// owner equity, withdrawable later) so the band can cover it. The UI is responsible for
+// confirming any wallet draw before calling this. Returns { ok, contributed } or { ok:false }.
+export function bandSpend(bandId, amount, category = "misc", note = "") {
+  amount = Math.floor(amount); const b = bandById(bandId);
+  if (!b) return { ok: false, msg: "No band." };
+  if (!(amount > 0)) return { ok: false, msg: "Nothing to pay." };
+  const have = b.account || 0;
+  const short = Math.max(0, amount - have);
+  if (short > 0) {
+    if (walletBalance() < short) return { ok: false, msg: "Not enough money." };
+    addStat("money", -short); b.account = have + short; b.ownerEquity = (b.ownerEquity || 0) + short;
+    logTx({ account: "wallet", band: bandId, amount: -short, category: "contribution", note: `Covered ${bandNm(b)} ${category}` });
+    logTx({ account: bandId, band: bandId, amount: short, category: "contribution", note: "Owner contribution" });
+  }
+  b.account -= amount;
+  logTx({ account: bandId, band: bandId, amount: -amount, category, note: note || category });
+  return { ok: true, contributed: short };
+}
