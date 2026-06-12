@@ -438,3 +438,54 @@ export function bandEarn(bandId, amount, category = "income", note = "") {
   logTx({ account: bandId, band: bandId, amount, category, note: note || category });
   return amount;
 }
+
+// ---- Payroll: pay members from their band accounts (Step 20.3b) ----
+// Per-band view of what's owed to members vs what each band's account holds.
+export function payrollSummary() {
+  const byBand = {};
+  for (const m of (getState().musicians || [])) {
+    if ((m.owed || 0) <= 0 || !m.bandId) continue;
+    const bid = m.bandId;
+    if (!byBand[bid]) { const b = bandById(bid); byBand[bid] = { bandId: bid, name: (b && b.name) || "Band", owed: 0, account: (b && b.account) || 0 }; }
+    byBand[bid].owed += m.owed;
+  }
+  return Object.values(byBand).map((b) => ({ ...b, short: Math.max(0, b.owed - b.account) }));
+}
+export function payrollTotals() {
+  const sum = payrollSummary();
+  return { owed: sum.reduce((a, b) => a + b.owed, 0), short: sum.reduce((a, b) => a + b.short, 0), bands: sum };
+}
+
+// Pay band members from their band accounts. If `cover` is true, any band short on
+// payroll has its shortfall auto-contributed from the player's wallet first (tracked as
+// owner equity). Otherwise short bands pay pro-rata and the remainder stays owed.
+export function payPayroll(cover) {
+  const s = getState();
+  let paid = 0, contributed = 0, leftOwed = 0;
+  for (const bs of payrollSummary()) {
+    const b = bandById(bs.bandId); if (!b) continue;
+    if (cover && bs.short > 0 && walletBalance() >= bs.short) {
+      addStat("money", -bs.short); b.account = (b.account || 0) + bs.short; b.ownerEquity = (b.ownerEquity || 0) + bs.short;
+      logTx({ account: "wallet", band: bs.bandId, amount: -bs.short, category: "contribution", note: `Covered ${bs.name} payroll` });
+      logTx({ account: bs.bandId, band: bs.bandId, amount: bs.short, category: "contribution", note: "Owner contribution (payroll)" });
+      contributed += bs.short;
+    }
+    const members = (s.musicians || []).filter((m) => m.bandId === bs.bandId && (m.owed || 0) > 0);
+    const owedTotal = members.reduce((a, m) => a + m.owed, 0);
+    if (owedTotal <= 0) continue;
+    const budget = b.account || 0;
+    const ratio = budget >= owedTotal ? 1 : (budget <= 0 ? 0 : budget / owedTotal);
+    let bandPaid = 0;
+    for (const m of members) {
+      const p = ratio >= 1 ? m.owed : Math.floor(m.owed * ratio);
+      if (p > 0) { m.owed -= p; bandPaid += p; }
+    }
+    if (bandPaid > 0) {
+      b.account -= bandPaid;
+      logTx({ account: bs.bandId, band: bs.bandId, amount: -bandPaid, category: "payout", note: `Paid ${members.length} member${members.length > 1 ? "s" : ""}` });
+      paid += bandPaid;
+    }
+    leftOwed += members.reduce((a, m) => a + (m.owed || 0), 0);
+  }
+  return { paid, contributed, leftOwed };
+}

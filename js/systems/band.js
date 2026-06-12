@@ -16,7 +16,7 @@ import {
   ensureMusicianModel, allMusicians, musicianById, bandMembers, performingMembers,
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
-  ensureContracts, totalOwed, payAllOwed, expectedLiveSplit, effectiveLiveSplit
+  ensureContracts, totalOwed, payrollTotals, payPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -239,11 +239,11 @@ function renderBand(view) {
       <div><span>Shows</span><strong>${b.showsPlayed || 0}</strong></div>
     </div>
     <div class="band-fin">
-      <div><span>Cash</span><strong>$${money}</strong></div>
-      <div><span>Owed</span><strong class="${owed > 0 ? "bad" : ""}">$${owed}</strong></div>
-      <div><span>Spendable</span><strong class="good">$${spend}</strong></div>
+      <div><span>Your cash</span><strong>$${money}</strong></div>
+      <div><span>Band acct</span><strong class="good">$${b.account || 0}</strong></div>
+      <div><span>Owed members</span><strong class="${owed > 0 ? "bad" : ""}">$${owed}</strong></div>
     </div>
-    ${owed > 0 ? `<button class="btn band-mini" id="band-payday">Payday — pay $${owed}</button>` : ""}
+    ${owed > 0 ? `<button class="btn band-mini" id="band-payday">Payday — pay $${owed} from band funds</button>` : ""}
     <div class="bd-stat"><span>Chemistry</span><div class="bd-bar"><div style="width:${Math.round((b.chemistry || 0) / maxChem * 100)}%;background:#ffd23f"></div></div></div>
     <div class="band-roster">${youRow}${memberRows || (b.playerIn ? "" : `<p class="muted" style="padding:8px">No members — recruit at The Dive, or assign someone on the Musicians page.</p>`)}</div>
     ${!b.playerIn ? `<button class="btn band-mini" id="player-join">Join this band (you)</button>` : ""}
@@ -520,11 +520,22 @@ function contractLabel(m) {
   return parts.length ? parts.join(" · ") : "volunteer";
 }
 function doPayday() {
-  const r = payAllOwed();
-  if (r.total <= 0) { toast("Nobody's owed anything right now.", "info"); return; }
-  for (const m of (getState().musicians || [])) if (m.bandId) m.happiness = Math.min(100, (m.happiness ?? 70) + (r.full ? 2 : 1));
-  persist();
-  toast(r.full ? `Payday! Paid out $${r.paid}.` : `Paid $${r.paid} of $${r.total} owed — you came up short.`, r.full ? "good" : "warn");
+  const t = payrollTotals();
+  if (t.owed <= 0) { toast("Nobody's owed anything right now.", "info"); return; }
+  let cover = false;
+  if (t.short > 0) {
+    if (walletBalance() >= t.short) {
+      cover = confirm(`Your bands are $${t.short} short on payroll (of $${t.owed} owed).\n\nCover the shortfall from your wallet? It's tracked as your contribution and you can withdraw it later.\n\nCancel = pay what the bands can and leave the rest owed.`);
+    } else {
+      toast("Bands can't cover payroll and neither can your wallet — paying what they can.", "warn");
+    }
+  }
+  const r = payPayroll(cover);
+  const full = r.leftOwed <= 0;
+  for (const m of (getState().musicians || [])) if (m.bandId) m.happiness = Math.min(100, (m.happiness ?? 70) + (full ? 2 : 1));
+  persist(); emit("renderAll");
+  const fronted = r.contributed ? ` (you fronted $${r.contributed})` : "";
+  toast(full ? `Payday! Paid out $${r.paid}${fronted}.` : `Paid $${r.paid}${fronted} — $${r.leftOwed} still owed.`, full ? "good" : "warn");
   refresh();
 }
 function openNegotiate(id) {
