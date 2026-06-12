@@ -11,7 +11,7 @@
 
 import { DATA } from "../engine/data.js";
 import { getState, stampItem } from "../engine/state.js";
-import { instrumentQuality, instrumentTierObj } from "./gear.js";
+import { instrumentTiers, instrumentTierQuality } from "./gear.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -48,10 +48,22 @@ const mod = (n, m) => ((n % m) + m) % m;
 
 function activeId() { return getState().equipped?.instrumentId || null; }
 let recordSource = "instrument";   // "instrument" | "phone" — which gear the take is captured on
+function phoneQ() { return (DATA.config.gear && DATA.config.gear.phoneQuality != null) ? DATA.config.gear.phoneQuality : 0.3; }
+function roomInstruments() {
+  const s = getState();
+  const objs = (s.placedObjects && s.placedObjects[s.location]) || (DATA.locations[s.location] && DATA.locations[s.location].objects) || [];
+  const best = {};
+  for (const o of objs) {
+    if (!o || !o.instrumentId) continue;
+    const tier = o.tier || "starter"; const q = instrumentTierQuality(o.instrumentId, tier);
+    if (!best[o.instrumentId] || q > best[o.instrumentId].q) best[o.instrumentId] = { instrumentId: o.instrumentId, tier, q };
+  }
+  return Object.values(best);
+}
 function currentGearQ() {
-  if (recordSource === "phone") return (DATA.config.gear && DATA.config.gear.phoneQuality != null) ? DATA.config.gear.phoneQuality : 0.3;
-  const id = activeId();
-  return id ? instrumentQuality(id) : ((DATA.config.gear && DATA.config.gear.phoneQuality) || 0.3);
+  if (recordSource === "phone") return phoneQ();
+  const here = roomInstruments().find((o) => o.instrumentId === activeId());
+  return here ? here.q : phoneQ();   // instrument must be physically present, else it's a phone take
 }
 function activeInst() { return DATA.instruments[activeId()] || null; }
 function owned() { return getState().owned || []; }
@@ -192,16 +204,16 @@ async function playAudioPattern(pat) {
 }
 
 function instSwitcher() {
-  const ids = Array.from(new Set([...owned(), activeId()].filter((id) => id && DATA.instruments[id])));
-  const phoneQ = Math.round(((DATA.config.gear && DATA.config.gear.phoneQuality) || 0.3) * 100);
-  const opts = ids.map((id) => {
-    const tier = instrumentTierObj(id); const q = Math.round(instrumentQuality(id) * 100);
-    const sel = (recordSource === "instrument" && id === activeId()) ? "selected" : "";
-    return `<option value="${id}" ${sel}>${tier ? tier.name : DATA.instruments[id].name} (q${q})</option>`;
+  const room = roomInstruments();
+  const pQ = Math.round(phoneQ() * 100);
+  const opts = room.map((o) => {
+    const tname = (instrumentTiers(o.instrumentId).find((t) => t.id === o.tier) || {}).name || DATA.instruments[o.instrumentId].name;
+    const sel = (recordSource === "instrument" && o.instrumentId === activeId()) ? "selected" : "";
+    return `<option value="${o.instrumentId}" ${sel}>${tname} (q${Math.round(o.q * 100)})</option>`;
   }).join("");
-  const phoneSel = recordSource === "phone" ? "selected" : "";
+  const phoneSel = (recordSource === "phone" || !room.length) ? "selected" : "";
   return `<label class="mus-sel">RECORD WITH
-    <select data-inst>${opts}<option value="__phone__" ${phoneSel}>📱 Phone scratch (q${phoneQ})</option></select></label>`;
+    <select data-inst>${opts}<option value="__phone__" ${phoneSel}>📱 Phone scratch (q${pQ})</option></select></label>`;
 }
 function bindSwitcher() {
   const el = screenEl.querySelector("select[data-inst]");

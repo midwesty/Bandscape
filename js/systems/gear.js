@@ -39,3 +39,9 @@ export function ensureGear() {
   s.gear.instruments = s.gear.instruments || {};
   for (const type of Object.keys((DATA.instruments) || {})) { if (!s.gear.instruments[type]) s.gear.instruments[type] = "starter"; }
 }
+
+// quality of a specific tier of an instrument type (Step 19.2: per-object tiers)
+export function instrumentTierQuality(type, tierId) {
+  const t = instrumentTiers(type).find((x) => x.id === tierId);
+  return t && t.quality != null ? t.quality : 0.5;
+}
