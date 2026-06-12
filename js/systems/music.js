@@ -11,6 +11,7 @@
 
 import { DATA } from "../engine/data.js";
 import { getState, stampItem } from "../engine/state.js";
+import { instrumentQuality, instrumentTierObj } from "./gear.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -46,6 +47,12 @@ const safe = (n) => n.replace("#", "s");
 const mod = (n, m) => ((n % m) + m) % m;
 
 function activeId() { return getState().equipped?.instrumentId || null; }
+let recordSource = "instrument";   // "instrument" | "phone" — which gear the take is captured on
+function currentGearQ() {
+  if (recordSource === "phone") return (DATA.config.gear && DATA.config.gear.phoneQuality != null) ? DATA.config.gear.phoneQuality : 0.3;
+  const id = activeId();
+  return id ? instrumentQuality(id) : ((DATA.config.gear && DATA.config.gear.phoneQuality) || 0.3);
+}
 function activeInst() { return DATA.instruments[activeId()] || null; }
 function owned() { return getState().owned || []; }
 
@@ -161,7 +168,7 @@ async function saveVocalClip(blob, ms, recSec) {
   try { dataURL = await blobToDataURL(blob); } catch { toast("Couldn't process the recording.", "bad"); return; }
   try { const buf = await decodeDataURL(dataURL); duration = buf.duration; } catch {}
   const name = (prompt("Name this clip:", "Vocal " + ((getState().patterns?.length || 0) + 1)) || "Untitled").trim();
-  const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", duration, bpm: ms.bpm, bars: ms.bars, createdAt: Date.now() };
+  const pat = { id: "pat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), name, instrument: activeId(), type: "audio", duration, bpm: ms.bpm, bars: ms.bars, gearQ: currentGearQ(), createdAt: Date.now() };
   getState().patterns = getState().patterns || [];
   stampItem(pat, "loop");
   try { await putAudio(pat.id, dataURL); } catch { toast("Couldn't store the recording.", "bad"); return; }
@@ -185,15 +192,26 @@ async function playAudioPattern(pat) {
 }
 
 function instSwitcher() {
-  const list = Array.from(new Set([...owned(), activeId()].filter((id) => id && DATA.instruments[id])));
-  if (list.length <= 1) return `<span class="mus-inst">${activeInst().name}</span>`;
-  return `<label class="mus-sel">INSTRUMENT
-    <select data-inst>${list.map((id) => `<option value="${id}" ${id === activeId() ? "selected" : ""}>${DATA.instruments[id].name}</option>`).join("")}</select></label>`;
+  const ids = Array.from(new Set([...owned(), activeId()].filter((id) => id && DATA.instruments[id])));
+  const phoneQ = Math.round(((DATA.config.gear && DATA.config.gear.phoneQuality) || 0.3) * 100);
+  const opts = ids.map((id) => {
+    const tier = instrumentTierObj(id); const q = Math.round(instrumentQuality(id) * 100);
+    const sel = (recordSource === "instrument" && id === activeId()) ? "selected" : "";
+    return `<option value="${id}" ${sel}>${tier ? tier.name : DATA.instruments[id].name} (q${q})</option>`;
+  }).join("");
+  const phoneSel = recordSource === "phone" ? "selected" : "";
+  return `<label class="mus-sel">RECORD WITH
+    <select data-inst>${opts}<option value="__phone__" ${phoneSel}>📱 Phone scratch (q${phoneQ})</option></select></label>`;
 }
 function bindSwitcher() {
   const el = screenEl.querySelector("select[data-inst]");
   if (!el) return;
-  el.addEventListener("change", () => { stopRec(true); getState().equipped.instrumentId = el.value; persist(); tab = (tab === "library") ? "library" : tab; renderMusicApp(screenEl); });
+  el.addEventListener("change", () => {
+    stopRec(true);
+    if (el.value === "__phone__") recordSource = "phone";
+    else { recordSource = "instrument"; getState().equipped.instrumentId = el.value; }
+    persist(); tab = (tab === "library") ? "library" : tab; renderMusicApp(screenEl);
+  });
 }
 function selCtl(label, key, opts, val) {
   return `<label class="mus-sel">${label}<select data-ms="${key}">${opts.map((o) => `<option ${o == val ? "selected" : ""}>${o}</option>`).join("")}</select></label>`;
@@ -314,7 +332,7 @@ function startRecording() {
   ensureAudio();
   const ms = MS(); const ts = TIME_SIGS[ms.timeSig];
   curBeatsPerBar = ts.bpb; curStepsPerBeat = ts.spb; curLength = ms.bars * ts.bpb * ts.spb;
-  currentPattern = { name: "Untitled", instrument: activeId(), length: curLength, bpm: ms.bpm, stepsPerBeat: curStepsPerBeat, timeSig: ms.timeSig, notes: [], createdAt: Date.now() };
+  currentPattern = { name: "Untitled", instrument: activeId(), length: curLength, bpm: ms.bpm, stepsPerBeat: curStepsPerBeat, timeSig: ms.timeSig, notes: [], gearQ: currentGearQ(), createdAt: Date.now() };
   const countInSteps = ms.metroOn ? ms.countInBars * curBeatsPerBar * curStepsPerBeat : 0;
   tickCount = -countInSteps; currentStep = 0; isRecording = true;
   clearInterval(stepTimer);
@@ -412,7 +430,7 @@ function openEditor(index) {
 function openCompose() {
   if (prGateLocked()) return;
   const ms = MS(); const ts = TIME_SIGS[ms.timeSig];
-  editPattern = { name: "New Loop", instrument: activeId(), length: ms.bars * ts.bpb * ts.spb, bpm: ms.bpm, stepsPerBeat: ts.spb, timeSig: ms.timeSig, notes: [], createdAt: Date.now() };
+  editPattern = { name: "New Loop", instrument: activeId(), length: ms.bars * ts.bpb * ts.spb, bpm: ms.bpm, stepsPerBeat: ts.spb, timeSig: ms.timeSig, notes: [], gearQ: currentGearQ(), createdAt: Date.now() };
   editIndex = null; prDirty = false; prScrollL = 0; prScrollT = 0;
   brushLen = (activeInst()?.kind === "percussion") ? 1 : 2;
   renderMusicApp(screenEl);

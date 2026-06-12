@@ -27,13 +27,15 @@ const songById = (id) => (getState().songs || []).find((s) => s.id === id) || nu
 // ---- quality ----
 function songGearQuality(song) {
   const pats = getState().patterns || [];
-  const types = new Set();
+  const qs = [];
   (song.tracks || []).forEach((tr) => (tr || []).forEach((c) => {
-    if (c && c.patternId) { const p = pats.find((x) => x.id === c.patternId); if (p && p.instrument) types.add(p.instrument); }
+    if (!c || !c.patternId) return;
+    const p = pats.find((x) => x.id === c.patternId); if (!p) return;
+    if (typeof p.gearQ === "number") qs.push(p.gearQ);              // stamped at record time
+    else if (p.instrument) qs.push(instrumentQuality(p.instrument)); // legacy loop fallback
   }));
-  if (!types.size) return null;
-  let sum = 0, n = 0; types.forEach((t) => { sum += instrumentQuality(t); n++; });
-  return n ? sum / n : null;
+  if (!qs.length) return null;
+  return qs.reduce((a, b) => a + b, 0) / qs.length;
 }
 export function songQuality(song, band) {
   if (!song) return 0;

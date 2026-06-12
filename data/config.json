@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.19.0 (Step 19.0: instrument tiers feed song quality)",
+  "version": "0.19.1 (Step 19.1: record-time gear pick + phone scratch + stamped quality)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -98,7 +98,8 @@
   "gear": {
     "device": "SoundPound 400",
     "maxTracks": 4,
-    "fidelity": 0.5
+    "fidelity": 0.5,
+    "phoneQuality": 0.3
   },
   "shows": {
     "baseAudience": 8,
