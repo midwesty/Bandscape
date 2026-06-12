@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, bandById, playerFame, bandMembers, streamCutFrac, accrueOwed, ensureContracts } from "../engine/state.js";
+import { getState, bandEarn, bandById, playerFame, bandMembers, streamCutFrac, accrueOwed, ensureContracts } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -53,7 +53,7 @@ function accrue() {
   const s = getState(); const rel = s.releases || []; if (!rel.length) return;
   ensureContracts();
   const cfg = CFG(); let tStreams = 0, tFans = 0;
-  s._streamBank = s._streamBank || 0;
+  const streamPay = {};
   for (const r of rel) {
     const band = bandById(r.bandId) || {};
     const age = (s.time?.day || 1) - r.releasedDay;
@@ -63,13 +63,23 @@ function accrue() {
     const fans = Math.round(ds * cfg.fanConversion);
     r.streams += ds; r.lastStreams = ds; r.fans += fans; r.revenue = (r.revenue || 0) + ds * cfg.payoutPerStream;
     if (band.id) { band.fans = (band.fans || 0) + fans; band.fame = (band.fame || 0) + Math.max(0, Math.round(fans * 0.2)); }
-    tStreams += ds; tFans += fans; s._streamBank += ds * cfg.payoutPerStream;
-    // members' streaming cut accrues to what you owe them
-    if (band.id) { const royalty = ds * cfg.payoutPerStream; for (const m of bandMembers(band.id)) accrueOwed(m, royalty * streamCutFrac(m)); }
+    tStreams += ds; tFans += fans;
+    if (band.id) {
+      const royalty = ds * cfg.payoutPerStream;
+      streamPay[band.id] = (streamPay[band.id] || 0) + royalty;
+      for (const m of bandMembers(band.id)) accrueOwed(m, royalty * streamCutFrac(m));
+    }
   }
-  const dollars = Math.floor(s._streamBank); if (dollars > 0) { addStat("money", dollars); s._streamBank -= dollars; }
+  // credit each band's account with whole dollars; carry the fractional remainder per band
+  let dollars = 0;
+  for (const bid of Object.keys(streamPay)) {
+    const b = bandById(bid); if (!b) continue;
+    b._streamAccum = (b._streamAccum || 0) + streamPay[bid];
+    const whole = Math.floor(b._streamAccum);
+    if (whole > 0) { bandEarn(bid, whole, "streaming", "Streaming royalties"); b._streamAccum -= whole; dollars += whole; }
+  }
   persist();
-  if (tStreams > 0) toast(`Your releases pulled ${fmt(tStreams)} streams overnight (+${tFans} fans, +$${dollars}).`, "good");
+  if (tStreams > 0) toast(`Your releases pulled ${fmt(tStreams)} streams overnight (+${tFans} fans, +$${dollars} to band accounts).`, "good");
 }
 on("day:advanced", accrue);
 

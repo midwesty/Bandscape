@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts, bandEarn } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -206,9 +206,9 @@ function playShow(setIds) {
   const energy = (cfg.energyCost || 25) + (setIds.length - 1) * 5;
   const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
 
-  addStat("money", est.pay);
+  bandEarn(band.id, est.pay, "show", "Show pay");
   const merch = sellMerchAtShow(band, est.draw);
-  if (merch.revenue > 0) { addStat("money", merch.revenue); band.merchSold = (band.merchSold || 0) + merch.revenue; }
+  if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   addStat("mood", cfg.moodGain || 8);
   addStat("energy", -energy);
   const maxChem = DATA.config.band?.maxChemistry || 100;
@@ -257,7 +257,7 @@ function playShow(setIds) {
           <div class="show-cuts-h">Band's cut — added to what you owe</div>
           ${cutLines.map((c) => `<div><span>${esc(c.name)}</span><strong>$${c.cut}</strong></div>`).join("")}
           <div class="show-cuts-total"><span>Owed this show</span><strong class="bad">$${cutTotal}</strong></div>
-          <p class="shop-note" style="margin-top:6px">You banked the full $${est.pay + merch.revenue}; settle up with the band on Payday.</p>
+          <p class="shop-note" style="margin-top:6px">${esc(band.name || "The band")} banked $${est.pay + merch.revenue} into its account; settle up on Payday.</p>
         </div>` : ""}
         <button class="btn" id="show-done">Done</button>
       </div>
@@ -291,9 +291,9 @@ export function autoResolveShow(commitment) {
   const venueId = commitment.venue || "thedive";
   const setIds = autoSetlist(band); if (!setIds.length) return null;
   const est = estimate(new Set(setIds), band, venueId);
-  addStat("money", est.pay);
+  bandEarn(band.id, est.pay, "show", "Show pay");
   const merch = sellMerchAtShow(band, est.draw);
-  if (merch.revenue > 0) { addStat("money", merch.revenue); band.merchSold = (band.merchSold || 0) + merch.revenue; }
+  if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   const maxChem = (DATA.config.band && DATA.config.band.maxChemistry) || 100;
   band.fans = (band.fans || 0) + est.fans;
   band.fame = (band.fame || 0) + est.fameGain;
@@ -324,7 +324,7 @@ export function showAutoReport(results) {
   const scrim = document.createElement("div"); scrim.className = "modal-scrim"; scrim.id = "ar-scrim";
   scrim.innerHTML = `<div class="neg-card ar-card">
     <div class="neg-head"><span>WHILE YOU WERE OUT</span><button id="ar-x">\u2715</button></div>
-    <p class="neg-ask">Your other acts played their booked nights without you. You banked the gross; settle the band's cut on Payday.</p>
+    <p class="neg-ask">Your other acts played their booked nights without you. The gross went into each band's account; settle their cut on Payday.</p>
     ${rows}
     <div class="neg-acts"><button class="btn" id="ar-ok">Nice</button></div>
   </div>`;

@@ -429,3 +429,12 @@ export function bandSpend(bandId, amount, category = "misc", note = "") {
   logTx({ account: bandId, band: bandId, amount: -amount, category, note: note || category });
   return { ok: true, contributed: short };
 }
+
+// Credit income to a band's account (shows, merch sales, streaming). Logged to the ledger.
+export function bandEarn(bandId, amount, category = "income", note = "") {
+  amount = Math.floor(amount); const b = bandById(bandId);
+  if (!b || !(amount > 0)) return 0;
+  b.account = (b.account || 0) + amount;
+  logTx({ account: bandId, band: bandId, amount, category, note: note || category });
+  return amount;
+}
