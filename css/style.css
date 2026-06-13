@@ -1117,3 +1117,8 @@ body:has(.modal-scrim) #log { display: none; }
 .set-load { flex: 1; text-align: left; padding: 7px 9px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 4px; cursor: pointer; }
 .set-del { width: 32px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; cursor: pointer; }
 .set-del:hover { color: var(--pink); border-color: var(--pink); }
+
+/* ---- Setlist chooser modal (Step 22.1.1) ---- */
+.set-modal-scrim { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 16px; }
+.set-modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; width: min(420px, 94vw); max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+.set-modal-body { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }

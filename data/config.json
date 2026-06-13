@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.22.1 (Step 22.1: setlist revamp \u2014 own/covers toggle, search, saved setlists, use-last-setlist)",
+  "version": "0.22.2 (Step 22.2: live cover royalties \u2014 performing a song released by another act pays a cut to its credit-holders + fame to originals)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -249,6 +249,8 @@
     "bandPct": 50,
     "playerPct": 20,
     "writerPoolPct": 30,
-    "fameFactor": 0.02
+    "fameFactor": 0.02,
+    "liveCoverRate": 0.4,
+    "liveFameFactor": 3
   }
 }

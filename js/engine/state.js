@@ -259,11 +259,11 @@ export function autoCredits(bandId, songIds) {
 // you → wallet, another band → its account, a member → their owed (settled on Payday from
 // their band's account; cross-band members get the cash moved to their band first). The
 // releasing band keeps its own share; free agents/unresolved ids leave it with the band.
-export function splitRoyalty(bandId, credits, amount, note) {
+export function splitRoyalty(bandId, credits, amount, note, category = "streaming") {
   amount = Math.floor(amount); const rb = bandById(bandId);
   if (!rb || !(amount > 0)) return;
   rb.account = (rb.account || 0) + amount;
-  logTx({ account: bandId, band: bandId, amount, category: "streaming", note: note || "Streaming royalties" });
+  logTx({ account: bandId, band: bandId, amount, category, note: note || "Royalties" });
   const list = (credits && credits.length) ? credits : [{ id: bandId, pct: 100 }];
   const totalPct = list.reduce((a, c) => a + (Number(c.pct) || 0), 0) || 1;
   const shares = list.map((c) => ({ id: c.id, raw: amount * (Number(c.pct) || 0) / totalPct }));
@@ -299,6 +299,30 @@ export function splitRoyalty(bandId, credits, amount, note) {
     }
     // free agent / unresolved id → releasing band retains the share
   }
+}
+
+// Live cover royalty: when a band performs a song RELEASED by another act, it pays a cut of
+// that song's share of the gig to the original credit-holders, plus a small fame bump to them.
+export function payCoverRoyalty(performerBandId, songId, perSongPay) {
+  const rel = (getState().releases || []).find((r) => (r.songIds || []).includes(songId));
+  if (!rel || rel.bandId === performerBandId) return null;       // own or unreleased → no royalty
+  const pb = bandById(performerBandId); if (!pb) return null;
+  const credits = (rel.credits && rel.credits.length) ? rel.credits : [{ id: rel.bandId, pct: 100 }];
+  const rate = (DATA.config.credits && DATA.config.credits.liveCoverRate) || 0.4;
+  const royalty = Math.floor((perSongPay || 0) * rate);
+  if (royalty <= 0) return null;
+  pb.account = (pb.account || 0) - royalty;
+  logTx({ account: performerBandId, band: performerBandId, amount: -royalty, category: "royalty", note: `Cover royalty: ${rel.title || "song"}` });
+  splitRoyalty(rel.bandId, credits, royalty, `Live cover: ${rel.title || "song"}`, "royalty");
+  const totalPct = credits.reduce((a, c) => a + (Number(c.pct) || 0), 0) || 1;
+  const ff = (DATA.config.credits && DATA.config.credits.liveFameFactor) || 3;
+  for (const c of credits) {
+    const fame = Math.max(0, Math.round(ff * (Number(c.pct) || 0) / totalPct));
+    if (fame <= 0) continue;
+    if (c.id === PLAYER_ARTIST) addStat("fame", fame);
+    else { const b = bandById(c.id); if (b) b.fame = (b.fame || 0) + fame; else { const m = (getState().musicians || []).find((x) => x.id === c.id); if (m) m.fame = (m.fame || 0) + fame; } }
+  }
+  return { royalty, title: rel.title || "song", owner: (bandById(rel.bandId) || {}).name || "another act" };
 }
 function bandByName(name) { return (getState()?.bands || []).find((b) => (b.name || "") === name) || null; }
 export function topWriter(bandId) {
