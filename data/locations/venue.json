@@ -40,6 +40,28 @@
       "decorId": "leather_sofa",
       "sprite": "assets/img/objects/decor/leather_sofa.png",
       "exclusive": true
+    },
+    {
+      "id": "pd_venue_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_venue_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 8,
+        "y": 3
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
     }
   ],
   "exits": [

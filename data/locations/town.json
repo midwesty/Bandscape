@@ -18,9 +18,7 @@
       },
       "interact": "shop",
       "shopId": "pawn",
-      "solid": true,
-      "to": "thrift",
-      "label": "Thrift"
+      "solid": true
     },
     {
       "id": "grocery",
@@ -100,6 +98,21 @@
         "x": 6,
         "y": 6
       }
+    },
+    {
+      "id": "thrift",
+      "name": "Second-Hand Rose",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "interact": "enter",
+      "to": "thrift",
+      "spawn": {
+        "x": 6,
+        "y": 6
+      },
+      "solid": true
     }
   ],
   "world": {

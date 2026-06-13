@@ -628,6 +628,7 @@ function drawProc(o, cx, cy) {
     case "door": case "out": case "exit":   doorway(cx, cy); break;
     case "pawn":    building(cx, cy, C.yellow); break;
     case "grocery": building(cx, cy, C.green); break;
+    case "thrift":  building(cx, cy, C.blue); break;
     case "musicstore": building(cx, cy, C.purple || C.blue); break;
     case "venue":   building(cx, cy, C.pink); break;
     case "busk":    buskSpot(cx, cy); break;
@@ -682,6 +683,34 @@ function drawDecor(o, cx, cy) {
       ctx.beginPath(); ctx.arc(cx, cy - 17, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
     case "floor":
       diamond(cx, cy, "#8a3a5c", "#5f2540"); break;
+    case "tables": {
+      ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+      [-10, 10].forEach((dx) => { ctx.beginPath(); ctx.moveTo(cx + dx, cy + 2); ctx.lineTo(cx + dx, cy - 7); ctx.stroke(); });
+      cuboid(cx, cy - 7, 13, 5, 3, "#8a6a44", "#6e5230", "#54401f");
+      break;
+    }
+    case "commercial": {
+      const id = o.decorId || "";
+      if (id === "shopping_cart") {
+        ctx.strokeStyle = C.line; ctx.lineWidth = 1.6;
+        ctx.strokeRect(cx - 8, cy - 15, 16, 11);
+        ctx.beginPath(); ctx.moveTo(cx - 8, cy - 4); ctx.lineTo(cx - 6, cy); ctx.moveTo(cx + 8, cy - 4); ctx.lineTo(cx + 6, cy); ctx.stroke();
+        ctx.fillStyle = C.line; [[-5, 1], [5, 1]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, 2, 0, Math.PI * 2); ctx.fill(); });
+      } else if (id === "bar_booth") {
+        cuboid(cx, cy, 16, 8, 6, "#5e3a3a", "#4a2d2d", "#3a2222");
+        cuboid(cx, cy - 6, 16, 4, 12, "#6e4444", "#563434", "#432828");
+      } else if (id === "display_case") {
+        cuboid(cx, cy, 12, 6, 15, "rgba(180,220,235,0.55)", "rgba(140,180,200,0.5)", "rgba(110,150,170,0.5)");
+      } else if (id === "merch_rack") {
+        ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - 12, cy - 20); ctx.lineTo(cx + 12, cy - 20); ctx.stroke();
+        const cc = [C.pink, C.blue, C.green, C.yellow];
+        [-8, -3, 2, 7].forEach((dx, i) => { ctx.fillStyle = cc[i % 4]; ctx.fillRect(cx + dx - 2, cy - 19, 4, 12); });
+      } else {
+        cuboid(cx, cy, 15, 6, 18, "#4a4458", "#3a3546", "#2e2a38");
+        ctx.strokeStyle = C.line; ctx.lineWidth = 1; [6, 12].forEach((h) => { ctx.beginPath(); ctx.moveTo(cx - 15, cy - h); ctx.lineTo(cx + 15, cy - h); ctx.stroke(); });
+      }
+      break;
+    }
     default:
       cuboid(cx, cy, 14, 7, 12, C.purple, "#6e54a0", "#523f78");
   }

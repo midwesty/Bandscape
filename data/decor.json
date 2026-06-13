@@ -8,7 +8,9 @@
     "electronics",
     "wall",
     "plants",
-    "floor"
+    "floor",
+    "tables",
+    "commercial"
   ],
   "categoryLabels": {
     "seating": "Seating",
@@ -18,7 +20,9 @@
     "electronics": "Electronics",
     "wall": "Wall & Art",
     "plants": "Plants",
-    "floor": "Rugs & Floor"
+    "floor": "Rugs & Floor",
+    "tables": "Tables & Desks",
+    "commercial": "Business"
   },
   "items": {
     "futon": {
@@ -480,6 +484,132 @@
       "tier": 3,
       "sprite": "assets/img/objects/decor/tatami_mat.png",
       "desc": "Calm, woven, intentional."
+    },
+    "coffee_table": {
+      "name": "Coffee Table",
+      "category": "tables",
+      "price": 70,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/coffee_table.png",
+      "desc": "Holds drinks, magazines, and your feet."
+    },
+    "side_table": {
+      "name": "Side Table",
+      "category": "tables",
+      "price": 45,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/side_table.png",
+      "desc": "A lamp's best friend."
+    },
+    "dining_table": {
+      "name": "Dining Table",
+      "category": "tables",
+      "price": 180,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/dining_table.png",
+      "desc": "For meals you'll mostly eat standing up anyway."
+    },
+    "writing_desk": {
+      "name": "Writing Desk",
+      "category": "tables",
+      "price": 160,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/writing_desk.png",
+      "desc": "Where the lyrics happen. Allegedly."
+    },
+    "console_table": {
+      "name": "Console Table",
+      "category": "tables",
+      "price": 140,
+      "vibe": 2,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/console_table.png",
+      "desc": "Long, narrow, and quietly judgmental of your keys."
+    },
+    "drafting_table": {
+      "name": "Drafting Table",
+      "category": "tables",
+      "price": 320,
+      "vibe": 4,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/drafting_table.png",
+      "desc": "Tilt it, light it, pretend you're an architect."
+    },
+    "shop_shelf": {
+      "name": "Shop Shelving",
+      "category": "commercial",
+      "price": 90,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/shop_shelving.png",
+      "desc": "Aisles of possibility. Mostly impulse buys."
+    },
+    "shopping_cart": {
+      "name": "Shopping Cart",
+      "category": "commercial",
+      "price": 40,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/shopping_cart.png",
+      "desc": "One wheel has a mind of its own."
+    },
+    "checkout_counter": {
+      "name": "Checkout Counter",
+      "category": "commercial",
+      "price": 220,
+      "vibe": 2,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/checkout_counter.png",
+      "desc": "Where the magic (transaction) happens."
+    },
+    "display_case": {
+      "name": "Display Case",
+      "category": "commercial",
+      "price": 260,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/display_case.png",
+      "desc": "Glass between you and the good stuff."
+    },
+    "bar_booth": {
+      "name": "Bar Booth",
+      "category": "commercial",
+      "price": 240,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "desc": "Cracked vinyl, a thousand confessions."
+    },
+    "cafe_table": {
+      "name": "Caf\u00e9 Table",
+      "category": "commercial",
+      "price": 80,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/caf\u00e9_table.png",
+      "desc": "Wobbles unless you fold a napkin under it."
+    },
+    "merch_rack": {
+      "name": "Merch Rack",
+      "category": "commercial",
+      "price": 110,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/merch_rack.png",
+      "desc": "Tees, totes, and unsold dreams."
+    },
+    "menu_board": {
+      "name": "Menu Board",
+      "category": "commercial",
+      "price": 55,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/menu_board.png",
+      "desc": "Chalk wisdom. Today's special: vibes."
     }
   }
 }

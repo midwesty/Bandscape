@@ -7,7 +7,41 @@
     "h": 7
   },
   "ambient": "arcade",
-  "objects": [],
+  "objects": [
+    {
+      "id": "pd_arcade_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_arcade_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 1,
+        "y": 4
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_arcade_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 8,
+        "y": 4
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
   "exits": [
     {
       "id": "cab1",
