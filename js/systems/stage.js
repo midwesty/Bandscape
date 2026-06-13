@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, setFlag } from "../engine/state.js";
+import { getState, addStat, setFlag, activeBand } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -24,7 +24,7 @@ import { openShop, busk, openVenue, openStore, openStoreCategory } from "./shop.
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
 import { playWorldSfx } from "./worldaudio.js";
-import { currentSlot } from "./calendar.js";
+import { bookedCommitments, currentDay, currentSlot } from "./calendar.js";
 import { openDialogue } from "./dialogue.js";
 
 const C = {
@@ -888,7 +888,12 @@ function drawMover(m) {
   const c = toScreen(m.x, m.y);
   if (m.kind === "car") return drawCar(c.x, c.y, m.facing);
   if (m.kind === "dog") return drawDog(c.x, c.y, m.facing);
-  if (m.kind === "npc") { shadow(c.x, c.y, 12, 6); return flipped(c.x, m.facing, () => npcFigure(c.x, c.y, { npcId: m.npcId })); }
+  if (m.kind === "npc") {
+    shadow(c.x, c.y, 12, 6);
+    flipped(c.x, m.facing, () => npcFigure(c.x, c.y, { npcId: m.npcId }));
+    if (m.band) { ctx.save(); ctx.fillStyle = "#b388ff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.fillText("\u266A", c.x, c.y - 44); ctx.restore(); }
+    return;
+  }
   return drawPed(c.x, c.y, m.facing);
 }
 function drawCar(cx, cy, facing) {
@@ -945,6 +950,12 @@ function scheduleResolve(npc, slot) {
   return { at: sc.at, post: sc.post || null };
 }
 function npcRecruited(id) { return (getState().musicians || []).some((m) => m.id === id && m.bandId); }
+function bandBusyNow() {   // does your band have a show/practice this very slot?
+  const b = activeBand(); if (!b) return false;
+  return bookedCommitments().some((c) => c.bandId === b.id && c.day === currentDay() && c.slot === currentSlot());
+}
+const BANDMATE_LINES = ["\"Ready when you are.\"", "\"When's the next gig?\"", "\"Sounds good, boss.\"", "\"Place is dead tonight, huh.\"", "\"I've been working on something new.\""];
+function bandmateLine(npc) { const day = (getState().time && getState().time.day) || 1; const i = (npc.id.length + day) % BANDMATE_LINES.length; return `${npc.name || "Bandmate"}: ${BANDMATE_LINES[i]}`; }
 function freeSceneTile() {
   const w = room.size?.w || 8, h = room.size?.h || 6;
   for (let i = 0; i < 30; i++) { const x = Math.floor(Math.random() * w), y = Math.floor(Math.random() * h); if (isFree(x, y)) return { x, y }; }
@@ -959,13 +970,15 @@ function buildSceneNPCs() {
     if (placed.has(npc.id)) continue;
     const r = scheduleResolve(npc, slot);
     if (!r || r.at !== here) continue;
-    if (!npc.townsfolk && npcRecruited(npc.id)) continue;        // they're in your band now
+    const bandmate = !npc.townsfolk && npcRecruited(npc.id);   // already in your band
+    if (bandmate && bandBusyNow()) continue;                   // off at a show / practice
     placed.add(npc.id);
     const posted = !!(r.post && Array.isArray(r.post) && isFree(r.post[0], r.post[1]));
     const spot = posted ? { x: r.post[0], y: r.post[1] } : freeSceneTile();
     npcMovers.push({
-      kind: "npc", npcId: npc.id, name: npc.name || npc.id,
-      interact: npc.townsfolk ? "flavor" : "talk", flavor: npc.line || npc.name || "",
+      kind: "npc", npcId: npc.id, name: npc.name || npc.id, band: bandmate,
+      interact: bandmate ? "flavor" : (npc.townsfolk ? "flavor" : "talk"),
+      flavor: bandmate ? bandmateLine(npc) : (npc.line || npc.name || ""),
       posted, x: spot.x, y: spot.y, speed: 0.85, target: null, pause: Math.random() * 2, facing: 1
     });
   }

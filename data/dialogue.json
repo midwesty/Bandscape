@@ -54,6 +54,20 @@
       "start": "neutral",
       "entry": [
         {
+          "node": "reward_favor",
+          "when": {
+            "minReleases": 1,
+            "flagNot": "favor_sal_done"
+          }
+        },
+        {
+          "node": "ask_favor",
+          "when": {
+            "minRapport": 15,
+            "flagNot": "favor_sal_done"
+          }
+        },
+        {
           "node": "warm",
           "when": {
             "minRapport": 5
@@ -106,6 +120,51 @@
               "end": true
             }
           ]
+        },
+        "ask_favor": {
+          "text": "Sal points a rag at you. \"Get a real record out and I'll start treating you like a regular.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(I'm on it.)",
+              "end": true
+            },
+            {
+              "text": "(maybe later)",
+              "end": true
+            }
+          ]
+        },
+        "reward_favor": {
+          "text": "Sal nods slow. \"You put out a record. Alright \u2014 you're a regular now.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 15,
+              "bypassDaily": true
+            },
+            {
+              "type": "flagSet",
+              "flag": "favor_sal_done",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Sal counts you as a regular.",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(thanks!)",
+              "end": true
+            }
+          ]
         }
       }
     },
@@ -146,8 +205,72 @@
               "end": true
             }
           ]
+        },
+        "ask_favor": {
+          "text": "Deb grabs your sleeve. \"Tell you what \u2014 play three shows and I'll bring my whole crew next time.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(I'm on it.)",
+              "end": true
+            },
+            {
+              "text": "(maybe later)",
+              "end": true
+            }
+          ]
+        },
+        "reward_favor": {
+          "text": "Deb beams. \"Three shows! My crew's officially yours now.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 15,
+              "bypassDaily": true
+            },
+            {
+              "type": "flagSet",
+              "flag": "favor_deb_done",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Deb's crew is in your corner.",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(thanks!)",
+              "end": true
+            }
+          ]
         }
-      }
+      },
+      "entry": [
+        {
+          "node": "reward_favor",
+          "when": {
+            "minShows": 3,
+            "flagNot": "favor_deb_done"
+          }
+        },
+        {
+          "node": "ask_favor",
+          "when": {
+            "minRapport": 10,
+            "flagNot": "favor_deb_done"
+          }
+        },
+        {
+          "node": "fan"
+        }
+      ]
     },
     "npc_walt": {
       "speaker": "Walt",
@@ -211,6 +334,20 @@
       "start": "hank",
       "entry": [
         {
+          "node": "reward_favor",
+          "when": {
+            "minFame": 40,
+            "flagNot": "favor_hank_done"
+          }
+        },
+        {
+          "node": "ask_favor",
+          "when": {
+            "minRapport": 15,
+            "flagNot": "favor_hank_done"
+          }
+        },
+        {
           "node": "busy",
           "when": {
             "slot": "late"
@@ -250,6 +387,51 @@
               "end": true
             }
           ]
+        },
+        "ask_favor": {
+          "text": "Hank wipes the bar. \"Make a real name for yourself and the Foundry'll look after you.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(I'm on it.)",
+              "end": true
+            },
+            {
+              "text": "(maybe later)",
+              "end": true
+            }
+          ]
+        },
+        "reward_favor": {
+          "text": "Hank slides you a drink. \"You've made a name. This one's on the house.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 15,
+              "bypassDaily": true
+            },
+            {
+              "type": "flagSet",
+              "flag": "favor_hank_done",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "The Foundry's got your back.",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(thanks!)",
+              "end": true
+            }
+          ]
         }
       }
     },
@@ -257,6 +439,20 @@
       "speaker": "Lou",
       "start": "lou",
       "entry": [
+        {
+          "node": "reward_favor",
+          "when": {
+            "minFans": 150,
+            "flagNot": "favor_lou_fans_done"
+          }
+        },
+        {
+          "node": "ask_favor",
+          "when": {
+            "minRapport": 15,
+            "flagNot": "favor_lou_fans_done"
+          }
+        },
         {
           "node": "tip",
           "when": {
@@ -325,6 +521,51 @@
           "choices": [
             {
               "text": "(grin)",
+              "end": true
+            }
+          ]
+        },
+        "ask_favor": {
+          "text": "Lou sizes you up. \"Get yourself to 150 fans and I'll really open my book for you.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(I'm on it.)",
+              "end": true
+            },
+            {
+              "text": "(maybe later)",
+              "end": true
+            }
+          ]
+        },
+        "reward_favor": {
+          "text": "Lou whistles. \"150 fans. Now we're talking \u2014 my book's open.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 15,
+              "bypassDaily": true
+            },
+            {
+              "type": "flagSet",
+              "flag": "favor_lou_fans_done",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Lou's connections are yours.",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(thanks!)",
               "end": true
             }
           ]
@@ -421,8 +662,72 @@
               "end": true
             }
           ]
+        },
+        "ask_favor": {
+          "text": "Min leans in. \"Get this town really buzzing and I'll make some noise for you.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(I'm on it.)",
+              "end": true
+            },
+            {
+              "text": "(maybe later)",
+              "end": true
+            }
+          ]
+        },
+        "reward_favor": {
+          "text": "Min's grinning. \"Whole town's talking about you! Told you I'd help.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 12,
+              "bypassDaily": true
+            },
+            {
+              "type": "flagSet",
+              "flag": "favor_min_done",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Min is hyping you everywhere.",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(thanks!)",
+              "end": true
+            }
+          ]
         }
-      }
+      },
+      "entry": [
+        {
+          "node": "reward_favor",
+          "when": {
+            "minBuzz": 25,
+            "flagNot": "favor_min_done"
+          }
+        },
+        {
+          "node": "ask_favor",
+          "when": {
+            "minRapport": 10,
+            "flagNot": "favor_min_done"
+          }
+        },
+        {
+          "node": "n0"
+        }
+      ]
     },
     "npc_gus": {
       "speaker": "Gus",

@@ -305,6 +305,7 @@ function playShow(setIds) {
   const coverTotal = coverPaid.reduce((a, c) => a + c.royalty, 0);
   addBuzz((venueById(perfVenueId) || {}).town, showBuzz(est));
   gainShowRapport((venueById(perfVenueId) || {}).town, 2);
+  { const st = getState(); st.stats.showsPlayed = (st.stats.showsPlayed || 0) + 1; }
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   addStat("mood", cfg.moodGain || 8);

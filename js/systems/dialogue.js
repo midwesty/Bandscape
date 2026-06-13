@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, setFlag, getRapport, addRapport, addContact } from "../engine/state.js";
+import { getState, setFlag, getRapport, addRapport, addContact, townBuzz } from "../engine/state.js";
 import { currentSlot } from "./calendar.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -31,6 +31,8 @@ function cond(w) {
   if (w.minReleases != null && (s.releases || []).length < w.minReleases) return false;
   if (w.minFame != null && (s.stats.fame || 0) < w.minFame) return false;
   if (w.minFans != null && (s.stats.fans || 0) < w.minFans) return false;
+  if (w.minShows != null && (s.stats.showsPlayed || 0) < w.minShows) return false;
+  if (w.minBuzz != null) { const nt = ((DATA.npcs && DATA.npcs.npcs) || []).find((x) => x.id === npc); if (townBuzz(nt && nt.town) < w.minBuzz) return false; }
   if (w.slot && currentSlot() !== w.slot) return false;
   if (w.town && s.location !== w.town) return false;
   return true;
@@ -48,7 +50,7 @@ function applyEffects(effects) {
   if (!Array.isArray(effects)) return;
   for (const e of effects) {
     if (e.type === "flagSet") setFlag(e.flag, e.value !== undefined ? e.value : true);
-    else if (e.type === "rapport") grantRapport(e.amount || 0);
+    else if (e.type === "rapport") { if (e.bypassDaily) addRapport(npc, e.amount || 0); else grantRapport(e.amount || 0); }
     else if (e.type === "toast") toast(fill(e.text), e.kind || "info");
   }
 }

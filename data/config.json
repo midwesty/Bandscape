@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.25.1 (Step 25.1: relationships pay off \u2014 rapport via talking + playing shows; fans boost your crowd, owners cut deals, connectors share tips; People app shows rapport + perks. Favors next in 25.2)",
+  "version": "0.25.3 (Step 25.3: favors \u2014 NPCs ask for a milestone (shows/release/fans/buzz/fame), reward rapport once and remember; third way to build rapport; data-driven)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
