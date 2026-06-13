@@ -124,5 +124,25 @@
         "y": 6
       }
     }
-  ]
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "drag",
+        "from": {
+          "x": 0,
+          "y": 6
+        },
+        "to": {
+          "x": 12,
+          "y": 6
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 2,
+      "dog": true,
+      "pedestrians": 3
+    }
+  }
 }

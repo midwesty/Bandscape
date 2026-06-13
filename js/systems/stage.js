@@ -41,6 +41,7 @@ let cssW = 0, cssH = 0, originX = 0, originY = 0;
 
 let room = null, furniture = [], exits = [], blocked = null;
 let player = { x: 4, y: 3, fx: 4, fy: 3, facing: 1 };
+let movers = [], roads = [];   // ambient world life (Step 24.1) — regenerated per scene, not saved
 let path = [], pendingInteract = null;
 let hovered = null;
 let arranging = false, held = null;
@@ -99,6 +100,7 @@ function syncToState() {
   for (const o of (room.objects || [])) if (!haveIds.has(o.id) && !removed.has(o.id)) furniture.push(JSON.parse(JSON.stringify(o)));
   exits = room.exits || [];
   rebuildBlocked();
+  buildWorld();
 
   const saved = s.player?.tile;
   const start = saved && isFree(saved.x, saved.y) ? saved : firstFreeTile();
@@ -482,8 +484,9 @@ function frame(ts) {
   const dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016;
   lastTs = ts;
   update(dt);
+  updateMovers(dt);
   draw();
-  if (path.length) requestRender();
+  if (path.length || movers.length) requestRender();
 }
 
 function draw() {
@@ -493,14 +496,16 @@ function draw() {
 
   drawWalls(w, h);
   drawFloor(w, h);
+  drawRoads();
   drawArrangeOverlay(w, h);
 
   const ents = [];
   for (const o of furniture) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y });
   for (const o of exits) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y - 0.5 });
+  for (const m of movers) ents.push({ kind: "mover", m, depth: m.x + m.y + 0.35 });
   ents.push({ kind: "player", depth: player.x + player.y + 0.4 });
   ents.sort((a, b) => a.depth - b.depth);
-  for (const e of ents) e.kind === "player" ? drawPlayer() : drawObject(e.o);
+  for (const e of ents) e.kind === "player" ? drawPlayer() : e.kind === "mover" ? drawMover(e.m) : drawObject(e.o);
 
   drawDayNight();
   if (hovered && !arranging) drawLabel();
@@ -797,4 +802,112 @@ function getImage(path) {
   img.src = path;
   imgCache.set(path, img);
   return img;
+}
+
+// ============================================================
+// World life (Step 24.1): ambient real-time movers — passing cars on
+// roads, a town dog, and a couple of pedestrians. Built from the scene's
+// optional `world` block; regenerated per visit (never saved). Movers are
+// non-interactive ambience — they don't intercept taps and (for now) don't
+// collide with the player. Code-drawn placeholders, each overridable by a
+// PNG dropped into the matching assets/world/ slot.
+// ============================================================
+const ROAD = { face: "#2a2630", edge: "#1d1a24", line: "#6b6478" };
+const lerp = (a, b, t) => a + (b - a) * t;
+const roadLen = (r) => Math.hypot(r.to.x - r.from.x, r.to.y - r.from.y) || 1;
+function lineTiles(from, to) {
+  const out = [{ x: from.x, y: from.y }]; const dx = Math.sign(to.x - from.x), dy = Math.sign(to.y - from.y);
+  let x = from.x, y = from.y, guard = 0;
+  while ((x !== to.x || y !== to.y) && guard++ < 64) { x += dx; y += dy; out.push({ x, y }); }
+  return out;
+}
+function randomFreeTileNear(cx, cy, rad) {
+  for (let i = 0; i < 14; i++) { const x = Math.round(cx + (Math.random() * 2 - 1) * rad), y = Math.round(cy + (Math.random() * 2 - 1) * rad); if (isFree(x, y)) return { x, y }; }
+  return null;
+}
+function posCar(m) { const r = m.road; m.x = lerp(r.from.x, r.to.x, m.t); m.y = lerp(r.from.y, r.to.y, m.t); }
+function spawnCar(r, t0, dir) { const m = { kind: "car", road: r, t: t0, dir, speed: 1.5, x: 0, y: 0, facing: 1 }; posCar(m); return m; }
+function makeWanderer(kind, speed) {
+  const w = room.size?.w || 8, h = room.size?.h || 6; let spot = null;
+  for (let i = 0; i < 24 && !spot; i++) { const x = Math.floor(Math.random() * w), y = Math.floor(Math.random() * h); if (isFree(x, y)) spot = { x, y }; }
+  spot = spot || firstFreeTile();
+  return { kind, x: spot.x, y: spot.y, speed, target: null, pause: Math.random() * 1.5, facing: 1 };
+}
+function buildWorld() {
+  movers = []; roads = [];
+  const W = room && room.world; if (!W) return;
+  roads = (W.roads || []).map((r) => ({ id: r.id, from: r.from, to: r.to }));
+  const amb = W.ambient || {};
+  const nCars = Math.min(3, amb.cars || 0);
+  for (let i = 0; i < nCars; i++) { const r = roads[i % Math.max(1, roads.length)]; if (!r) break; const dir = i % 2 ? -1 : 1; movers.push(spawnCar(r, dir > 0 ? i / Math.max(1, nCars) : 1 - i / Math.max(1, nCars), dir)); }
+  if (amb.dog) movers.push(makeWanderer("dog", 1.5));
+  const nPed = Math.min(4, amb.pedestrians || 0);
+  for (let i = 0; i < nPed; i++) movers.push(makeWanderer("ped", 1.0));
+}
+function updateMovers(dt) { for (const m of movers) m.kind === "car" ? updateCar(m, dt) : updateWanderer(m, dt); }
+function updateCar(m, dt) {
+  m.t += m.dir * (m.speed / roadLen(m.road)) * dt;
+  if (m.t > 1) m.t -= 1; else if (m.t < 0) m.t += 1;
+  const px = m.x, py = m.y; posCar(m);
+  const sdx = (m.x - px) - (m.y - py); if (Math.abs(sdx) > 0.0001) m.facing = sdx >= 0 ? 1 : -1;
+}
+function updateWanderer(m, dt) {
+  if (m.pause > 0) { m.pause -= dt; return; }
+  if (!m.target) { m.target = randomFreeTileNear(m.x, m.y, 3); if (!m.target) { m.pause = 1; return; } }
+  const dx = m.target.x - m.x, dy = m.target.y - m.y, dist = Math.hypot(dx, dy), step = m.speed * dt;
+  if (dist <= step) { m.x = m.target.x; m.y = m.target.y; m.target = null; m.pause = 0.8 + Math.random() * 2.2; }
+  else { m.x += (dx / dist) * step; m.y += (dy / dist) * step; const sdx = dx - dy; if (Math.abs(sdx) > 0.0001) m.facing = sdx >= 0 ? 1 : -1; }
+}
+function drawRoads() {
+  for (const r of roads) {
+    for (const t of lineTiles(r.from, r.to)) { const c = toScreen(t.x, t.y); diamond(c.x, c.y, ROAD.face, ROAD.edge); }
+    const n = Math.max(1, Math.round(roadLen(r)));
+    for (let i = 0; i < n; i++) { const t = (i + 0.5) / n; const c = toScreen(lerp(r.from.x, r.to.x, t), lerp(r.from.y, r.to.y, t)); ctx.fillStyle = ROAD.line; ctx.fillRect(c.x - 3, c.y - 1, 6, 2); }
+  }
+}
+function flipped(cx, facing, fn) { ctx.save(); if (facing < 0) { ctx.translate(cx, 0); ctx.scale(-1, 1); ctx.translate(-cx, 0); } fn(); ctx.restore(); }
+function drawMover(m) {
+  const c = toScreen(m.x, m.y);
+  if (m.kind === "car") return drawCar(c.x, c.y, m.facing);
+  if (m.kind === "dog") return drawDog(c.x, c.y, m.facing);
+  return drawPed(c.x, c.y, m.facing);
+}
+function drawCar(cx, cy, facing) {
+  shadow(cx, cy, 20, 9);
+  const img = getImage("assets/world/car.png");
+  if (img && img._ok) { const dw = 54, dh = dw * (img.naturalHeight / img.naturalWidth || 0.6); return flipped(cx, facing, () => ctx.drawImage(img, cx - dw / 2, cy - dh + 8, dw, dh)); }
+  flipped(cx, facing, () => {
+    ctx.fillStyle = "#e0556b"; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+    roundRect(cx - 18, cy - 16, 36, 14, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#f2c14e"; roundRect(cx - 11, cy - 24, 22, 10, 3); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#bfe6ff"; ctx.fillRect(cx - 8, cy - 22, 16, 6);
+    ctx.fillStyle = "#1b1622"; ctx.beginPath(); ctx.arc(cx - 11, cy - 1, 4, 0, Math.PI * 2); ctx.arc(cx + 11, cy - 1, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6cc"; ctx.fillRect(cx + 16, cy - 13, 3, 4);
+  });
+}
+function drawDog(cx, cy, facing) {
+  shadow(cx, cy, 9, 4);
+  const img = getImage("assets/world/dog.png");
+  if (img && img._ok) { const dw = 26, dh = dw * (img.naturalHeight / img.naturalWidth || 0.8); return flipped(cx, facing, () => ctx.drawImage(img, cx - dw / 2, cy - dh + 4, dw, dh)); }
+  flipped(cx, facing, () => {
+    ctx.fillStyle = "#8a6b4a"; ctx.strokeStyle = C.line; ctx.lineWidth = 1.4;
+    roundRect(cx - 9, cy - 12, 18, 8, 3); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx + 9, cy - 13, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#6e5236"; ctx.fillRect(cx - 8, cy - 5, 2.5, 5); ctx.fillRect(cx + 5, cy - 5, 2.5, 5);
+    ctx.fillStyle = "#8a6b4a"; ctx.beginPath(); ctx.moveTo(cx - 9, cy - 11); ctx.lineTo(cx - 14, cy - 15); ctx.lineTo(cx - 9, cy - 8); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 11, cy - 14, 1, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawPed(cx, cy, facing) {
+  shadow(cx, cy, 10, 5);
+  const img = getImage("assets/world/pedestrian.png");
+  if (img && img._ok) { const dw = 30, dh = dw * (img.naturalHeight / img.naturalWidth || 1.6); return flipped(cx, facing, () => ctx.drawImage(img, cx - dw / 2, cy - dh + 6, dw, dh)); }
+  flipped(cx, facing, () => {
+    ctx.fillStyle = "#1b1622"; ctx.fillRect(cx - 5, cy - 12, 4, 12); ctx.fillRect(cx + 1, cy - 12, 4, 12);
+    ctx.fillStyle = "#6fae8f"; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+    roundRect(cx - 7, cy - 26, 14, 16, 3); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#e9c9a0"; ctx.beginPath(); ctx.arc(cx, cy - 31, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#3a2f49"; ctx.fillRect(cx - 6, cy - 37, 12, 4);
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 2, cy - 31, 1.2, 0, Math.PI * 2); ctx.fill();
+  });
 }

@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.23.1 (Step 23.1: venue scene \u2014 starter venues, Dive gate, local buzz, in-person discovery, People/contacts, per-venue weekly availability, Maps venue board)",
+  "version": "0.24.1 (Step 24.1: living world \u2014 real-time ambient cars on roads, a town dog, pedestrians; per-scene world block; PNG override slots)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

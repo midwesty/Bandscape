@@ -99,5 +99,25 @@
         "y": 6
       }
     }
-  ]
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 10,
+          "y": 4
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 2,
+      "dog": true,
+      "pedestrians": 2
+    }
+  }
 }
