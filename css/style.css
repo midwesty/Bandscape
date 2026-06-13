@@ -1103,3 +1103,17 @@ body:has(.modal-scrim) #log { display: none; }
 .po-mem-r { display: flex; align-items: center; gap: 8px; }
 .po-mem-r .muted { font-family: var(--mono); }
 .po-paybtn { background: var(--green); color: #06120a; border: none; border-radius: 4px; padding: 5px 10px; font-family: var(--cond); font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; }
+
+/* ---- Setlist booking revamp (Step 22.1) ---- */
+.set-src { display: flex; gap: 4px; margin-bottom: 8px; }
+.set-srcbtn { flex: 1; padding: 8px; font-family: var(--cond); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; font-size: 12px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); border-radius: 4px; cursor: pointer; }
+.set-srcbtn.on { color: #06120a; background: var(--green); border-color: var(--green); }
+.set-tools { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
+.set-tool { flex: 1; min-width: 80px; padding: 7px 8px; font-size: 12px; font-family: var(--mono); background: var(--bg); border: 1px solid var(--line); color: var(--text); border-radius: 4px; cursor: pointer; }
+.set-tool.on { border-color: var(--green); color: var(--green); }
+.set-tool:disabled { opacity: .4; }
+.set-saved-panel { background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+.set-saved-row { display: flex; gap: 6px; }
+.set-load { flex: 1; text-align: left; padding: 7px 9px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 4px; cursor: pointer; }
+.set-del { width: 32px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; cursor: pointer; }
+.set-del:hover { color: var(--pink); border-color: var(--pink); }

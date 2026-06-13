@@ -19,6 +19,7 @@ import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 import { deviceFidelity, instrumentQuality } from "./gear.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
+let bookSource = "own", bookQuery = "", savedPanelOpen = false;
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -116,6 +117,7 @@ export function openPerform(venueId = "thedive") {
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
   document.body.classList.add("modal-open");
+  bookSource = "own"; bookQuery = ""; savedPanelOpen = false;
   renderBooking(new Set([perfBand.pressKit?.songId].filter(Boolean)));
 }
 export function closeShow() {
@@ -142,22 +144,57 @@ function estimate(setIds, band, venueId) {
   return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
 }
 
+function releaseOf(songId) { return (getState().releases || []).find((r) => (r.songIds || []).includes(songId)) || null; }
+function songOwnerBandId(songId) { const r = releaseOf(songId); return r ? r.bandId : null; }
+function bandNameOf(id) { const b = bandById(id); return b ? (b.name || "Unknown") : "Unknown"; }
+
+function bookSongList() {
+  const all = getState().songs || [];
+  const q = bookQuery.trim().toLowerCase();
+  const pid = perfBand && perfBand.id;
+  return all.filter((sg) => {
+    const owner = songOwnerBandId(sg.id);
+    if (bookSource === "covers") { if (!owner || owner === pid) return false; }
+    else { if (owner && owner !== pid) return false; }
+    if (q && !((sg.name || "").toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+function savedPanelHTML() {
+  const saved = getState().setlists || [];
+  if (!saved.length) return `<div class="set-saved-panel"><p class="muted" style="padding:6px 8px">No saved setlists yet. Pick songs, then tap “Save set.”</p></div>`;
+  return `<div class="set-saved-panel">${saved.map((sl) => `<div class="set-saved-row"><button class="set-load" data-load="${sl.id}">${esc(sl.name)} <span class="muted">(${(sl.songIds || []).length})</span></button><button class="set-del" data-del="${sl.id}" title="Delete">✕</button></div>`).join("")}</div>`;
+}
+
 function renderBooking(selected) {
-  const s = getState(); const songs = s.songs || [];
   const est = estimate(selected, perfBand);
   const _sl = overlay.querySelector(".set-list"); const _sly = _sl ? _sl.scrollTop : 0;
+  const list = bookSongList();
+  const saved = getState().setlists || [];
+  const last = (perfBand && perfBand.lastSetlist) || [];
   overlay.innerHTML = `
     <div class="show-modal">
       <div class="shop-head"><span class="shop-title">BOOK A SHOW</span><button class="phone-nav" id="show-close">✕</button></div>
       <div class="show-body">
-        <p class="shop-note">Pick your setlist. Bigger sets pull a little more, but cost more energy and time.</p>
-        <div class="show-section">SETLIST</div>
+        <div class="set-src">
+          <button class="set-srcbtn ${bookSource === "own" ? "on" : ""}" data-src="own">${esc((perfBand && perfBand.name) || "Our")} songs</button>
+          <button class="set-srcbtn ${bookSource === "covers" ? "on" : ""}" data-src="covers">Covers</button>
+        </div>
+        <input id="book-search" class="bank-search" type="text" placeholder="Search songs…" value="${esc(bookQuery)}" autocapitalize="off">
+        <div class="set-tools">
+          ${last.length ? `<button class="set-tool" id="set-last">↺ Last set</button>` : ""}
+          <button class="set-tool ${savedPanelOpen ? "on" : ""}" id="set-saved">▾ Saved (${saved.length})</button>
+          <button class="set-tool" id="set-save" ${selected.size ? "" : "disabled"}>＋ Save set</button>
+        </div>
+        ${savedPanelOpen ? savedPanelHTML() : ""}
         <div class="set-list">
-          ${songs.map((sg) => {
+          ${list.length ? list.map((sg) => {
             const on = selected.has(sg.id);
+            const owner = songOwnerBandId(sg.id);
+            const tag = bookSource === "covers" ? `cover · ${esc(bandNameOf(owner))}` : (owner ? "released" : "demo");
             return `<label class="set-row ${on ? "on" : ""}"><input type="checkbox" data-song="${sg.id}" ${on ? "checked" : ""}>
-              <span class="set-name">${esc(sg.name)}</span><span class="set-q">Q ${songQuality(sg, perfBand)}</span></label>`;
-          }).join("")}
+              <span class="set-name">${esc(sg.name)}</span><span class="set-q">${tag} · Q ${songQuality(sg, perfBand)}</span></label>`;
+          }).join("") : `<p class="muted" style="padding:8px">${bookSource === "covers" ? "No released songs by other acts yet." : "No songs here yet — make one in the DAW."}</p>`}
         </div>
         <div class="show-est">
           <div><span>Expected crowd</span><strong>${est.draw}</strong></div>
@@ -165,7 +202,7 @@ function renderBooking(selected) {
           <div><span>Est. take</span><strong class="good">$${est.pay}</strong></div>
           <div><span>Band fame / fans</span><strong>+${est.fameGain} / +${est.fans}</strong></div>
         </div>
-        <button class="btn show-go" id="show-go" ${selected.size ? "" : "disabled"}>▶ PLAY THE SHOW</button>
+        <button class="btn show-go" id="show-go" ${selected.size ? "" : "disabled"}>▶ PLAY THE SHOW (${selected.size})</button>
       </div>
     </div>`;
   overlay.querySelector("#show-close").addEventListener("click", closeShow);
@@ -173,6 +210,30 @@ function renderBooking(selected) {
   overlay.querySelectorAll("[data-song]").forEach((cb) => cb.addEventListener("change", () => {
     cb.checked ? selected.add(cb.dataset.song) : selected.delete(cb.dataset.song);
     renderBooking(selected);
+  }));
+  overlay.querySelectorAll("[data-src]").forEach((b) => b.addEventListener("click", () => { bookSource = b.dataset.src; renderBooking(selected); }));
+  const search = overlay.querySelector("#book-search");
+  if (search) search.addEventListener("input", () => { bookQuery = search.value; renderBooking(selected); requestAnimationFrame(() => { const n = overlay.querySelector("#book-search"); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }); });
+  const lastBtn = overlay.querySelector("#set-last");
+  if (lastBtn) lastBtn.addEventListener("click", () => { const ns = new Set((perfBand.lastSetlist || []).filter((id) => (getState().songs || []).some((sg) => sg.id === id))); renderBooking(ns); });
+  const savedBtn = overlay.querySelector("#set-saved");
+  if (savedBtn) savedBtn.addEventListener("click", () => { savedPanelOpen = !savedPanelOpen; renderBooking(selected); });
+  const saveBtn = overlay.querySelector("#set-save");
+  if (saveBtn) saveBtn.addEventListener("click", () => {
+    if (!selected.size) return;
+    const name = (prompt("Name this setlist:", `Set ${(getState().setlists || []).length + 1}`) || "").trim();
+    if (!name) return;
+    const st = getState(); st.setlists = st.setlists || [];
+    st.setlists.push({ id: "set_" + Date.now().toString(36), name, songIds: [...selected], savedDay: st.time?.day || 1 });
+    persist(); toast(`Saved setlist “${name}.”`, "good"); savedPanelOpen = true; renderBooking(selected);
+  });
+  overlay.querySelectorAll("[data-load]").forEach((b) => b.addEventListener("click", () => {
+    const sl = (getState().setlists || []).find((x) => x.id === b.dataset.load); if (!sl) return;
+    const ns = new Set((sl.songIds || []).filter((id) => (getState().songs || []).some((sg) => sg.id === id)));
+    savedPanelOpen = false; renderBooking(ns);
+  }));
+  overlay.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => {
+    const st = getState(); st.setlists = (st.setlists || []).filter((x) => x.id !== b.dataset.del); persist(); renderBooking(selected);
   }));
   const go = overlay.querySelector("#show-go");
   if (go) go.addEventListener("click", () => playShow([...selected]));
@@ -201,6 +262,7 @@ function playShow(setIds) {
   if (!setIds.length) return;
   const s = getState(); const cfg = DATA.config.shows;
   const band = perfBand || activeBand() || {};
+  if (band && band.id) band.lastSetlist = [...setIds];
   const est = estimate(new Set(setIds), band);
   if (!band.playerIn) { const bst = cfg.attendBoost || 1.15; est.pay = Math.round(est.pay * bst); est.fans = Math.round(est.fans * bst); est.fameGain = Math.round(est.fameGain * bst); est._boosted = bst; }
   const energy = (cfg.energyCost || 25) + (setIds.length - 1) * 5;
