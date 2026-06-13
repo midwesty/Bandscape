@@ -209,6 +209,97 @@ export function artistName(artistId) {
   const m = (getState()?.musicians || []).find((x) => x.id === artistId);
   return m ? m.name : artistId;
 }
+
+// ---- Credits & splits (Step 21.1) ----
+// Resolve any credit holder (the player, a musician, or a band) to a display name.
+export function creditName(id) {
+  if (id === PLAYER_ARTIST) return playerArtistName();
+  const b = (getState()?.bands || []).find((x) => x.id === id);
+  if (b) return b.name || "Unnamed band";
+  return artistName(id);
+}
+// Which band (if any) a credit holder belongs to — for the picker's affiliation hint.
+export function creditAffiliation(id) {
+  if (id === PLAYER_ARTIST) return "You";
+  const b = (getState()?.bands || []).find((x) => x.id === id);
+  if (b) return "Band";
+  const m = (getState()?.musicians || []).find((x) => x.id === id);
+  if (m && m.bandId) { const mb = (getState()?.bands || []).find((x) => x.id === m.bandId); return mb ? (mb.name || "a band") : "free agent"; }
+  return m ? "free agent" : "";
+}
+// Distinct loop-authors (artistIds) across the given songs — i.e. everyone who recorded a part used in them.
+export function songWriters(songIds) {
+  const ids = new Set(songIds || []);
+  const songs = (getState().songs || []).filter((s) => ids.has(s.id));
+  const byPat = {}; for (const p of (getState().patterns || [])) byPat[p.id] = p;
+  const authors = [];
+  const seen = new Set();
+  for (const sg of songs) for (const tr of (sg.tracks || [])) for (const c of (tr || [])) {
+    const p = byPat[c && c.patternId]; const a = p && p.artistId;
+    if (a && !seen.has(a)) { seen.add(a); authors.push(a); }
+  }
+  return authors;
+}
+// Build a default credits list for a release: the band performs, you produce, loop-authors write.
+export function autoCredits(bandId, songIds) {
+  const cfg = (DATA.config && DATA.config.credits) || {};
+  const credits = []; const seen = new Set();
+  const add = (id, role, pct) => { if (id == null || seen.has(id)) return; seen.add(id); credits.push({ id, role, pct: Math.round(pct) }); };
+  if (bandId) add(bandId, "Performer", cfg.bandPct != null ? cfg.bandPct : 50);
+  add(PLAYER_ARTIST, "Producer", cfg.playerPct != null ? cfg.playerPct : 20);
+  const writers = songWriters(songIds).filter((a) => !seen.has(a));
+  const pool = cfg.writerPoolPct != null ? cfg.writerPoolPct : 30;
+  const each = writers.length ? Math.floor(pool / writers.length) : 0;
+  writers.forEach((a) => add(a, "Songwriter", each));
+  return credits;
+}
+
+// Split an `amount` of income from a release among its credit holders by % (Step 21.2).
+// The releasing band receives the full amount first, then non-retained shares flow out:
+// you → wallet, another band → its account, a member → their owed (settled on Payday from
+// their band's account; cross-band members get the cash moved to their band first). The
+// releasing band keeps its own share; free agents/unresolved ids leave it with the band.
+export function splitRoyalty(bandId, credits, amount, note) {
+  amount = Math.floor(amount); const rb = bandById(bandId);
+  if (!rb || !(amount > 0)) return;
+  rb.account = (rb.account || 0) + amount;
+  logTx({ account: bandId, band: bandId, amount, category: "streaming", note: note || "Streaming royalties" });
+  const list = (credits && credits.length) ? credits : [{ id: bandId, pct: 100 }];
+  const totalPct = list.reduce((a, c) => a + (Number(c.pct) || 0), 0) || 1;
+  const shares = list.map((c) => ({ id: c.id, raw: amount * (Number(c.pct) || 0) / totalPct }));
+  shares.forEach((sh) => (sh.amt = Math.floor(sh.raw)));
+  let rem = amount - shares.reduce((a, s) => a + s.amt, 0);
+  if (rem > 0) { const own = shares.find((s) => s.id === bandId); if (own) own.amt += rem; else { shares.sort((a, b) => b.raw - a.raw); if (shares[0]) shares[0].amt += rem; } }
+  for (const sh of shares) {
+    if (sh.amt <= 0 || sh.id === bandId) continue;               // band keeps its own share
+    if (sh.id === PLAYER_ARTIST) {
+      rb.account -= sh.amt; addStat("money", sh.amt);
+      logTx({ account: bandId, band: bandId, amount: -sh.amt, category: "royalty", note: "Your royalty cut" });
+      logTx({ account: "wallet", band: bandId, amount: sh.amt, category: "royalty", note: `Royalty from ${rb.name || "release"}` });
+      continue;
+    }
+    const ob = bandById(sh.id);
+    if (ob) {
+      rb.account -= sh.amt; ob.account = (ob.account || 0) + sh.amt;
+      logTx({ account: bandId, band: bandId, amount: -sh.amt, category: "royalty", note: `Royalty to ${ob.name || "a band"}` });
+      logTx({ account: sh.id, band: sh.id, amount: sh.amt, category: "royalty", note: `Royalty from ${rb.name || "a release"}` });
+      continue;
+    }
+    const m = (getState().musicians || []).find((x) => x.id === sh.id);
+    if (m && m.bandId) {
+      if (m.bandId !== bandId) {
+        const mb = bandById(m.bandId);
+        if (mb) {
+          rb.account -= sh.amt; mb.account = (mb.account || 0) + sh.amt;
+          logTx({ account: bandId, band: bandId, amount: -sh.amt, category: "royalty", note: `Royalty to ${mb.name || "a band"}` });
+          logTx({ account: m.bandId, band: m.bandId, amount: sh.amt, category: "royalty", note: `Royalty for ${m.name || "a writer"}` });
+        }
+      }
+      accrueOwed(m, sh.amt);                                      // paid on Payday from their band
+    }
+    // free agent / unresolved id → releasing band retains the share
+  }
+}
 function bandByName(name) { return (getState()?.bands || []).find((b) => (b.name || "") === name) || null; }
 export function topWriter(bandId) {
   const ms = (getState()?.musicians || []).filter((m) => m.bandId === bandId && (m.status === "active" || m.status === "benched"));

@@ -1063,3 +1063,27 @@ body:has(.modal-scrim) #log { display: none; }
 .bank-filters { display: flex; gap: 6px; }
 .bank-filter { flex: 1; min-width: 0; padding: 7px 6px; background: var(--bg); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 12px; border-radius: 4px; }
 .bank-search { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 13px; border-radius: 4px; }
+
+/* ---- Credits & Splits (Step 21.1) ---- */
+.cr-list { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+.cr-row { background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 8px 9px; display: flex; flex-direction: column; gap: 6px; }
+.cr-who { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.cr-name { font-weight: 700; }
+.cr-aff { font-size: 11px; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
+.cr-controls { display: flex; align-items: center; gap: 6px; }
+.cr-role { flex: 1; min-width: 0; padding: 6px; background: var(--bg); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 12px; border-radius: 4px; }
+.cr-pct { display: flex; align-items: center; gap: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; }
+.cr-pctin { width: 44px; background: none; border: none; color: var(--text); font-family: var(--mono); font-size: 14px; text-align: right; padding: 4px 0; }
+.cr-pct-sym { color: var(--muted); font-family: var(--mono); }
+.cr-rm { background: none; border: 1px solid var(--line); color: var(--muted); width: 30px; height: 30px; border-radius: 4px; cursor: pointer; flex: none; }
+.cr-rm:hover { color: var(--pink); border-color: var(--pink); }
+.cr-total { text-align: center; font-family: var(--mono); padding: 6px; border-radius: 4px; }
+.cr-total.ok { color: var(--green); }
+.cr-total.off { color: var(--yellow); }
+.cr-add { width: 100%; }
+.cr-picker-card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin: 6px 0; }
+.cr-cands { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; margin-top: 6px; }
+.cr-cand { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); color: var(--text); border-radius: 4px; cursor: pointer; width: 100%; text-align: left; }
+.cr-cand:hover { border-color: var(--green); }
+.rel-credits { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.rel-cr-role { color: var(--green); }
