@@ -1122,3 +1122,28 @@ body:has(.modal-scrim) #log { display: none; }
 .set-modal-scrim { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 16px; }
 .set-modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; width: min(420px, 94vw); max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
 .set-modal-body { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+
+/* ---- Maps venue board + discovery (Step 23.1) ---- */
+.mp-buzz { margin: 6px 0 10px; }
+.mp-buzz-h { display: flex; justify-content: space-between; font-family: var(--cond); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.mp-buzz-h span { color: var(--green); }
+.mp-buzz-bar { height: 7px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.mp-buzz-bar i { display: block; height: 100%; background: var(--green); }
+.mp-blurb { font-size: 12px; color: var(--muted); margin: 3px 0 5px; line-height: 1.35; }
+.mp-sched { font-family: var(--mono); font-size: 11px; color: var(--text); opacity: .8; margin: 0 0 6px; }
+.mp-open { font-size: 11px; color: var(--green); font-family: var(--cond); text-transform: uppercase; letter-spacing: .5px; }
+.mp-next-open { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.mp-lock-req { font-size: 12px; color: var(--pink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+.mp-go { width: 100%; margin-top: 4px; padding: 8px; font-family: var(--cond); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; font-size: 12px; background: var(--green); color: #06120a; border: none; border-radius: 4px; cursor: pointer; }
+.mp-venue.lead { opacity: .92; border-style: dashed; }
+.mp-venue.lead .mp-go { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
+.mp-lead-tag { font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; text-transform: uppercase; letter-spacing: .5px; }
+
+/* ---- People (contacts) app (Step 23.1) ---- */
+.ct-note { margin: 2px 0 10px; font-size: 12px; line-height: 1.4; }
+.ct-list { display: flex; flex-direction: column; gap: 6px; }
+.ct-row { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.ct-av { width: 34px; height: 34px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--cond); font-weight: 700; color: var(--accent, #b388ff); flex-shrink: 0; }
+.ct-info { flex: 1; display: flex; flex-direction: column; }
+.ct-info small { color: var(--muted); font-size: 11px; }
+.ct-met { font-family: var(--mono); font-size: 10px; color: var(--muted); }

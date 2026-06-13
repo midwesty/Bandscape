@@ -324,6 +324,36 @@ export function payCoverRoyalty(performerBandId, songId, perSongPay) {
   }
   return { royalty, title: rel.title || "song", owner: (bandById(rel.bandId) || {}).name || "another act" };
 }
+
+// ---- Scene: local buzz, venue discovery, contacts (Step 23.1) ----
+export function townBuzz(town) { return ((getState().buzz || {})[town]) || 0; }
+export function addBuzz(town, n) { const s = getState(); if (!town || !(n > 0)) return; s.buzz = s.buzz || {}; s.buzz[town] = (s.buzz[town] || 0) + Math.round(n); }
+export function isDiscovered(venueId) {
+  const v = ((DATA.venues && DATA.venues.venues) || {})[venueId];
+  if (!v) return false;
+  if (!v.discover) return true;                       // known from the start
+  return !!((getState().discovered || {})[venueId]);
+}
+export function discoverVenue(venueId) { const s = getState(); s.discovered = s.discovered || {}; s.discovered[venueId] = true; }
+export function contacts() { return getState().contacts || []; }
+export function addContact(c) {
+  if (!c || !c.id) return false;
+  const s = getState(); s.contacts = s.contacts || [];
+  if (s.contacts.some((x) => x.id === c.id)) return false;
+  s.contacts.push({ id: c.id, name: c.name || "Someone", role: c.role || "", venueId: c.venueId || null, metDay: (s.time && s.time.day) || 1, rel: c.rel || 1 });
+  return true;
+}
+export function ensureScene() {
+  const s = getState();
+  s.buzz = s.buzz || {};
+  s.discovered = s.discovered || {};
+  s.contacts = s.contacts || [];
+  // You already know Ralph — his basement is your first bookable room and first contact.
+  if (!s.discovered.ralphs) {
+    const v = ((DATA.venues && DATA.venues.venues) || {}).ralphs;
+    if (v) { s.discovered.ralphs = true; if (v.booker) addContact(Object.assign({ venueId: "ralphs" }, v.booker)); }
+  }
+}
 function bandByName(name) { return (getState()?.bands || []).find((b) => (b.name || "") === name) || null; }
 export function topWriter(bandId) {
   const ms = (getState()?.musicians || []).filter((m) => m.bandId === bandId && (m.status === "active" || m.status === "benched"));

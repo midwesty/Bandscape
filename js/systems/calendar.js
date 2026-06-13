@@ -43,6 +43,22 @@ function bookedAt(day, slot) { return list().some((c) => c.status === "booked" &
 function bandBusyAt(bandId, day, slot) { return list().some((c) => c.status === "booked" && c.bandId === bandId && c.day === day && c.slot === slot); }
 function venueBusyAt(venueId, day, slot) { return list().some((c) => c.status === "booked" && c.type === "show" && c.venue === venueId && c.day === day && c.slot === slot); }
 function venueOpen(day) { return (((day * 2654435761) >>> 0) % 3) !== 0; }
+// Per-venue weekly rhythm (Step 23.1): day 1 = Monday. A venue with days[] hosts only those
+// weekdays at its own slot; venues without days[] fall back to the legacy open-most-nights rhythm.
+const WK = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+const WK_LABEL = { MO: "Mon", TU: "Tue", WE: "Wed", TH: "Thu", FR: "Fri", SA: "Sat", SU: "Sun" };
+function weekday(day) { return WK[((day - 1) % 7 + 7) % 7]; }
+function weekdayLabel(day) { return WK_LABEL[weekday(day)] || ""; }
+function venueRec(id) { return (DATA.venues && DATA.venues.venues && DATA.venues.venues[id]) || null; }
+function venueSlotOf(id) { const v = venueRec(id); return (v && v.slot) || cfg().showSlot || "evening"; }
+function venueOpenOn(id, day) { const v = venueRec(id); if (v && Array.isArray(v.days) && v.days.length) return v.days.includes(weekday(day)); return venueOpen(day); }
+export function venueOpenInfo(venueId) {
+  const v = venueRec(venueId); const d0 = today();
+  let nextDay = null;
+  for (let d = d0; d <= d0 + 14; d++) { if (venueOpenOn(venueId, d)) { nextDay = d; break; } }
+  const nextLabel = nextDay == null ? null : (nextDay === d0 ? "today" : nextDay === d0 + 1 ? "tomorrow" : `Day ${nextDay} (${weekdayLabel(nextDay)})`);
+  return { openToday: venueOpenOn(venueId, d0), nextDay, nextLabel, slotLabel: slotLabel(venueSlotOf(venueId)), dayLabels: v && Array.isArray(v.days) ? v.days.map((x) => WK_LABEL[x] || x) : null };
+}
 function bandAvailableCount(slot) {
   const npcs = DATA.npcs.npcs || []; const ab = activeBand(); const mem = ab ? bandMembers(ab.id) : [];
   return mem.filter((m) => { const n = npcs.find((x) => x.id === m.id); return n && (n.availability || []).includes(slot); }).length;
@@ -67,8 +83,8 @@ function availableSlots(type) {
       if (idx < ni) continue;
       if (ab.id && bandBusyAt(ab.id, d, sl.id)) continue;                       // never double-book the SAME band
       if (type === "show") {
-        if (sl.id !== (cfg().showSlot || "evening")) continue;
-        if (!venueOpen(d)) continue;
+        if (sl.id !== venueSlotOf(schedVenue)) continue;
+        if (!venueOpenOn(schedVenue, d)) continue;
         if (schedVenue && venueBusyAt(schedVenue, d, sl.id)) continue;          // this venue is taken that night
       } else if (type === "rehearse") {
         if (!mem) continue;
@@ -93,7 +109,7 @@ export function openScheduler(type, venueId) {
   opts.forEach((o) => { (byDay[o.day] = byDay[o.day] || []).push(o); });
   const daysHTML = Object.keys(byDay).length
     ? Object.entries(byDay).map(([d, arr]) => `
-        <div class="cal-day"><div class="cal-day-h">Day ${d}${+d === today() ? " · today" : ""}</div>
+        <div class="cal-day"><div class="cal-day-h">Day ${d} · ${weekdayLabel(+d)}${+d === today() ? " · today" : ""}</div>
           <div class="cal-slots">${arr.map((o) => `<button class="cal-slot-btn" data-day="${o.day}" data-slot="${o.slot}">${esc(o.label)}</button>`).join("")}</div></div>`).join("")
     : `<p class="shop-note">No open slots ${type === "show" ? "at the venue" : "for the band"} in the next while. ${type === "show" ? "Check back another day." : "Your bandmates aren't free — try a different week."}</p>`;
   overlay.innerHTML = `

@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.22.2 (Step 22.2: live cover royalties \u2014 performing a song released by another act pays a cut to its credit-holders + fame to originals)",
+  "version": "0.23.1 (Step 23.1: venue scene \u2014 starter venues, Dive gate, local buzz, in-person discovery, People/contacts, per-venue weekly availability, Maps venue board)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -54,7 +54,7 @@
     "music": true,
     "maps": true,
     "bank": true,
-    "contacts": false,
+    "contacts": true,
     "streamr": true,
     "band": true,
     "calendar": true,

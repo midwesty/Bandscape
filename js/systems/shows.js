@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts, bandEarn, payCoverRoyalty } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts, bandEarn, payCoverRoyalty, addBuzz, townBuzz } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -86,6 +86,7 @@ export function venueEligible(id) {
   if (r.minFans && (s.stats.fans || 0) < r.minFans) return false;
   if (r.minReleases && (s.releases || []).length < r.minReleases) return false;
   if (r.showsInTown && showsInTown(v.town) < r.showsInTown) return false;
+  if (r.minBuzz && townBuzz(v.town) < r.minBuzz) return false;
   return true;
 }
 export function venueReqText(id) {
@@ -95,6 +96,7 @@ export function venueReqText(id) {
   if (r.minFans) p.push(`${s.stats.fans || 0}/${r.minFans} fans`);
   if (r.minFame) p.push(`${s.stats.fame || 0}/${r.minFame} fame`);
   if (r.showsInTown) p.push(`${showsInTown(v.town)}/${r.showsInTown} shows in town`);
+  if (r.minBuzz) p.push(`${townBuzz(v.town)}/${r.minBuzz} buzz`);
   const rc = DATA.config.venueRep || {}; const tr = townRep(v.town); const need = rc.unlockTownRep || 50;
   return "Requires " + p.join(" · ") + ` — or earn it: town standing ${tr}/${need}`;
 }
@@ -132,17 +134,19 @@ function estimate(setIds, band, venueId) {
   const vId = venueId || perfVenueId;
   const mem = band.id ? performingMembers(band.id) : [];
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
-  const vm = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId] && DATA.venues.venues[vId].drawMult) || 1;
+  const vRec = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId]) || {};
+  const vm = vRec.drawMult || 1; const pm = vRec.payMult || 1;
   const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm);
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
-  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId));
+  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId) * pm);
   const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
   const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
   return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
 }
+function showBuzz(est) { return Math.max(1, Math.round(2 + (est.draw || 0) * 0.2 + Math.max(0, (est.avgQ || 0) - 50) * 0.04)); }
 
 function releaseOf(songId) { return (getState().releases || []).find((r) => (r.songIds || []).includes(songId)) || null; }
 function songOwnerBandId(songId) { const r = releaseOf(songId); return r ? r.bandId : null; }
@@ -299,6 +303,7 @@ function playShow(setIds) {
   const coverPaid = [];
   for (const sid of setIds) { const cr = payCoverRoyalty(band.id, sid, perSongPay); if (cr) coverPaid.push(cr); }
   const coverTotal = coverPaid.reduce((a, c) => a + c.royalty, 0);
+  addBuzz((venueById(perfVenueId) || {}).town, showBuzz(est));
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   addStat("mood", cfg.moodGain || 8);
@@ -391,6 +396,7 @@ export function autoResolveShow(commitment) {
   bandEarn(band.id, est.pay, "show", "Show pay");
   const perSongPay = setIds.length ? est.pay / setIds.length : 0;
   for (const sid of setIds) payCoverRoyalty(band.id, sid, perSongPay);
+  addBuzz((venueById(venueId) || {}).town, showBuzz(est));
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   const maxChem = (DATA.config.band && DATA.config.band.maxChemistry) || 100;

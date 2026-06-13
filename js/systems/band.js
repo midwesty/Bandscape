@@ -16,7 +16,7 @@ import {
   ensureMusicianModel, allMusicians, musicianById, bandMembers, performingMembers,
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
-  ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit
+  ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -87,7 +87,7 @@ function bookShowFlow() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const s = getState();
   const accessible = (t) => t === "yourtown" || (t === "rocktroit" && s.flags && s.flags.rocktroit_unlocked);
-  const vs = venueList().filter((v) => accessible(v.town));
+  const vs = venueList().filter((v) => accessible(v.town) && isDiscovered(v.id));
   const rows = vs.map((v) => {
     const elig = venueEligible(v.id);
     const where = v.town === "rocktroit" ? "Rocktroit" : "your block";
@@ -96,8 +96,9 @@ function bookShowFlow() {
       : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
     return `<div class="cal-day"><div class="cal-day-h">${esc(v.name)} <small>· ${esc(where)}</small></div><div class="cal-slots">${action}</div></div>`;
   }).join("");
+  const body = rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">PICK A VENUE</span><button class="phone-nav" id="vp-close">✕</button></div>
-    <div class="cal-body"><p class="shop-note">Where do you want to play? Locked rooms show what they still need.</p>${rows}</div></div>`;
+    <div class="cal-body"><p class="shop-note">Where do you want to play? Locked rooms show what they still need.</p>${body}</div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
   ov.querySelector("#vp-close").addEventListener("click", () => { ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); });
   ov.querySelectorAll("[data-venue]").forEach((b) => b.addEventListener("click", () => openScheduler("show", b.dataset.venue)));
