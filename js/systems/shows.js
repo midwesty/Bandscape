@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts, bandEarn, payCoverRoyalty, addBuzz, townBuzz } from "../engine/state.js";
+import { getState, addStat, activeBand, bandById, performingMembers, playerFame, liveCut, merchCut, accrueOwed, ensureContracts, bandEarn, payCoverRoyalty, addBuzz, townBuzz, relationshipDraw, ownerPayMult, gainShowRapport } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -135,13 +135,13 @@ function estimate(setIds, band, venueId) {
   const mem = band.id ? performingMembers(band.id) : [];
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
   const vRec = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId]) || {};
-  const vm = vRec.drawMult || 1; const pm = vRec.payMult || 1;
-  const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm);
+  const vm = vRec.drawMult || 1; const pm = vRec.payMult || 1; const relMult = relationshipDraw(vRec.town);
+  const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm * relMult);
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);
   const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
-  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId) * pm);
+  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId) * pm * ownerPayMult(vId));
   const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
   const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
   return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
@@ -304,6 +304,7 @@ function playShow(setIds) {
   for (const sid of setIds) { const cr = payCoverRoyalty(band.id, sid, perSongPay); if (cr) coverPaid.push(cr); }
   const coverTotal = coverPaid.reduce((a, c) => a + c.royalty, 0);
   addBuzz((venueById(perfVenueId) || {}).town, showBuzz(est));
+  gainShowRapport((venueById(perfVenueId) || {}).town, 2);
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
   addStat("mood", cfg.moodGain || 8);

@@ -75,7 +75,7 @@
         "reliability": 72
       },
       "schedule": {
-        "afternoon": "town",
+        "afternoon": "venue",
         "evening": "venue",
         "late": "venue"
       }
@@ -110,7 +110,7 @@
         "reliability": 48
       },
       "schedule": {
-        "afternoon": "town",
+        "afternoon": "venue",
         "evening": "venue",
         "late": "venue"
       }
@@ -146,7 +146,7 @@
       },
       "schedule": {
         "morning": "town",
-        "afternoon": "town",
+        "afternoon": "venue",
         "evening": "venue"
       }
     },
@@ -226,7 +226,7 @@
         "reliability": 74
       },
       "schedule": {
-        "afternoon": "rocktroit",
+        "afternoon": "rocktroit_bar",
         "evening": "rocktroit_bar"
       }
     },
@@ -346,7 +346,7 @@
         "reliability": 78
       },
       "schedule": {
-        "afternoon": "rocktroit",
+        "afternoon": "rocktroit_bar",
         "evening": "rocktroit_bar",
         "late": "rocktroit_bar"
       }
@@ -387,7 +387,7 @@
         "reliability": 72
       },
       "schedule": {
-        "afternoon": "rocktroit",
+        "afternoon": "rocktroit_bar",
         "evening": "rocktroit_bar"
       }
     },
@@ -500,7 +500,13 @@
           ]
         }
       },
-      "town": "yourtown"
+      "town": "yourtown",
+      "perk": {
+        "type": "booking",
+        "venue": "thedive",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
     },
     {
       "id": "npc_deb",
@@ -512,7 +518,12 @@
         "evening": "venue",
         "late": "venue"
       },
-      "town": "yourtown"
+      "town": "yourtown",
+      "perk": {
+        "type": "draw",
+        "minRapport": 30,
+        "bonus": 0.06
+      }
     },
     {
       "id": "npc_walt",
@@ -553,7 +564,13 @@
           ]
         }
       },
-      "town": "rocktroit"
+      "town": "rocktroit",
+      "perk": {
+        "type": "booking",
+        "venue": "foundry",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
     },
     {
       "id": "npc_lou",
@@ -565,7 +582,99 @@
         "evening": "rocktroit_bar",
         "late": "rocktroit_bar"
       },
+      "town": "rocktroit",
+      "perk": {
+        "type": "tip",
+        "minRapport": 40
+      }
+    },
+    {
+      "id": "npc_rae",
+      "name": "Rae",
+      "townsfolk": true,
+      "line": "Rae cradles a guitar she can't afford yet.",
+      "schedule": {
+        "afternoon": "musicstore",
+        "evening": "town"
+      },
+      "town": "yourtown"
+    },
+    {
+      "id": "npc_gabe",
+      "name": "Gabe",
+      "townsfolk": true,
+      "line": "\"You playing soon? I'll be there.\"",
+      "schedule": {
+        "morning": "town",
+        "afternoon": "town",
+        "evening": "venue"
+      },
+      "town": "yourtown",
+      "perk": {
+        "type": "draw",
+        "minRapport": 30,
+        "bonus": 0.06
+      }
+    },
+    {
+      "id": "npc_min",
+      "name": "Min",
+      "townsfolk": true,
+      "line": "Min shoves a flyer at you.",
+      "schedule": {
+        "afternoon": "town",
+        "evening": "venue",
+        "late": "venue"
+      },
+      "town": "yourtown",
+      "perk": {
+        "type": "draw",
+        "minRapport": 30,
+        "bonus": 0.06
+      }
+    },
+    {
+      "id": "npc_gus",
+      "name": "Gus",
+      "townsfolk": true,
+      "line": "\"Foundry or bust around here, kid.\"",
+      "schedule": {
+        "afternoon": "rocktroit",
+        "evening": "rocktroit_bar"
+      },
+      "town": "rocktroit",
+      "perk": {
+        "type": "draw",
+        "minRapport": 30,
+        "bonus": 0.06
+      }
+    },
+    {
+      "id": "npc_nina",
+      "name": "Nina",
+      "townsfolk": true,
+      "line": "Nina is locked into a cabinet.",
+      "schedule": {
+        "afternoon": "arcade",
+        "evening": "rocktroit"
+      },
       "town": "rocktroit"
+    },
+    {
+      "id": "npc_ozzy",
+      "name": "Ozzy",
+      "townsfolk": true,
+      "line": "\"I've seen every band that rolled through here.\"",
+      "schedule": {
+        "morning": "rocktroit",
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
+      },
+      "town": "rocktroit",
+      "perk": {
+        "type": "tip",
+        "minRapport": 40
+      }
     }
   ]
 }

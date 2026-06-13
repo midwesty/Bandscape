@@ -46,6 +46,7 @@ let room = null, furniture = [], exits = [], blocked = null;
 let player = { x: 4, y: 3, fx: 4, fy: 3, facing: 1 };
 let movers = [], roads = [];   // ambient world life (Step 24.1) — regenerated per scene, not saved
 let npcMovers = [], lastSlot = null;   // scheduled NPCs in this scene (Step 24.4)
+let lastHintLoc = null;   // so the 'players around' hint fires on scene entry, not every render
 let path = [], pendingInteract = null;
 let hovered = null;
 let arranging = false, held = null;
@@ -106,6 +107,7 @@ function syncToState() {
   rebuildBlocked();
   buildWorld();
   buildSceneNPCs();
+  hintRecruitables();
 
   const saved = s.player?.tile;
   const start = saved && isFree(saved.x, saved.y) ? saved : firstFreeTile();
@@ -952,10 +954,13 @@ function buildSceneNPCs() {
   npcMovers = [];
   const here = getState().location, slot = currentSlot();
   lastSlot = slot;
+  const placed = new Set();   // one instance per NPC, ever — no clones on a map
   for (const npc of ((DATA.npcs && DATA.npcs.npcs) || [])) {
+    if (placed.has(npc.id)) continue;
     const r = scheduleResolve(npc, slot);
     if (!r || r.at !== here) continue;
     if (!npc.townsfolk && npcRecruited(npc.id)) continue;        // they're in your band now
+    placed.add(npc.id);
     const posted = !!(r.post && Array.isArray(r.post) && isFree(r.post[0], r.post[1]));
     const spot = posted ? { x: r.post[0], y: r.post[1] } : freeSceneTile();
     npcMovers.push({
@@ -964,6 +969,13 @@ function buildSceneNPCs() {
       posted, x: spot.x, y: spot.y, speed: 0.85, target: null, pause: Math.random() * 2, facing: 1
     });
   }
+}
+function hintRecruitables() {
+  const loc = getState().location;
+  if (loc === lastHintLoc) return;
+  lastHintLoc = loc;
+  const n = npcMovers.filter((m) => m.interact === "talk").length;
+  if (n > 0) toast(`${n} musician${n > 1 ? "s" : ""} hanging around \u2014 tap one to talk.`, "info");
 }
 function npcAt(tx, ty) {
   const m = npcMovers.find((mv) => Math.round(mv.x) === tx && Math.round(mv.y) === ty);

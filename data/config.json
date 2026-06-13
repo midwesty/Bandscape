@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.24.5 (Step 24.5: data-driven NPC dialogue \u2014 branching trees in dialogue.json w/ rapport, conditions, choices, effects; tap townsfolk to talk; recruiting/DAW untouched)",
+  "version": "0.25.1 (Step 25.1: relationships pay off \u2014 rapport via talking + playing shows; fans boost your crowd, owners cut deals, connectors share tips; People app shows rapport + perks. Favors next in 25.2)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

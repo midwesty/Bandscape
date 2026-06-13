@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, setFlag, getRapport, addRapport } from "../engine/state.js";
+import { getState, setFlag, getRapport, addRapport, addContact } from "../engine/state.js";
 import { currentSlot } from "./calendar.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -59,6 +59,7 @@ export function openDialogue(npcId, fallback) {
   const t = DATA.dialogue && DATA.dialogue.trees && DATA.dialogue.trees[npcId];
   if (!t) { if (fallback && fallback.flavor) toast(fallback.flavor, "info"); return; }
   tree = t; npc = npcId;
+  addContact({ id: npcId, name: t.speaker || npcId });
   overlay = overlay || document.getElementById("dialogue");
   if (!overlay) return;
   overlay.classList.remove("hidden");

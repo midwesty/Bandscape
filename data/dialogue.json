@@ -258,6 +258,12 @@
       "start": "lou",
       "entry": [
         {
+          "node": "tip",
+          "when": {
+            "minRapport": 40
+          }
+        },
+        {
           "node": "warm",
           "when": {
             "minRapport": 4
@@ -294,10 +300,22 @@
           ]
         },
         "tip": {
-          "text": "\"Stick around. I hear things \u2014 who's hiring, who's splitting up.\"",
+          "text": "Lou lowers his voice. \"Word is Dex wants out of his current mess. He's at The Foundry \u2014 tell him I sent you.\"",
+          "effects": [
+            {
+              "type": "flagSet",
+              "flag": "met_dex",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Tip: Dex is looking for a band (The Foundry).",
+              "kind": "good"
+            }
+          ],
           "choices": [
             {
-              "text": "I'll remember that.",
+              "text": "(thanks, Lou)",
               "end": true
             }
           ]
@@ -307,6 +325,238 @@
           "choices": [
             {
               "text": "(grin)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_rae": {
+      "speaker": "Rae",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "Rae's cradling a guitar she can't afford. \"One day this is mine.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "It'll happen.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "end": true
+            },
+            {
+              "text": "(let her browse)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_gabe": {
+      "speaker": "Gabe",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "Gabe's got a flyer in each hand. \"You playing soon? I'll be there, front row.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Count on it.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "end": true
+            },
+            {
+              "text": "(nod)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_min": {
+      "speaker": "Min",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "Min shoves a flyer at you. \"My band's Friday. Come heckle.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Wouldn't miss it.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "end": true
+            },
+            {
+              "text": "(take flyer)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_gus": {
+      "speaker": "Gus",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "Gus eyes your gear. \"Foundry or bust around here, kid.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Noted.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 1
+                }
+              ],
+              "end": true
+            },
+            {
+              "text": "(nod)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_nina": {
+      "speaker": "Nina",
+      "start": "n0",
+      "nodes": {
+        "n0": {
+          "text": "Nina doesn't look up from the cabinet. \"...new high score. Don't talk to me.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(respect the grind)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_ozzy": {
+      "speaker": "Ozzy",
+      "start": "o0",
+      "entry": [
+        {
+          "node": "tip",
+          "when": {
+            "minRapport": 40
+          }
+        },
+        {
+          "node": "warm",
+          "when": {
+            "minRapport": 4
+          }
+        },
+        {
+          "node": "o0"
+        }
+      ],
+      "nodes": {
+        "o0": {
+          "text": "Ozzy raises a glass. \"I've seen every band roll through here. Most folded inside a year.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Not us.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "goto": "o1"
+            },
+            {
+              "text": "(cheers)",
+              "end": true
+            }
+          ]
+        },
+        "o1": {
+          "text": "\"Hah \u2014 they all say that. Prove me wrong.\"",
+          "choices": [
+            {
+              "text": "(grin)",
+              "end": true
+            }
+          ]
+        },
+        "warm": {
+          "text": "\"There's the one who's gonna prove me wrong. Sit.\"",
+          "choices": [
+            {
+              "text": "(sit)",
+              "end": true
+            }
+          ]
+        },
+        "tip": {
+          "text": "Ozzy leans in. \"Want keys? Grim's been asking around. Foundry, late.\"",
+          "effects": [
+            {
+              "type": "flagSet",
+              "flag": "met_grim",
+              "value": true
+            },
+            {
+              "type": "toast",
+              "text": "Tip: Grim's looking for a band (The Foundry, late).",
+              "kind": "good"
+            }
+          ],
+          "choices": [
+            {
+              "text": "(noted)",
               "end": true
             }
           ]

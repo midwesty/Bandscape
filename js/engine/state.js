@@ -338,6 +338,21 @@ export function discoverVenue(venueId) { const s = getState(); s.discovered = s.
 export function contacts() { return getState().contacts || []; }
 export function getRapport(id) { return ((getState().rapport || {})[id]) || 0; }
 export function addRapport(id, n) { const s = getState(); if (!id || !n) return; s.rapport = s.rapport || {}; s.rapport[id] = Math.max(0, Math.min(100, (s.rapport[id] || 0) + n)); }
+// ---- Relationship payoffs (Step 25.1): rapport perks read from NPC data ----
+function npcRoster() { return (DATA.npcs && DATA.npcs.npcs) || []; }
+export function relationshipDraw(town) {            // fans you're tight with bring a crowd
+  let mult = 1;
+  for (const n of npcRoster()) { const pk = n.perk; if (!pk || pk.type !== "draw") continue; if (town && n.town && n.town !== town) continue; if (getRapport(n.id) >= (pk.minRapport || 0)) mult += (pk.bonus || 0); }
+  return Math.min(mult, 1.4);                        // cap the crowd boost at +40%
+}
+export function ownerPayMult(venueId) {             // a venue owner you're a regular with treats you better
+  for (const n of npcRoster()) { const pk = n.perk; if (!pk || pk.type !== "booking" || pk.venue !== venueId) continue; if (getRapport(n.id) >= (pk.minRapport || 0)) return pk.payMult || 1; }
+  return 1;
+}
+export function gainShowRapport(town, amount) {     // playing a show warms the fans who showed up
+  for (const n of npcRoster()) { const pk = n.perk; if (!pk || pk.type !== "draw") continue; if (town && n.town && n.town !== town) continue; addRapport(n.id, amount); }
+}
+export function npcPerk(id) { const n = npcRoster().find((x) => x.id === id); return n ? n.perk || null : null; }
 export function addContact(c) {
   if (!c || !c.id) return false;
   const s = getState(); s.contacts = s.contacts || [];

@@ -1,12 +1,120 @@
 {
   "_comment": "Venue registry. open=true means no requirements (any band with a demo can play); open=false is gated by req (minReleases/minFans/minFame/showsInTown/minBuzz). discover=true means the venue must be found in person (Maps 'Head over') before it can be booked; absent/false = known from start. days = weekdays (MO..SU) the venue hosts shows (its 3x/week rhythm); slot = time-of-day (morning/afternoon/evening/late). drawMult scales crowd+pay; payMult scales pay independently (college = big crowd, tiny pay). booker = contact met on discovery. blurb = flavor. Venues without days[] fall back to the legacy open-most-nights rhythm.",
   "venues": {
-    "ralphs":    { "name": "Ralph's Basement",    "town": "yourtown",  "open": true,  "discover": true, "drawMult": 0.5, "payMult": 0.6,  "days": ["TU", "TH", "SA"], "slot": "late",      "booker": { "id": "ralph",       "name": "Ralph",       "role": "Your buddy" },        "blurb": "Your buddy Ralph clears the laundry off the couch. BYOB, ~15 people, pays out of the tip jar." },
-    "church":    { "name": "Church Basement",     "town": "yourtown",  "open": true,  "discover": true, "drawMult": 0.7, "payMult": 0.85, "days": ["WE", "SA", "SU"], "slot": "morning",   "booker": { "id": "pastor_dave", "name": "Pastor Dave", "role": "Youth group" },        "blurb": "Folding chairs, fluorescent lights, a sober but attentive crowd. Keep it PG. Small honorarium." },
-    "college":   { "name": "College House Party", "town": "yourtown",  "open": true,  "discover": true, "drawMult": 1.4, "payMult": 0.15, "days": ["TH", "FR", "SA"], "slot": "afternoon", "booker": { "id": "chad",        "name": "Chad",        "role": "Frat social chair" }, "blurb": "Sticky floors and a keg. Big crowd, broke crowd - great for your name, lousy for cash." },
-    "thedive":   { "name": "The Dive",            "town": "yourtown",  "open": false, "discover": true, "drawMult": 1.0, "payMult": 1.0,  "days": ["TH", "FR", "SA", "SU"], "slot": "evening", "req": { "minReleases": 1, "minBuzz": 20 }, "booker": { "id": "sal", "name": "Sal", "role": "The Dive's owner" }, "blurb": "The real stage in town. Sal books bands with a record out and a following - earn it in the basements first." },
-    "foundry":   { "name": "The Foundry",         "town": "rocktroit", "open": true,  "drawMult": 1.4, "req": {} },
-    "steelroom": { "name": "The Steel Room",      "town": "rocktroit", "open": false, "drawMult": 2.2, "req": { "minReleases": 1, "minFans": 150, "showsInTown": 2 } },
-    "apex":      { "name": "Apex Hall",           "town": "rocktroit", "open": false, "drawMult": 3.4, "req": { "minReleases": 2, "minFame": 120, "minFans": 600, "showsInTown": 5 } }
+    "ralphs": {
+      "name": "Ralph's Basement",
+      "town": "yourtown",
+      "open": true,
+      "discover": true,
+      "drawMult": 0.5,
+      "payMult": 0.6,
+      "days": [
+        "TU",
+        "TH",
+        "SA"
+      ],
+      "slot": "late",
+      "booker": {
+        "id": "ralph",
+        "name": "Ralph",
+        "role": "Your buddy"
+      },
+      "blurb": "Your buddy Ralph clears the laundry off the couch. BYOB, ~15 people, pays out of the tip jar."
+    },
+    "church": {
+      "name": "Church Basement",
+      "town": "yourtown",
+      "open": true,
+      "discover": true,
+      "drawMult": 0.7,
+      "payMult": 0.85,
+      "days": [
+        "WE",
+        "SA",
+        "SU"
+      ],
+      "slot": "morning",
+      "booker": {
+        "id": "pastor_dave",
+        "name": "Pastor Dave",
+        "role": "Youth group"
+      },
+      "blurb": "Folding chairs, fluorescent lights, a sober but attentive crowd. Keep it PG. Small honorarium."
+    },
+    "college": {
+      "name": "College House Party",
+      "town": "yourtown",
+      "open": true,
+      "discover": true,
+      "drawMult": 1.4,
+      "payMult": 0.15,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "afternoon",
+      "booker": {
+        "id": "chad",
+        "name": "Chad",
+        "role": "Frat social chair"
+      },
+      "blurb": "Sticky floors and a keg. Big crowd, broke crowd - great for your name, lousy for cash."
+    },
+    "thedive": {
+      "name": "The Dive",
+      "town": "yourtown",
+      "open": false,
+      "discover": true,
+      "drawMult": 1.0,
+      "payMult": 1.0,
+      "days": [
+        "TH",
+        "FR",
+        "SA",
+        "SU"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minBuzz": 20
+      },
+      "booker": {
+        "id": "npc_sal",
+        "name": "Sal",
+        "role": "The Dive's owner"
+      },
+      "blurb": "The real stage in town. Sal books bands with a record out and a following - earn it in the basements first."
+    },
+    "foundry": {
+      "name": "The Foundry",
+      "town": "rocktroit",
+      "open": true,
+      "drawMult": 1.4,
+      "req": {}
+    },
+    "steelroom": {
+      "name": "The Steel Room",
+      "town": "rocktroit",
+      "open": false,
+      "drawMult": 2.2,
+      "req": {
+        "minReleases": 1,
+        "minFans": 150,
+        "showsInTown": 2
+      }
+    },
+    "apex": {
+      "name": "Apex Hall",
+      "town": "rocktroit",
+      "open": false,
+      "drawMult": 3.4,
+      "req": {
+        "minReleases": 2,
+        "minFame": 120,
+        "minFans": 600,
+        "showsInTown": 5
+      }
+    }
   }
 }
