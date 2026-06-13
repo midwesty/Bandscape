@@ -9,6 +9,7 @@ import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts, e
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { putAudio } from "./engine/audiostore.js";
 import { ensureGear } from "./systems/gear.js";
+import { initWorldAudio } from "./systems/worldaudio.js";
 import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock, initTimeControls } from "./systems/time.js";
@@ -128,6 +129,7 @@ function enterGame(isNew) {
   ensureGear(); ensureProperties();          // Step 19.0: default instrument tiers
   ensureBankAccounts();  // Step 20.1: band accounts + ledger
   ensureScene();         // Step 23.1: buzz, venue discovery, contacts (seeds Ralph)
+  initWorldAudio();      // Step 24.2: ambient world sound (idempotent)
   migrateInlineAudio();  // Step 18.0: move any inline audio into IndexedDB (off the localStorage quota)
   initObjectives();
   initPhone();

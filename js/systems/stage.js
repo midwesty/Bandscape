@@ -23,6 +23,7 @@ import { openDAW } from "./daw.js";
 import { openShop, busk, openVenue, openStore, openStoreCategory } from "./shop.js";
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
+import { playWorldSfx } from "./worldaudio.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -850,8 +851,10 @@ function updateCar(m, dt) {
   if (m.t > 1) m.t -= 1; else if (m.t < 0) m.t += 1;
   const px = m.x, py = m.y; posCar(m);
   const sdx = (m.x - px) - (m.y - py); if (Math.abs(sdx) > 0.0001) m.facing = sdx >= 0 ? 1 : -1;
+  if (m.t >= 0.5 && !m.passed) { m.passed = true; if (Math.random() < 0.5) playWorldSfx("car_pass", 0.5); } else if (m.t < 0.45) m.passed = false;
 }
 function updateWanderer(m, dt) {
+  if (m.kind === "dog") { m.bark = (m.bark == null ? 9 + Math.random() * 12 : m.bark - dt); if (m.bark <= 0) { playWorldSfx("dog_bark", 0.6); m.bark = 18 + Math.random() * 30; } }
   if (m.pause > 0) { m.pause -= dt; return; }
   if (!m.target) { m.target = randomFreeTileNear(m.x, m.y, 3); if (!m.target) { m.pause = 1; return; } }
   const dx = m.target.x - m.x, dy = m.target.y - m.y, dist = Math.hypot(dx, dy), step = m.speed * dt;

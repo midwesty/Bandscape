@@ -1,0 +1,12 @@
+{
+  "_comment": "World audio (Step 24.2). Drop your own files at these paths to replace the placeholders — no code changes. 'ambient' = a looping bed per scene id (omit a scene for silence). 'sfx' = one-shots the world triggers (cars passing, the dog). 'volume' is the world-audio master, 0..1.",
+  "volume": 0.35,
+  "ambient": {
+    "town": "assets/audio/world/street_loop.wav",
+    "rocktroit": "assets/audio/world/street_loop.wav"
+  },
+  "sfx": {
+    "car_pass": "assets/audio/world/car_pass.wav",
+    "dog_bark": "assets/audio/world/dog_bark.wav"
+  }
+}

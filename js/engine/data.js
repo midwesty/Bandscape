@@ -30,7 +30,8 @@ const FILES = {
   shops:      "data/shops.json",
   devices:    "data/devices.json",
   venues:     "data/venues.json",
-  properties:  "data/properties.json"
+  properties:  "data/properties.json",
+  worldaudio:  "data/audio/world.json"
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];

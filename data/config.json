@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.24.1 (Step 24.1: living world \u2014 real-time ambient cars on roads, a town dog, pedestrians; per-scene world block; PNG override slots)",
+  "version": "0.24.2 (Step 24.2: world audio foundation \u2014 data-driven ambient beds + car/dog sfx w/ placeholder sounds; shop wanderers in music store + arcade; Rocktroit road fix)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
