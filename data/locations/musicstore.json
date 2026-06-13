@@ -72,7 +72,7 @@
       "name": "Shop Shelf",
       "tile": {
         "x": 1,
-        "y": 3
+        "y": 1
       },
       "decorId": "shop_shelf",
       "sprite": "assets/img/objects/decor/shop_shelf.png",
@@ -82,8 +82,8 @@
       "id": "pd_musicstore_shop_shelf",
       "name": "Shop Shelf",
       "tile": {
-        "x": 10,
-        "y": 3
+        "x": 3,
+        "y": 1
       },
       "decorId": "shop_shelf",
       "sprite": "assets/img/objects/decor/shop_shelf.png",
@@ -93,8 +93,8 @@
       "id": "pd_musicstore_checkout_counter",
       "name": "Checkout Counter",
       "tile": {
-        "x": 2,
-        "y": 5
+        "x": 1,
+        "y": 3
       },
       "decorId": "checkout_counter",
       "sprite": "assets/img/objects/decor/checkout_counter.png",
@@ -104,8 +104,8 @@
       "id": "pd_musicstore_merch_rack",
       "name": "Merch Rack",
       "tile": {
-        "x": 1,
-        "y": 5
+        "x": 5,
+        "y": 1
       },
       "decorId": "merch_rack",
       "sprite": "assets/img/objects/decor/merch_rack.png",
@@ -115,8 +115,8 @@
       "id": "pd_musicstore_display_case",
       "name": "Display Case",
       "tile": {
-        "x": 10,
-        "y": 5
+        "x": 1,
+        "y": 4
       },
       "decorId": "display_case",
       "sprite": "assets/img/objects/decor/display_case.png",

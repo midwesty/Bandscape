@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.26.2 (Step 26.2: thrift storefront visible/enterable in town + pawn shop restored; catalog grown to 62 with Tables & Desks + Business categories; businesses dressed \u2014 store aisles/checkout/merch, bars & arcade booths/tables)",
+  "version": "0.26.3 (Step 26.3: multi-tile footprints \u2014 beds/sofas/counters/tables/tubs occupy & block their real size, render as proper 3D boxes, sort by front edge; bought items drop only where they fit; pre-placed d\u00e9cor re-laid-out safely)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

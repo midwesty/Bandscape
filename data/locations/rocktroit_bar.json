@@ -12,7 +12,7 @@
       "id": "pd_rocktroit_bar_neon_sign",
       "name": "Neon Sign",
       "tile": {
-        "x": 10,
+        "x": 1,
         "y": 1
       },
       "decorId": "neon_sign",
@@ -23,7 +23,7 @@
       "id": "pd_rocktroit_bar_disco_ball",
       "name": "Disco Ball",
       "tile": {
-        "x": 1,
+        "x": 2,
         "y": 1
       },
       "decorId": "disco_ball",
@@ -34,8 +34,8 @@
       "id": "pd_rocktroit_bar_string_lights",
       "name": "String Lights",
       "tile": {
-        "x": 10,
-        "y": 6
+        "x": 3,
+        "y": 1
       },
       "decorId": "string_lights",
       "sprite": "assets/img/objects/decor/string_lights.png",
@@ -45,8 +45,8 @@
       "id": "pd_rocktroit_bar_leather_sofa",
       "name": "Leather Sofa",
       "tile": {
-        "x": 1,
-        "y": 6
+        "x": 7,
+        "y": 1
       },
       "decorId": "leather_sofa",
       "sprite": "assets/img/objects/decor/leather_sofa.png",
@@ -56,8 +56,8 @@
       "id": "pd_rocktroit_bar_bar_booth",
       "name": "Bar Booth",
       "tile": {
-        "x": 1,
-        "y": 3
+        "x": 4,
+        "y": 1
       },
       "decorId": "bar_booth",
       "sprite": "assets/img/objects/decor/bar_booth.png",
@@ -68,7 +68,7 @@
       "name": "Cafe Table",
       "tile": {
         "x": 10,
-        "y": 3
+        "y": 1
       },
       "decorId": "cafe_table",
       "sprite": "assets/img/objects/decor/cafe_table.png",

@@ -24,7 +24,7 @@
       "name": "Bar Booth",
       "tile": {
         "x": 1,
-        "y": 4
+        "y": 2
       },
       "decorId": "bar_booth",
       "sprite": "assets/img/objects/decor/bar_booth.png",
@@ -34,8 +34,8 @@
       "id": "pd_arcade_cafe_table",
       "name": "Cafe Table",
       "tile": {
-        "x": 8,
-        "y": 4
+        "x": 3,
+        "y": 1
       },
       "decorId": "cafe_table",
       "sprite": "assets/img/objects/decor/cafe_table.png",

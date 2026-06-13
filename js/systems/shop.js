@@ -293,10 +293,20 @@ function storeSprite(type) {
   }
   return null;
 }
-function freeTile(loc, arr) {
+function freeTile(loc, arr, foot) {
   const size = (DATA.locations[loc] && DATA.locations[loc].size) || { w: 8, h: 6 };
-  const occ = new Set(arr.filter((o) => o && o.tile).map((o) => o.tile.x + "," + o.tile.y));
-  for (let y = 1; y < size.h - 1; y++) for (let x = 1; x < size.w - 1; x++) if (!occ.has(x + "," + y)) return { x, y };
+  const [fw, fh] = foot || [1, 1];
+  const occ = new Set();
+  for (const o of arr) {
+    if (!o || !o.tile) continue;
+    const def = decorItem(o.decorId); const [ow, oh] = (def && def.footprint) || [1, 1];
+    for (let dy = 0; dy < oh; dy++) for (let dx = 0; dx < ow; dx++) occ.add((o.tile.x + dx) + "," + (o.tile.y + dy));
+  }
+  for (let y = 1; y <= size.h - 1 - fh; y++) for (let x = 1; x <= size.w - 1 - fw; x++) {
+    let fits = true;
+    for (let dy = 0; dy < fh && fits; dy++) for (let dx = 0; dx < fw && fits; dx++) if (occ.has((x + dx) + "," + (y + dy))) fits = false;
+    if (fits) return { x, y };
+  }
   return { x: 1, y: 1 };
 }
 function placedAt(loc) {
@@ -466,7 +476,7 @@ function buyAndSendDecor(spec) {
   const loc = p.location;
   if (!s.placedObjects[loc]) s.placedObjects[loc] = JSON.parse(JSON.stringify((DATA.locations[loc] && DATA.locations[loc].objects) || []));
   const arr = s.placedObjects[loc];
-  const tile = freeTile(loc, arr);
+  const tile = freeTile(loc, arr, d.footprint);
   arr.push({ id: "decor_" + itemId + "_" + Date.now().toString(36), name: d.name, tile, decorId: itemId, sprite: d.sprite });
   addStat("money", -d.price);
   persist(); emit("renderAll");

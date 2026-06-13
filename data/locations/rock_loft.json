@@ -74,7 +74,7 @@
       "id": "pd_rock_loft_string",
       "name": "String Lights",
       "tile": {
-        "x": 3,
+        "x": 4,
         "y": 1
       },
       "decorId": "string_lights",
@@ -84,7 +84,7 @@
       "id": "pd_rock_loft_monitor",
       "name": "Studio Monitor",
       "tile": {
-        "x": 4,
+        "x": 5,
         "y": 1
       },
       "decorId": "studio_monitor",
@@ -94,7 +94,7 @@
       "id": "pd_rock_loft_gold",
       "name": "Gold Record",
       "tile": {
-        "x": 5,
+        "x": 6,
         "y": 1
       },
       "decorId": "framed_gold_record",
@@ -104,7 +104,7 @@
       "id": "pd_rock_loft_cow",
       "name": "Cowhide Rug",
       "tile": {
-        "x": 6,
+        "x": 7,
         "y": 1
       },
       "decorId": "cowhide_rug",

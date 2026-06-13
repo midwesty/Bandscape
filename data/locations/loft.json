@@ -74,7 +74,7 @@
       "id": "pd_loft_neon",
       "name": "Neon Sign",
       "tile": {
-        "x": 3,
+        "x": 5,
         "y": 1
       },
       "decorId": "neon_sign",
@@ -84,7 +84,7 @@
       "id": "pd_loft_turntable",
       "name": "Turntable",
       "tile": {
-        "x": 4,
+        "x": 6,
         "y": 1
       },
       "decorId": "turntable",
@@ -94,7 +94,7 @@
       "id": "pd_loft_monstera",
       "name": "Monstera",
       "tile": {
-        "x": 5,
+        "x": 7,
         "y": 1
       },
       "decorId": "monstera",
@@ -104,8 +104,8 @@
       "id": "pd_loft_rug",
       "name": "Persian Rug",
       "tile": {
-        "x": 6,
-        "y": 1
+        "x": 1,
+        "y": 2
       },
       "decorId": "persian_rug",
       "sprite": "assets/img/objects/decor/persian_rug.png"
@@ -114,8 +114,8 @@
       "id": "pd_loft_espresso",
       "name": "Espresso Machine",
       "tile": {
-        "x": 7,
-        "y": 1
+        "x": 8,
+        "y": 2
       },
       "decorId": "espresso_machine",
       "sprite": "assets/img/objects/decor/espresso_machine.png"

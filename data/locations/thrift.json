@@ -21,7 +21,7 @@
       "id": "d_sofa",
       "name": "Leather Sofa",
       "tile": {
-        "x": 3,
+        "x": 2,
         "y": 1
       },
       "decorId": "leather_sofa"
@@ -39,7 +39,7 @@
       "id": "d_disco",
       "name": "Disco Ball",
       "tile": {
-        "x": 7,
+        "x": 6,
         "y": 1
       },
       "decorId": "disco_ball"
@@ -48,7 +48,7 @@
       "id": "d_monstera",
       "name": "Monstera",
       "tile": {
-        "x": 9,
+        "x": 7,
         "y": 1
       },
       "decorId": "monstera"
@@ -57,7 +57,7 @@
       "id": "d_tub",
       "name": "Clawfoot Tub",
       "tile": {
-        "x": 10,
+        "x": 8,
         "y": 1
       },
       "decorId": "clawfoot_tub"
@@ -66,8 +66,8 @@
       "id": "d_turntable",
       "name": "Turntable",
       "tile": {
-        "x": 1,
-        "y": 4
+        "x": 10,
+        "y": 1
       },
       "decorId": "turntable"
     },
@@ -75,8 +75,8 @@
       "id": "d_rug",
       "name": "Persian Rug",
       "tile": {
-        "x": 3,
-        "y": 5
+        "x": 1,
+        "y": 2
       },
       "decorId": "persian_rug"
     },
@@ -85,7 +85,7 @@
       "name": "String Lights",
       "tile": {
         "x": 10,
-        "y": 4
+        "y": 2
       },
       "decorId": "string_lights"
     },

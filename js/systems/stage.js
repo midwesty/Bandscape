@@ -121,7 +121,11 @@ function syncToState() {
 function rebuildBlocked(except) {
   const w = room.size?.w || 8, h = room.size?.h || 6;
   blocked = Array.from({ length: h }, () => Array(w).fill(false));
-  for (const o of furniture) { if (o !== except && o.tile && o.kind !== "item") blocked[o.tile.y][o.tile.x] = true; }
+  for (const o of furniture) {
+    if (o === except || !o.tile || o.kind === "item") continue;
+    const f = footOf(o);
+    for (let dy = 0; dy < f.h; dy++) for (let dx = 0; dx < f.w; dx++) { const bx = o.tile.x + dx, by = o.tile.y + dy; if (inBounds(bx, by)) blocked[by][bx] = true; }
+  }
   for (const o of exits) { if (o.solid && o.tile && inBounds(o.tile.x, o.tile.y)) blocked[o.tile.y][o.tile.x] = true; }
 }
 function firstFreeTile() {
@@ -515,7 +519,7 @@ function draw() {
   drawArrangeOverlay(w, h);
 
   const ents = [];
-  for (const o of furniture) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y });
+  for (const o of furniture) { const f = footOf(o); ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y + (f.w - 1) + (f.h - 1) }); }
   for (const o of exits) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y - 0.5 });
   for (const m of movers) ents.push({ kind: "mover", m, depth: m.x + m.y + 0.35 });
   for (const m of npcMovers) ents.push({ kind: "mover", m, depth: m.x + m.y + 0.36 });
@@ -579,14 +583,15 @@ function shadow(cx, cy, rw = TILE_W * 0.34, rh = TILE_H * 0.34) {
   ctx.fillStyle = C.shadow; ctx.fill();
 }
 function drawObject(o) {
-  const c = toScreen(o.tile.x, o.tile.y);
+  const _f = footOf(o);
+  const c = toScreen(o.tile.x + (_f.w - 1) / 2, o.tile.y + (_f.h - 1) / 2);
   const lifted = held === o;
   const img = getImage(o.sprite);
   shadow(c.x, c.y);
   ctx.save();
   if (lifted) ctx.translate(0, -8);
   if (img && img._ok) {
-    const dw = (o.kind === "item" ? TILE_W * 0.6 : TILE_W * 1.1), dh = dw * (img.naturalHeight / img.naturalWidth || 1);
+    const dw = (o.kind === "item" ? TILE_W * 0.6 : TILE_W * 1.1 * Math.max(_f.w, _f.h)), dh = dw * (img.naturalHeight / img.naturalWidth || 1);
     ctx.drawImage(img, c.x - dw / 2, c.y - dh + TILE_H * 0.35, dw, dh);
   } else if (o.kind === "item") {
     drawFloorItem(o, c.x, c.y);
@@ -645,9 +650,44 @@ function drawProc(o, cx, cy) {
     default:       cuboid(cx, cy, 14, 7, 18, C.purple, "#6e54a0", "#523f78");
   }
 }
+function footOf(o) {                            // Step 26.3: object footprint in tiles (default 1x1)
+  const d = o && o.decorId && DATA.decor && DATA.decor.items && DATA.decor.items[o.decorId];
+  const f = (d && d.footprint) || (o && o.footprint) || [1, 1];
+  return { w: Math.max(1, f[0] | 0), h: Math.max(1, f[1] | 0) };
+}
+function isoBox(x, y, w, h, height, top, lft, rgt) {   // a 3D box spanning a w×h tile footprint
+  const N = toScreen(x - 0.5, y - 0.5), E = toScreen(x + w - 0.5, y - 0.5),
+        S = toScreen(x + w - 0.5, y + h - 0.5), W = toScreen(x - 0.5, y + h - 0.5);
+  const up = (p) => ({ x: p.x, y: p.y - height });
+  ctx.fillStyle = lft;
+  ctx.beginPath(); ctx.moveTo(W.x, W.y); ctx.lineTo(S.x, S.y); ctx.lineTo(up(S).x, up(S).y); ctx.lineTo(up(W).x, up(W).y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = rgt;
+  ctx.beginPath(); ctx.moveTo(S.x, S.y); ctx.lineTo(E.x, E.y); ctx.lineTo(up(E).x, up(E).y); ctx.lineTo(up(S).x, up(S).y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = top;
+  ctx.beginPath(); ctx.moveTo(up(N).x, up(N).y); ctx.lineTo(up(E).x, up(E).y); ctx.lineTo(up(S).x, up(S).y); ctx.lineTo(up(W).x, up(W).y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.stroke();
+}
+function drawDecorBox(o, cat, f) {              // multi-tile décor renders as a properly-sized box
+  const x = o.tile.x, y = o.tile.y;
+  const M = {
+    seating:    { h: 10, top: "#5e4480", lft: "#4a3568", rgt: "#3a2954" },
+    kitchen:    { h: 20, top: "#cfd6dd", lft: "#9aa3ad", rgt: "#7c858f" },
+    tables:     { h: 9,  top: "#8a6a44", lft: "#6e5230", rgt: "#54401f" },
+    bath:       { h: 11, top: "#eaf2f6", lft: "#c4d2da", rgt: "#a8b8c2" },
+    commercial: { h: 16, top: "#4a4458", lft: "#3a3546", rgt: "#2e2a38" },
+  };
+  const m = M[cat] || { h: 12, top: C.purple, lft: "#6e54a0", rgt: "#523f78" };
+  isoBox(x, y, f.w, f.h, m.h, m.top, m.lft, m.rgt);
+  if (cat === "bath") { const c = toScreen(x + (f.w - 1) / 2, y + (f.h - 1) / 2); ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(c.x, c.y - m.h, 9 * f.w, 4.5, 0, 0, Math.PI * 2); ctx.fill(); }
+}
 function drawDecor(o, cx, cy) {
   const def = (DATA.decor && DATA.decor.items && DATA.decor.items[o.decorId]) || {};
   const cat = def.category;
+  const _f = footOf(o);
+  if (_f.w > 1 || _f.h > 1) {                   // multi-tile -> proper iso box, then done
+    if (def.glow) { const g = def.glow, r = g.r || 30; ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.55; const gr = ctx.createRadialGradient(cx, cy - 16, 2, cx, cy - 16, r); gr.addColorStop(0, g.color); gr.addColorStop(1, "rgba(0,0,0,0)"); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(cx, cy - 16, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+    return drawDecorBox(o, cat, _f);
+  }
   if (def.glow) {                              // real illumination: additive radial glow
     const g = def.glow, r = g.r || 30;
     ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.55;
