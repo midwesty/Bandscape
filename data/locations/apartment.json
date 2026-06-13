@@ -104,6 +104,56 @@
       "sprite": "assets/img/objects/mic.png",
       "interact": "equip",
       "instrumentId": "microphone"
+    },
+    {
+      "id": "pd_apartment_futon",
+      "name": "Futon",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "futon",
+      "sprite": "assets/img/objects/decor/futon.png"
+    },
+    {
+      "id": "pd_apartment_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "lava_lamp",
+      "sprite": "assets/img/objects/decor/lava_lamp.png"
+    },
+    {
+      "id": "pd_apartment_poster",
+      "name": "Band Poster",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "band_poster",
+      "sprite": "assets/img/objects/decor/band_poster.png"
+    },
+    {
+      "id": "pd_apartment_succ",
+      "name": "Succulents",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "succulent_set",
+      "sprite": "assets/img/objects/decor/succulent_set.png"
+    },
+    {
+      "id": "pd_apartment_mat",
+      "name": "Floor Mat",
+      "tile": {
+        "x": 3,
+        "y": 2
+      },
+      "decorId": "vinyl_mat",
+      "sprite": "assets/img/objects/decor/vinyl_mat.png"
     }
   ],
   "exits": [

@@ -1,0 +1,119 @@
+{
+  "_comment": "Second-Hand Rose thrift & decor store (Step 26.1). Clerk (interact 'decorclerk') opens the decor catalog; exit (interact 'storeexit') returns to whichever city you came from. Ambient pieces use 'decorId' -> resolved from data/decor.json for sprite/category/glow.",
+  "id": "thrift",
+  "name": "Second-Hand Rose",
+  "size": {
+    "w": 12,
+    "h": 8
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "d_neon",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign"
+    },
+    {
+      "id": "d_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "leather_sofa"
+    },
+    {
+      "id": "d_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "decorId": "lava_lamp"
+    },
+    {
+      "id": "d_disco",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "decorId": "disco_ball"
+    },
+    {
+      "id": "d_monstera",
+      "name": "Monstera",
+      "tile": {
+        "x": 9,
+        "y": 1
+      },
+      "decorId": "monstera"
+    },
+    {
+      "id": "d_tub",
+      "name": "Clawfoot Tub",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "decorId": "clawfoot_tub"
+    },
+    {
+      "id": "d_turntable",
+      "name": "Turntable",
+      "tile": {
+        "x": 1,
+        "y": 4
+      },
+      "decorId": "turntable"
+    },
+    {
+      "id": "d_rug",
+      "name": "Persian Rug",
+      "tile": {
+        "x": 3,
+        "y": 5
+      },
+      "decorId": "persian_rug"
+    },
+    {
+      "id": "d_string",
+      "name": "String Lights",
+      "tile": {
+        "x": 10,
+        "y": 4
+      },
+      "decorId": "string_lights"
+    },
+    {
+      "id": "clerk",
+      "name": "Rose (owner)",
+      "tile": {
+        "x": 6,
+        "y": 4
+      },
+      "interact": "decorclerk"
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit",
+      "name": "Exit",
+      "tile": {
+        "x": 6,
+        "y": 7
+      },
+      "interact": "storeexit",
+      "solid": true
+    }
+  ],
+  "world": {
+    "ambient": {
+      "pedestrians": 1
+    }
+  }
+}

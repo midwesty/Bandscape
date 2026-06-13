@@ -13,7 +13,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, controlledProperties, propDef } from "../engine/state.js";
+import { getState, addStat, activeBand, controlledProperties, propDef, propVibe } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -26,6 +26,7 @@ import { openScheduler, findReady } from "./calendar.js";
 
 let overlay = null, currentShop = null, currentVenue = null, lastRenderKey = null;
 let storeView = { stage: "cats", type: null, tierId: null };
+let decorView = { stage: "cats", cat: null, item: null };
 
 const money = () => getState().stats.money || 0;
 const num = (n) => Math.round(n || 0).toLocaleString();
@@ -43,6 +44,7 @@ export function openShop(shopId) {
   if (!overlay) return;
   currentShop = shopId;
   if (shopId === "musicstore") storeView = { stage: "cats", type: null, tierId: null };
+  if (shopId === "thrift") decorView = { stage: "cats", cat: null, item: null };
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
   document.body.classList.add("modal-open");
@@ -68,6 +70,7 @@ function render() {
   if (currentShop === "pawn" || currentShop === "pawn2") { body = pawnBody(); title = currentShop === "pawn" ? DATA.shops.pawn.name : "Rust Belt Pawn"; }
   else if (currentShop === "grocery") { body = groceryBody(); title = DATA.shops.grocery.name; }
   else if (currentShop === "musicstore") { body = storeBody(); title = "Sound City — Music & Gear"; }
+  else if (currentShop === "thrift") { body = decorBody(); title = "Second-Hand Rose — Décor"; }
   else if (currentShop === "venuebook") { body = venuePanelBody(); title = venueById(currentVenue)?.name || "Venue"; }
   else { body = venueBody(); title = DATA.shops.venue.name; }
   overlay.innerHTML = `<div class="shop-modal">${head(title)}<div class="shop-body">${body}</div></div>`;
@@ -178,6 +181,10 @@ function bind() {
   overlay.querySelectorAll("[data-store-carry]").forEach((b) => b.addEventListener("click", () => buyAndCarry(b.dataset.storeCarry)));
   overlay.querySelectorAll("[data-store-send]").forEach((b) => b.addEventListener("click", () => { const parts = b.dataset.storeSend.split(":"); storeView = { stage: "send", type: parts[0], tierId: parts[1] }; render(); }));
   overlay.querySelectorAll("[data-store-place]").forEach((b) => b.addEventListener("click", () => buyAndSend(b.dataset.storePlace)));
+  overlay.querySelectorAll("[data-decor-cat]").forEach((b) => b.addEventListener("click", () => { decorView = { stage: "items", cat: b.dataset.decorCat, item: null }; render(); }));
+  overlay.querySelectorAll("[data-decor-back]").forEach((b) => b.addEventListener("click", () => { decorView = { stage: b.dataset.decorBack, cat: decorView.cat, item: decorView.item }; render(); }));
+  overlay.querySelectorAll("[data-decor-send]").forEach((b) => b.addEventListener("click", () => { decorView = { stage: "send", cat: decorView.cat, item: b.dataset.decorSend }; render(); }));
+  overlay.querySelectorAll("[data-decor-place]").forEach((b) => b.addEventListener("click", () => buyAndSendDecor(b.dataset.decorPlace)));
   overlay.querySelectorAll("[data-sell-instr]").forEach((b) => b.addEventListener("click", () => sellInstrument(b.dataset.sellInstr)));
 }
 
@@ -410,6 +417,63 @@ function sellInstrument(itemId) {
   toast(`Sold your ${t ? t.name : "instrument"} for $${num(payout)}.`, "good");
   render();
 }
+
+// ---- decor catalog (Step 26.1): browse -> deliver to a property ----
+const decorItem = (id) => (DATA.decor && DATA.decor.items && DATA.decor.items[id]) || null;
+function decorBody() {
+  if (decorView.stage === "items") return decorItems(decorView.cat);
+  if (decorView.stage === "send") return decorSend(decorView.item);
+  return decorCats();
+}
+function decorCats() {
+  const cats = (DATA.decor && DATA.decor.categories) || [];
+  const labels = (DATA.decor && DATA.decor.categoryLabels) || {};
+  const items = (DATA.decor && DATA.decor.items) || {};
+  const rows = cats.map((c) => {
+    const ids = Object.keys(items).filter((id) => items[id].category === c);
+    const from = ids.length ? Math.min.apply(null, ids.map((id) => items[id].price)) : 0;
+    return `<button class="shop-row store-cat" data-decor-cat="${c}"><div><strong>${esc(labels[c] || c)}</strong><small>${ids.length} pieces \u00b7 from $${num(from)}</small></div><span class="store-chev">\u203a</span></button>`;
+  }).join("");
+  return `<p class="shop-note">Browse the floor \u2014 pick a piece and we'll deliver it to a place you own.</p>${rows}`;
+}
+function decorItems(cat) {
+  const items = (DATA.decor && DATA.decor.items) || {};
+  const labels = (DATA.decor && DATA.decor.categoryLabels) || {};
+  const ids = Object.keys(items).filter((id) => items[id].category === cat).sort((a, b) => items[a].price - items[b].price);
+  const rows = ids.map((id) => { const d = items[id];
+    const glow = d.glow ? ' \u00b7 glows' : '';
+    return `<div class="shop-row"><div><strong>${esc(d.name)}</strong><small>vibe +${d.vibe}${glow} \u00b7 ${esc(d.desc || "")}</small></div><div class="store-acts"><span class="shop-price">$${num(d.price)}</span> <button class="btn shop-btn" data-decor-send="${id}">Place\u2026</button></div></div>`;
+  }).join("");
+  return `<button class="shop-back" data-decor-back="cats">\u2039 All categories</button><div class="shop-section">${esc(labels[cat] || cat).toUpperCase()}</div>${rows}`;
+}
+function decorSend(itemId) {
+  const d = decorItem(itemId); if (!d) return decorCats();
+  const props = controlledProperties();
+  if (!props.length) return `<button class="shop-back" data-decor-back="items">\u2039 Back</button><p class="shop-note">You don't own a place to put it yet \u2014 rent or buy somewhere in Properties first.</p>`;
+  const rows = props.map((p) => {
+    const v = propVibe(p.location);
+    return `<div class="shop-row"><div><strong>${esc(p.name)}</strong><small>vibe ${v} \u2192 ${v + (d.vibe || 0)}</small></div><div class="store-acts"><button class="btn shop-btn" data-decor-place="${itemId}:${p.id}">Deliver $${num(d.price)}</button></div></div>`;
+  }).join("");
+  return `<button class="shop-back" data-decor-back="items">\u2039 Back</button><div class="shop-section">DELIVER \u2014 ${esc(d.name).toUpperCase()}</div>${rows}`;
+}
+function buyAndSendDecor(spec) {
+  const [itemId, propId] = String(spec).split(":");
+  const d = decorItem(itemId); if (!d) return;
+  const p = propDef(propId); if (!p) return;
+  if (money() < d.price) { toast("Can't afford that yet.", "warn"); return; }
+  const s = getState();
+  s.placedObjects = s.placedObjects || {};
+  const loc = p.location;
+  if (!s.placedObjects[loc]) s.placedObjects[loc] = JSON.parse(JSON.stringify((DATA.locations[loc] && DATA.locations[loc].objects) || []));
+  const arr = s.placedObjects[loc];
+  const tile = freeTile(loc, arr);
+  arr.push({ id: "decor_" + itemId + "_" + Date.now().toString(36), name: d.name, tile, decorId: itemId, sprite: d.sprite });
+  addStat("money", -d.price);
+  persist(); emit("renderAll");
+  toast(`Delivered the ${d.name}. Vibe +${d.vibe}.`, "good");
+  render();
+}
+export function openThrift() { openShop("thrift"); }
 
 // Showroom entry points (Step 19.5b): walk up to a display → that category; clerk → full store.
 export function openStore() { openShop("musicstore"); }

@@ -18,7 +18,9 @@
       },
       "interact": "shop",
       "shopId": "pawn",
-      "solid": true
+      "solid": true,
+      "to": "thrift",
+      "label": "Thrift"
     },
     {
       "id": "grocery",

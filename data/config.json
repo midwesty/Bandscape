@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.25.3 (Step 25.3: favors \u2014 NPCs ask for a milestone (shows/release/fans/buzz/fame), reward rapport once and remember; third way to build rapport; data-driven)",
+  "version": "0.26.1 (Step 26.1: d\u00e9cor \u2014 thrift store, 48 items across 8 categories, glowing lights, buy\u2192deliver\u2192place, Vibe score \u2192 better rest/mood + slower need-drain at home, bar-exclusive d\u00e9cor, unique pre-dressed homes)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

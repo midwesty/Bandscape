@@ -8,7 +8,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, statDef } from "../engine/state.js";
+import { getState, addStat, statDef, homeVibeHere } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { tickConditionsHour, pruneConditions, addCondition } from "./conditions.js";
 import { toast } from "../ui/toast.js";
@@ -86,8 +86,11 @@ function onHour() {
   const s = getState();
   const rules = DATA.stats.healthRules || {};
 
+  const homeVibe = homeVibeHere();              // Step 26.1: a comfortable home eases hunger/thirst/energy drain
+  const ease = homeVibe > 0 ? Math.max(0.5, 1 - homeVibe / 60) : 1;
   for (const def of DATA.stats.stats) {
-    if (def.decayPerHour) addStat(def.id, -def.decayPerHour);
+    if (!def.decayPerHour) continue;
+    addStat(def.id, -(def.kind === "need" ? def.decayPerHour * ease : def.decayPerHour));
   }
 
   const starving = (s.stats.hunger ?? 99) <= (rules.starvingHungerAt ?? 0)
@@ -126,6 +129,9 @@ export function sleep({ forced = false } = {}) {
 
   if (forced) addCondition("exhausted");
   else addCondition("well_rested");
+
+  const homeVibe = homeVibeHere();              // Step 26.1: décor pays off when you rest at home
+  if (homeVibe > 0 && !forced) { addStat("mood", Math.min(12, Math.round(homeVibe * 0.4))); addStat("health", Math.min(6, Math.round(homeVibe * 0.2))); }
 
   emit("day:advanced", { day: s.time.day, forced });
   emit("renderAll");

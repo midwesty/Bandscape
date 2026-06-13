@@ -1,0 +1,485 @@
+{
+  "_comment": "Decor catalog (Step 26.1). Each item: category, price, vibe (mood/comfort contribution), tier 1-3, sprite (PNG override slot; code fallback by category), optional glow {color,r} for lights. Fully editable for the future builder.",
+  "categories": [
+    "seating",
+    "lighting",
+    "kitchen",
+    "bath",
+    "electronics",
+    "wall",
+    "plants",
+    "floor"
+  ],
+  "categoryLabels": {
+    "seating": "Seating",
+    "lighting": "Lighting",
+    "kitchen": "Kitchen",
+    "bath": "Bath",
+    "electronics": "Electronics",
+    "wall": "Wall & Art",
+    "plants": "Plants",
+    "floor": "Rugs & Floor"
+  },
+  "items": {
+    "futon": {
+      "name": "Futon",
+      "category": "seating",
+      "price": 60,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/futon.png",
+      "desc": "Sleeps two, comfortably seats none."
+    },
+    "beanbag": {
+      "name": "Beanbag Chair",
+      "category": "seating",
+      "price": 35,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/beanbag.png",
+      "desc": "Swallows you whole. In a good way."
+    },
+    "papasan": {
+      "name": "Papasan Chair",
+      "category": "seating",
+      "price": 120,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/papasan.png",
+      "desc": "The bowl chair. Peak dorm luxury."
+    },
+    "recliner": {
+      "name": "Worn Recliner",
+      "category": "seating",
+      "price": 150,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/recliner.png",
+      "desc": "Reclines into another dimension."
+    },
+    "leather_sofa": {
+      "name": "Leather Sofa",
+      "category": "seating",
+      "price": 420,
+      "vibe": 5,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "desc": "Cracked just right. Smells like success."
+    },
+    "sectional": {
+      "name": "Modular Sectional",
+      "category": "seating",
+      "price": 780,
+      "vibe": 7,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/sectional.png",
+      "desc": "Rearrange it nightly. You won't."
+    },
+    "lava_lamp": {
+      "name": "Lava Lamp",
+      "category": "lighting",
+      "price": 45,
+      "vibe": 4,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/lava_lamp.png",
+      "desc": "Hypnotic blobs. Instant creative trance.",
+      "glow": {
+        "color": "#ff4fa3",
+        "r": 34
+      }
+    },
+    "string_lights": {
+      "name": "String Lights",
+      "category": "lighting",
+      "price": 30,
+      "vibe": 4,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/string_lights.png",
+      "desc": "Warm little stars across the wall.",
+      "glow": {
+        "color": "#ffd27f",
+        "r": 40
+      }
+    },
+    "salt_lamp": {
+      "name": "Salt Lamp",
+      "category": "lighting",
+      "price": 55,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/salt_lamp.png",
+      "desc": "Pink glow, dubious health claims.",
+      "glow": {
+        "color": "#ff9a52",
+        "r": 30
+      }
+    },
+    "floor_lamp": {
+      "name": "Arc Floor Lamp",
+      "category": "lighting",
+      "price": 110,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/floor_lamp.png",
+      "desc": "Throws a soft pool of light.",
+      "glow": {
+        "color": "#fff0c2",
+        "r": 36
+      }
+    },
+    "neon_sign": {
+      "name": "Neon Sign",
+      "category": "lighting",
+      "price": 260,
+      "vibe": 6,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "desc": "Custom buzzing neon. Pure mood.",
+      "glow": {
+        "color": "#3df2ff",
+        "r": 46
+      }
+    },
+    "disco_ball": {
+      "name": "Disco Ball",
+      "category": "lighting",
+      "price": 180,
+      "vibe": 5,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "desc": "Spins the room into a tiny club.",
+      "glow": {
+        "color": "#c9a0ff",
+        "r": 48
+      }
+    },
+    "toaster_oven": {
+      "name": "Toaster Oven",
+      "category": "kitchen",
+      "price": 40,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/toaster_oven.png",
+      "desc": "Toast, reheats, minor fire hazard."
+    },
+    "microwave": {
+      "name": "Microwave",
+      "category": "kitchen",
+      "price": 55,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/microwave.png",
+      "desc": "3am ramen's best friend."
+    },
+    "mini_fridge": {
+      "name": "Mini Fridge",
+      "category": "kitchen",
+      "price": 90,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/mini_fridge.png",
+      "desc": "Cold drinks, cold leftovers, cold truth."
+    },
+    "espresso_machine": {
+      "name": "Espresso Machine",
+      "category": "kitchen",
+      "price": 240,
+      "vibe": 4,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/espresso_machine.png",
+      "desc": "Caffeine on tap. Songwriting fuel."
+    },
+    "full_range": {
+      "name": "Full Range Stove",
+      "category": "kitchen",
+      "price": 520,
+      "vibe": 6,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/full_range.png",
+      "desc": "An actual stove. You've made it."
+    },
+    "kitchen_island": {
+      "name": "Kitchen Island",
+      "category": "kitchen",
+      "price": 680,
+      "vibe": 7,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/kitchen_island.png",
+      "desc": "Counter space and a quiet flex."
+    },
+    "towel_rack": {
+      "name": "Towel Rack",
+      "category": "bath",
+      "price": 20,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/towel_rack.png",
+      "desc": "Holds towels. Revolutionary."
+    },
+    "toilet": {
+      "name": "Toilet",
+      "category": "bath",
+      "price": 80,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/toilet.png",
+      "desc": "Non-negotiable. Truly essential."
+    },
+    "pedestal_sink": {
+      "name": "Pedestal Sink",
+      "category": "bath",
+      "price": 140,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/pedestal_sink.png",
+      "desc": "Porcelain. A touch fancy."
+    },
+    "vanity_mirror": {
+      "name": "Vanity Mirror",
+      "category": "bath",
+      "price": 160,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/vanity_mirror.png",
+      "desc": "Lit edges. Rockstar selfies."
+    },
+    "shower_stall": {
+      "name": "Glass Shower",
+      "category": "bath",
+      "price": 380,
+      "vibe": 5,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/shower_stall.png",
+      "desc": "Hot water, finally reliable."
+    },
+    "clawfoot_tub": {
+      "name": "Clawfoot Tub",
+      "category": "bath",
+      "price": 620,
+      "vibe": 7,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/clawfoot_tub.png",
+      "desc": "Soak away the tour fatigue."
+    },
+    "vintage_radio": {
+      "name": "Vintage Radio",
+      "category": "electronics",
+      "price": 50,
+      "vibe": 3,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/vintage_radio.png",
+      "desc": "Crackly AM warmth."
+    },
+    "boombox": {
+      "name": "Boombox",
+      "category": "electronics",
+      "price": 70,
+      "vibe": 3,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/boombox.png",
+      "desc": "Shoulder-mounted, obviously."
+    },
+    "gaming_console": {
+      "name": "Game Console",
+      "category": "electronics",
+      "price": 240,
+      "vibe": 4,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/gaming_console.png",
+      "desc": "Tour-bus boredom, solved."
+    },
+    "turntable": {
+      "name": "Turntable",
+      "category": "electronics",
+      "price": 300,
+      "vibe": 5,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/turntable.png",
+      "desc": "Vinyl ritual. Studied crate-digger energy."
+    },
+    "flatscreen_tv": {
+      "name": "Flatscreen TV",
+      "category": "electronics",
+      "price": 450,
+      "vibe": 4,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/flatscreen_tv.png",
+      "desc": "Wall-mounted, cinematic."
+    },
+    "studio_monitor": {
+      "name": "Studio Monitor",
+      "category": "electronics",
+      "price": 520,
+      "vibe": 6,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/studio_monitor.png",
+      "desc": "Flat response. Hear everything."
+    },
+    "band_poster": {
+      "name": "Band Poster",
+      "category": "wall",
+      "price": 15,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/band_poster.png",
+      "desc": "Your heroes, watching you work."
+    },
+    "wall_mirror": {
+      "name": "Wall Mirror",
+      "category": "wall",
+      "price": 60,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/wall_mirror.png",
+      "desc": "Doubles the room, doubles the vibe."
+    },
+    "neon_clock": {
+      "name": "Neon Wall Clock",
+      "category": "wall",
+      "price": 90,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/neon_clock.png",
+      "desc": "Glows, ticks, never on time.",
+      "glow": {
+        "color": "#7CFC9B",
+        "r": 24
+      }
+    },
+    "tapestry": {
+      "name": "Tapestry",
+      "category": "wall",
+      "price": 75,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/tapestry.png",
+      "desc": "Hides the wall damage. Adds mystery."
+    },
+    "bookshelf": {
+      "name": "Loaded Bookshelf",
+      "category": "wall",
+      "price": 220,
+      "vibe": 4,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/bookshelf.png",
+      "desc": "Looks smart. Occasionally read."
+    },
+    "framed_gold_record": {
+      "name": "Framed Gold Record",
+      "category": "wall",
+      "price": 900,
+      "vibe": 8,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/framed_gold_record.png",
+      "desc": "The dream, on the wall."
+    },
+    "succulent_set": {
+      "name": "Succulent Set",
+      "category": "plants",
+      "price": 18,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/succulent_set.png",
+      "desc": "Nearly unkillable. Nearly."
+    },
+    "cactus_trio": {
+      "name": "Cactus Trio",
+      "category": "plants",
+      "price": 28,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/cactus_trio.png",
+      "desc": "Prickly little roommates."
+    },
+    "snake_plant": {
+      "name": "Snake Plant",
+      "category": "plants",
+      "price": 45,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/snake_plant.png",
+      "desc": "Cleans the air, asks for nothing."
+    },
+    "hanging_fern": {
+      "name": "Hanging Fern",
+      "category": "plants",
+      "price": 65,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/hanging_fern.png",
+      "desc": "Cascading green from above."
+    },
+    "monstera": {
+      "name": "Monstera",
+      "category": "plants",
+      "price": 120,
+      "vibe": 4,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/monstera.png",
+      "desc": "The influencer plant. Big leaves, big vibe."
+    },
+    "bonsai": {
+      "name": "Bonsai",
+      "category": "plants",
+      "price": 260,
+      "vibe": 5,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/bonsai.png",
+      "desc": "Tiny tree, enormous calm."
+    },
+    "vinyl_mat": {
+      "name": "Vinyl Floor Mat",
+      "category": "floor",
+      "price": 20,
+      "vibe": 1,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/vinyl_mat.png",
+      "desc": "Wipes clean. Practical."
+    },
+    "runner_rug": {
+      "name": "Runner Rug",
+      "category": "floor",
+      "price": 40,
+      "vibe": 2,
+      "tier": 1,
+      "sprite": "assets/img/objects/decor/runner_rug.png",
+      "desc": "Ties the hallway together."
+    },
+    "shag_rug": {
+      "name": "Shag Rug",
+      "category": "floor",
+      "price": 95,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/shag_rug.png",
+      "desc": "Toes love it. Vacuum hates it."
+    },
+    "cowhide_rug": {
+      "name": "Cowhide Rug",
+      "category": "floor",
+      "price": 180,
+      "vibe": 4,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/cowhide_rug.png",
+      "desc": "Bold. Polarizing. Cozy."
+    },
+    "persian_rug": {
+      "name": "Persian Rug",
+      "category": "floor",
+      "price": 520,
+      "vibe": 6,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/persian_rug.png",
+      "desc": "Hand-knotted history underfoot."
+    },
+    "tatami_mat": {
+      "name": "Tatami Mat",
+      "category": "floor",
+      "price": 140,
+      "vibe": 4,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/tatami_mat.png",
+      "desc": "Calm, woven, intentional."
+    }
+  }
+}

@@ -7,7 +7,52 @@
     "h": 8
   },
   "ambient": "dive_bar",
-  "objects": [],
+  "objects": [
+    {
+      "id": "pd_rocktroit_bar_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_rocktroit_bar_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_rocktroit_bar_string_lights",
+      "name": "String Lights",
+      "tile": {
+        "x": 10,
+        "y": 6
+      },
+      "decorId": "string_lights",
+      "sprite": "assets/img/objects/decor/string_lights.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_rocktroit_bar_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 1,
+        "y": 6
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    }
+  ],
   "exits": [
     {
       "id": "stage",

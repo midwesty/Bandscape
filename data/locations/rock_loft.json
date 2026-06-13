@@ -1,5 +1,5 @@
 {
-  "_comment": "Warehouse Unit 7 (Step 19.4b) — a Rocktroit dwelling / practice space. Its own container ids so storage is separate; a DAW; no pre-placed instruments. Entered via the Properties app once Rocktroit is unlocked; the door exits to the Rocktroit street.",
+  "_comment": "Warehouse Unit 7 (Step 19.4b) \u2014 a Rocktroit dwelling / practice space. Its own container ids so storage is separate; a DAW; no pre-placed instruments. Entered via the Properties app once Rocktroit is unlocked; the door exits to the Rocktroit street.",
   "id": "rock_loft",
   "name": "Unit 7",
   "size": {
@@ -11,14 +11,20 @@
     {
       "id": "bed",
       "name": "Mattress on the Floor",
-      "tile": { "x": 1, "y": 1 },
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
       "sprite": "assets/img/objects/bed.png",
       "interact": "sleep"
     },
     {
       "id": "fridge",
       "name": "Beat-up Fridge",
-      "tile": { "x": 8, "y": 1 },
+      "tile": {
+        "x": 8,
+        "y": 1
+      },
       "sprite": "assets/img/objects/fridge.png",
       "interact": "container",
       "containerId": "rock_fridge"
@@ -26,7 +32,10 @@
     {
       "id": "crate",
       "name": "Gear Shelving",
-      "tile": { "x": 8, "y": 5 },
+      "tile": {
+        "x": 8,
+        "y": 5
+      },
       "sprite": "assets/img/objects/crate.png",
       "interact": "container",
       "containerId": "rock_storage"
@@ -34,25 +43,87 @@
     {
       "id": "laptop",
       "name": "Battered Laptop",
-      "tile": { "x": 4, "y": 5 },
+      "tile": {
+        "x": 4,
+        "y": 5
+      },
       "sprite": "assets/img/objects/laptop.png",
       "interact": "daw"
     },
     {
       "id": "couch",
       "name": "Old Couch",
-      "tile": { "x": 2, "y": 5 },
+      "tile": {
+        "x": 2,
+        "y": 5
+      },
       "interact": "flavor",
       "flavor": "A couch that's seen things. Stuffing optional."
+    },
+    {
+      "id": "pd_rock_loft_sect",
+      "name": "Sectional",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "sectional",
+      "sprite": "assets/img/objects/decor/sectional.png"
+    },
+    {
+      "id": "pd_rock_loft_string",
+      "name": "String Lights",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "string_lights",
+      "sprite": "assets/img/objects/decor/string_lights.png"
+    },
+    {
+      "id": "pd_rock_loft_monitor",
+      "name": "Studio Monitor",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "studio_monitor",
+      "sprite": "assets/img/objects/decor/studio_monitor.png"
+    },
+    {
+      "id": "pd_rock_loft_gold",
+      "name": "Gold Record",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "decorId": "framed_gold_record",
+      "sprite": "assets/img/objects/decor/framed_gold_record.png"
+    },
+    {
+      "id": "pd_rock_loft_cow",
+      "name": "Cowhide Rug",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "decorId": "cowhide_rug",
+      "sprite": "assets/img/objects/decor/cowhide_rug.png"
     }
   ],
   "exits": [
     {
       "id": "door",
       "name": "Loading Door",
-      "tile": { "x": 5, "y": 6 },
+      "tile": {
+        "x": 5,
+        "y": 6
+      },
       "to": "rocktroit",
-      "spawn": { "x": 5, "y": 6 }
+      "spawn": {
+        "x": 5,
+        "y": 6
+      }
     }
   ]
 }

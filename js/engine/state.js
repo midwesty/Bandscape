@@ -352,6 +352,29 @@ export function ownerPayMult(venueId) {             // a venue owner you're a re
 export function gainShowRapport(town, amount) {     // playing a show warms the fans who showed up
   for (const n of npcRoster()) { const pk = n.perk; if (!pk || pk.type !== "draw") continue; if (town && n.town && n.town !== town) continue; addRapport(n.id, amount); }
 }
+export function ensureDecorDefaults() {  // Step 26.1: bring pre-dressed decor to saves that already have a frozen placedObjects snapshot
+  const s = getState(); if (!s.placedObjects) return;
+  const locs = new Set(((DATA.properties && DATA.properties.properties) || []).map((p) => p.location).filter(Boolean));
+  for (const loc of locs) {
+    const snap = s.placedObjects[loc]; if (!snap) continue;             // no snapshot -> uses fresh defaults already
+    const defs = (DATA.locations[loc] && DATA.locations[loc].objects) || [];
+    const have = new Set(snap.map((o) => o && o.id).filter(Boolean));
+    for (const o of defs) { if (o && o.id && !have.has(o.id)) snap.push(JSON.parse(JSON.stringify(o))); }
+  }
+}
+export function propVibe(loc) {              // Step 26.1: a place's Vibe from its decor (higher-tier + more items both help)
+  const s = getState();
+  const arr = (s.placedObjects && s.placedObjects[loc]) || (DATA.locations[loc] && DATA.locations[loc].objects) || [];
+  const decor = DATA.decor && DATA.decor.items; if (!decor) return 0;
+  let sum = 0, n = 0;
+  for (const o of arr) { if (o && o.decorId && decor[o.decorId]) { sum += decor[o.decorId].vibe || 0; n++; } }
+  return Math.round(sum + Math.min(n, 12) * 0.5);
+}
+export function homeVibeHere() {        // Vibe of the owned/rented place you're currently standing in (else 0)
+  const s = getState();
+  const here = controlledProperties().find((p) => p.location === s.location);
+  return here ? propVibe(here.location) : 0;
+}
 export function npcPerk(id) { const n = npcRoster().find((x) => x.id === id); return n ? n.perk || null : null; }
 export function addContact(c) {
   if (!c || !c.id) return false;

@@ -20,7 +20,7 @@ import { toast } from "../ui/toast.js";
 import { openContainerView, giveItem } from "./inventory.js";
 import { instrItemId, parseInstrItem } from "./gear.js";
 import { openDAW } from "./daw.js";
-import { openShop, busk, openVenue, openStore, openStoreCategory } from "./shop.js";
+import { openShop, busk, openVenue, openStore, openStoreCategory, openThrift } from "./shop.js";
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
 import { playWorldSfx } from "./worldaudio.js";
@@ -251,7 +251,7 @@ function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function travel(to, spawn) {
   const s = getState();
   if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
-  if (to === "musicstore") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
+  if (to === "musicstore" || to === "thrift") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
   s.location = to;
   if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
@@ -367,6 +367,9 @@ function interact(obj) {
       break;
     case "storeclerk":
       openStore();
+      break;
+    case "decorclerk":
+      openThrift();
       break;
     case "storeexit": {
       const ret = (getState().flags && getState().flags.storeReturn) || { to: "town", spawn: null };
@@ -594,8 +597,9 @@ function drawObject(o) {
   if (hovered === o.id && !arranging) outlineObject(c.x, c.y);
 }
 function drawProc(o, cx, cy) {
-  if (o.interact === "talk" || o.interact === "storeclerk") return npcFigure(cx, cy, o);
+  if (o.interact === "talk" || o.interact === "storeclerk" || o.interact === "decorclerk") return npcFigure(cx, cy, o);
   if (o.interact === "stage") return stageShape(cx, cy);
+  if (o.decorId) return drawDecor(o, cx, cy);
   if (o.instrumentId) {
     switch (o.instrumentId) {
       case "guitar": return stringed(cx, cy, C.orange);
@@ -638,6 +642,48 @@ function drawProc(o, cx, cy) {
     case "bus":      busSign(cx, cy); break;
     case "cab1": case "cab2": case "cab3": case "cab4": cabinet(cx, cy); break;
     default:       cuboid(cx, cy, 14, 7, 18, C.purple, "#6e54a0", "#523f78");
+  }
+}
+function drawDecor(o, cx, cy) {
+  const def = (DATA.decor && DATA.decor.items && DATA.decor.items[o.decorId]) || {};
+  const cat = def.category;
+  if (def.glow) {                              // real illumination: additive radial glow
+    const g = def.glow, r = g.r || 30;
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.55;
+    const grad = ctx.createRadialGradient(cx, cy - 16, 2, cx, cy - 16, r);
+    grad.addColorStop(0, g.color); grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, cy - 16, r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+  const lit = (def.glow && def.glow.color) || C.yellow;
+  switch (cat) {
+    case "seating":
+      cuboid(cx, cy, 18, 9, 9, "#5e4480", "#4a3568", "#3a2954");
+      cuboid(cx - 6, cy - 3, 12, 6, 9, "#6e54a0", "#56407e", "#43306a"); break;
+    case "lighting":
+      ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 20); ctx.stroke();
+      ctx.fillStyle = lit; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 26, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
+    case "kitchen":
+      cuboid(cx, cy, 14, 7, 22, "#cfd6dd", "#9aa3ad", "#7c858f");
+      ctx.fillStyle = "#5a626b"; ctx.fillRect(cx + 5, cy - 18, 2, 12); break;
+    case "bath":
+      cuboid(cx, cy, 13, 7, 11, "#eaf2f6", "#c4d2da", "#a8b8c2");
+      ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(cx - 3, cy - 9, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill(); break;
+    case "electronics":
+      cuboid(cx, cy, 16, 8, 12, "#2b2533", "#211b29", "#1a1521");
+      ctx.fillStyle = C.blue; ctx.fillRect(cx - 9, cy - 20, 18, 9); break;
+    case "wall":
+      cuboid(cx, cy, 12, 5, 16, "#33293f", "#281f33", "#201929");
+      ctx.fillStyle = lit; ctx.fillRect(cx - 8, cy - 22, 16, 12);
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 8, cy - 22, 16, 12); break;
+    case "plants":
+      cuboid(cx, cy, 7, 4, 7, "#7a5a36", "#5e4528", "#4a361f");
+      ctx.fillStyle = C.green; ctx.strokeStyle = C.line; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(cx, cy - 17, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
+    case "floor":
+      diamond(cx, cy, "#8a3a5c", "#5f2540"); break;
+    default:
+      cuboid(cx, cy, 14, 7, 12, C.purple, "#6e54a0", "#523f78");
   }
 }
 function cuboid(cx, cy, fw, fh, hgt, top, lft, rgt) {

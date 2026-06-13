@@ -15,6 +15,7 @@ export const DATA = {
   devices: null,
   venues: null,
   properties: null,
+  decor: null,
   instruments: {},
   locations: {}
 };
@@ -31,7 +32,8 @@ const FILES = {
   devices:    "data/devices.json",
   venues:     "data/venues.json",
   properties:  "data/properties.json",
-  worldaudio:  "data/audio/world.json"
+  worldaudio:  "data/audio/world.json",
+  decor:       "data/decor.json"
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];
