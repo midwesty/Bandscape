@@ -16,7 +16,7 @@ import {
   ensureMusicianModel, allMusicians, musicianById, bandMembers, performingMembers,
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
-  ensureContracts, totalOwed, payrollTotals, payPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit
+  ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -198,7 +198,7 @@ function renderBand(view) {
   const b = activeBand();
   ensureContracts();
   const mem = bandMembers(b.id);
-  const money = getState().stats.money || 0; const owed = totalOwed(); const spend = money - owed;
+  const money = getState().stats.money || 0; const owed = bandPayroll(b.id).owed; const spend = money - owed;
   const maxChem = DATA.config.band?.maxChemistry || 100;
   const rehReady = findReady("rehearse", b.id);
   const nextReh = nextCommitment("rehearse", b.id);
@@ -520,22 +520,23 @@ function contractLabel(m) {
   return parts.length ? parts.join(" · ") : "volunteer";
 }
 function doPayday() {
-  const t = payrollTotals();
-  if (t.owed <= 0) { toast("Nobody's owed anything right now.", "info"); return; }
+  const b = activeBand(); if (!b) return;
+  const p = bandPayroll(b.id);
+  if (p.owed <= 0) { toast("Nobody's owed in this band right now.", "info"); return; }
   let cover = false;
-  if (t.short > 0) {
-    if (walletBalance() >= t.short) {
-      cover = confirm(`Your bands are $${t.short} short on payroll (of $${t.owed} owed).\n\nCover the shortfall from your wallet? It's tracked as your contribution and you can withdraw it later.\n\nCancel = pay what the bands can and leave the rest owed.`);
+  if (p.short > 0) {
+    if (walletBalance() >= p.short) {
+      cover = confirm(`${b.name || "This band"} is $${p.short} short on payroll (of $${p.owed} owed).\n\nCover from your wallet? It's tracked as your contribution, withdrawable later.\n\nCancel = pay what the band can and leave the rest owed.`);
     } else {
-      toast("Bands can't cover payroll and neither can your wallet — paying what they can.", "warn");
+      toast("This band can't cover payroll and neither can your wallet — paying what it can.", "warn");
     }
   }
-  const r = payPayroll(cover);
+  const r = payBand(b.id, cover);
   const full = r.leftOwed <= 0;
-  for (const m of (getState().musicians || [])) if (m.bandId) m.happiness = Math.min(100, (m.happiness ?? 70) + (full ? 2 : 1));
+  for (const m of (getState().musicians || [])) if (m.bandId === b.id) m.happiness = Math.min(100, (m.happiness ?? 70) + (full ? 2 : 1));
   persist(); emit("renderAll");
   const fronted = r.contributed ? ` (you fronted $${r.contributed})` : "";
-  toast(full ? `Payday! Paid out $${r.paid}${fronted}.` : `Paid $${r.paid}${fronted} — $${r.leftOwed} still owed.`, full ? "good" : "warn");
+  toast(full ? `Payday! Paid $${r.paid}${fronted}.` : `Paid $${r.paid}${fronted} — $${r.leftOwed} still owed.`, full ? "good" : "warn");
   refresh();
 }
 function openNegotiate(id) {

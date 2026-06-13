@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.21.2 (Step 21.2: streaming income splits by credits \u2014 your cut/band/members/other bands + writer fame)",
+  "version": "0.21.3 (Step 21.3: Payout center \u2014 Bank Payouts tab pays everyone/per-band/per-member; Band-app Payday now per-band)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

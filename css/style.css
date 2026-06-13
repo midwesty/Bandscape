@@ -1087,3 +1087,19 @@ body:has(.modal-scrim) #log { display: none; }
 .cr-cand:hover { border-color: var(--green); }
 .rel-credits { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
 .rel-cr-role { color: var(--green); }
+
+/* ---- Payouts tab (Step 21.3) ---- */
+.po-head { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.po-tot { display: flex; justify-content: space-between; align-items: baseline; }
+.po-tot strong { font-family: var(--mono); font-size: 20px; }
+.po-short { font-size: 11px; color: var(--yellow); }
+.po-all { width: 100%; }
+.po-bands { display: flex; flex-direction: column; gap: 10px; }
+.po-band { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 9px; }
+.po-band-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.po-band-name { font-family: var(--cond); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.po-band-sub { font-size: 11px; color: var(--muted); margin: 3px 0 6px; font-family: var(--mono); }
+.po-mem { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.po-mem-r { display: flex; align-items: center; gap: 8px; }
+.po-mem-r .muted { font-family: var(--mono); }
+.po-paybtn { background: var(--green); color: #06120a; border: none; border-radius: 4px; padding: 5px 10px; font-family: var(--cond); font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; }

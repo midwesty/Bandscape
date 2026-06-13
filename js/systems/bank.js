@@ -11,6 +11,7 @@ import {
   getState, walletBalance, ledgerEntries, ensureBankAccounts,
   bankContribute, bankWithdraw, bankBorrow, bankRepay,
   bandById, bandSpend,
+  payBand, payMember, payPayroll, payrollTotals, bandPayroll,
 } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -58,11 +59,12 @@ export function renderBankApp(screenEl) {
   let body = "";
   if (tab === "overview") body = overviewHTML(bands);
   else if (tab === "bands") body = bandsHTML(bands);
+  else if (tab === "payouts") body = payoutsHTML(s);
   else body = activityHTML(s);
 
   screenEl.innerHTML = `
     <h2 class="app-title">BANK</h2>
-    <div class="bank-tabs">${tabBtn("overview", "Overview")}${tabBtn("bands", "Bands")}${tabBtn("activity", "Activity")}</div>
+    <div class="bank-tabs">${tabBtn("overview", "Overview")}${tabBtn("bands", "Bands")}${tabBtn("payouts", "Payouts")}${tabBtn("activity", "Activity")}</div>
     <div class="bank-body">${body}</div>`;
   bind(screenEl);
 }
@@ -143,6 +145,43 @@ function listHTML(s) {
 }
 function bandLabel(s, id) { const b = (s.bands || []).find((x) => x.id === id); return b ? bandName(b) : "Band"; }
 
+function payoutsHTML(s) {
+  const t = payrollTotals();
+  if (t.owed <= 0) return `<div class="set-note">No one's owed anything right now. Play shows or release music, then come back to pay out.</div>`;
+  const head = `<div class="po-head">
+    <div class="po-tot"><span>Owed to members</span><strong>${num(t.owed)}</strong></div>
+    ${t.short > 0 ? `<div class="po-short">Bands are short ${num(t.short)} — covering pulls from your wallet</div>` : ""}
+    <button class="btn po-all" data-pay="all">Pay everyone — ${num(t.owed)}</button>
+  </div>`;
+  const groups = t.bands.map((bs) => {
+    const pr = bandPayroll(bs.bandId);
+    const rows = pr.members.map((mem) => `<div class="po-mem"><span>${esc(mem.name)}</span><span class="po-mem-r"><span class="muted">${num(mem.owed)}</span><button class="po-paybtn" data-pay="member" data-id="${mem.id}">Pay</button></span></div>`).join("");
+    return `<div class="po-band">
+      <div class="po-band-head"><span class="po-band-name">${esc(bs.name)}</span><button class="po-paybtn" data-pay="band" data-id="${bs.bandId}">Pay band · ${num(bs.owed)}</button></div>
+      <div class="po-band-sub">Account ${num(pr.account)}${bs.short > 0 ? ` · short ${num(bs.short)}` : ""}</div>
+      ${rows}
+    </div>`;
+  }).join("");
+  return head + `<div class="po-bands">${groups}</div>`;
+}
+
+function doPay(kind, id, root) {
+  let short = 0, label = "";
+  if (kind === "all") { const t = payrollTotals(); if (t.owed <= 0) { toast("Nobody's owed right now.", "info"); return; } short = t.short; label = "Payroll"; }
+  else if (kind === "band") { const p = bandPayroll(id); if (p.owed <= 0) { toast("Nobody owed in that band.", "info"); return; } short = p.short; label = creditNameOf(id); }
+  else { const mem = (getState().musicians || []).find((x) => x.id === id); if (!mem || (mem.owed || 0) <= 0) { toast("Nothing owed.", "info"); return; } const b = bandById(mem.bandId); short = Math.max(0, mem.owed - ((b && b.account) || 0)); label = mem.name; }
+  let cover = false;
+  if (short > 0) {
+    if (walletBalance() >= short) cover = confirm(`${label} is short ${num(short)}. Cover from your wallet? It's tracked as your contribution, withdrawable later.\n\nCancel = pay what's available and leave the rest owed.`);
+    else toast("Short, and your wallet can't cover it — paying what's available.", "warn");
+  }
+  const r = kind === "all" ? payPayroll(cover) : kind === "band" ? payBand(id, cover) : payMember(id, cover);
+  persist(); emit("renderAll");
+  toast(`Paid ${num(r.paid)}${r.contributed ? ` (you fronted ${num(r.contributed)})` : ""}${r.leftOwed ? ` — ${num(r.leftOwed)} still owed` : ""}.`, r.leftOwed ? "warn" : "good");
+  renderBankApp(root);
+}
+function creditNameOf(bandId) { const b = (getState().bands || []).find((x) => x.id === bandId); return b ? bandName(b) : "This band"; }
+
 function refreshList(root) {
   const list = root.querySelector("#bank-ledger-list");
   if (list) list.innerHTML = listHTML(getState());
@@ -152,6 +191,7 @@ function bind(root) {
   root.querySelectorAll(".bank-tab").forEach((t) => t.addEventListener("click", () => {
     tab = t.dataset.tab; if (tab !== "bands") selBand = null; renderBankApp(root);
   }));
+  root.querySelectorAll("[data-pay]").forEach((b) => b.addEventListener("click", () => doPay(b.dataset.pay, b.dataset.id, root)));
   root.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => { selBand = b.dataset.open; tab = "bands"; renderBankApp(root); }));
   root.querySelectorAll(".bank-pick").forEach((p) => p.addEventListener("click", () => { selBand = p.dataset.band; renderBankApp(root); }));
   const back = root.querySelector("[data-back]");
