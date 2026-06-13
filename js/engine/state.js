@@ -336,6 +336,8 @@ export function isDiscovered(venueId) {
 }
 export function discoverVenue(venueId) { const s = getState(); s.discovered = s.discovered || {}; s.discovered[venueId] = true; }
 export function contacts() { return getState().contacts || []; }
+export function getRapport(id) { return ((getState().rapport || {})[id]) || 0; }
+export function addRapport(id, n) { const s = getState(); if (!id || !n) return; s.rapport = s.rapport || {}; s.rapport[id] = Math.max(0, Math.min(100, (s.rapport[id] || 0) + n)); }
 export function addContact(c) {
   if (!c || !c.id) return false;
   const s = getState(); s.contacts = s.contacts || [];
@@ -348,6 +350,7 @@ export function ensureScene() {
   s.buzz = s.buzz || {};
   s.discovered = s.discovered || {};
   s.contacts = s.contacts || [];
+  s.rapport = s.rapport || {};
   // You already know Ralph — his basement is your first bookable room and first contact.
   if (!s.discovered.ralphs) {
     const v = ((DATA.venues && DATA.venues.venues) || {}).ralphs;

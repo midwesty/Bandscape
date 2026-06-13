@@ -35,6 +35,10 @@
         "stagePresence": 70,
         "songwriting": 48,
         "reliability": 55
+      },
+      "schedule": {
+        "evening": "venue",
+        "late": "venue"
       }
     },
     {
@@ -69,6 +73,11 @@
         "stagePresence": 58,
         "songwriting": 66,
         "reliability": 72
+      },
+      "schedule": {
+        "afternoon": "town",
+        "evening": "venue",
+        "late": "venue"
       }
     },
     {
@@ -99,6 +108,11 @@
         "stagePresence": 82,
         "songwriting": 71,
         "reliability": 48
+      },
+      "schedule": {
+        "afternoon": "town",
+        "evening": "venue",
+        "late": "venue"
       }
     },
     {
@@ -129,6 +143,11 @@
         "stagePresence": 46,
         "songwriting": 63,
         "reliability": 80
+      },
+      "schedule": {
+        "morning": "town",
+        "afternoon": "town",
+        "evening": "venue"
       }
     },
     {
@@ -165,6 +184,10 @@
         "stagePresence": 78,
         "songwriting": 66,
         "reliability": 50
+      },
+      "schedule": {
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
       }
     },
     {
@@ -201,6 +224,10 @@
         "stagePresence": 64,
         "songwriting": 70,
         "reliability": 74
+      },
+      "schedule": {
+        "afternoon": "rocktroit",
+        "evening": "rocktroit_bar"
       }
     },
     {
@@ -237,6 +264,10 @@
         "stagePresence": 72,
         "songwriting": 52,
         "reliability": 56
+      },
+      "schedule": {
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
       }
     },
     {
@@ -273,6 +304,9 @@
         "stagePresence": 90,
         "songwriting": 75,
         "reliability": 66
+      },
+      "schedule": {
+        "evening": "rocktroit_bar"
       }
     },
     {
@@ -310,6 +344,11 @@
         "stagePresence": 55,
         "songwriting": 80,
         "reliability": 78
+      },
+      "schedule": {
+        "afternoon": "rocktroit",
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
       }
     },
     {
@@ -346,6 +385,10 @@
         "stagePresence": 68,
         "songwriting": 64,
         "reliability": 72
+      },
+      "schedule": {
+        "afternoon": "rocktroit",
+        "evening": "rocktroit_bar"
       }
     },
     {
@@ -383,6 +426,10 @@
         "stagePresence": 70,
         "songwriting": 68,
         "reliability": 86
+      },
+      "schedule": {
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
       }
     },
     {
@@ -419,7 +466,106 @@
         "stagePresence": 66,
         "songwriting": 72,
         "reliability": 76
+      },
+      "schedule": {
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
       }
+    },
+    {
+      "id": "npc_sal",
+      "name": "Sal",
+      "townsfolk": true,
+      "line": "Sal owns The Dive. \"Bring me a record and a crowd and we'll talk.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "yourtown"
+    },
+    {
+      "id": "npc_deb",
+      "name": "Deb",
+      "townsfolk": true,
+      "line": "\"I've been at every show since the place opened.\"",
+      "schedule": {
+        "afternoon": "town",
+        "evening": "venue",
+        "late": "venue"
+      },
+      "town": "yourtown"
+    },
+    {
+      "id": "npc_walt",
+      "name": "Walt",
+      "townsfolk": true,
+      "line": "Walt nods. \"Mornings are the only quiet time around here.\"",
+      "schedule": {
+        "morning": "town",
+        "afternoon": "town"
+      },
+      "town": "yourtown"
+    },
+    {
+      "id": "npc_hank",
+      "name": "Hank",
+      "townsfolk": true,
+      "line": "Hank wipes a glass. \"Foundry's loud tonight. Good.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "rocktroit_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "rocktroit_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "rocktroit_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "rocktroit"
+    },
+    {
+      "id": "npc_lou",
+      "name": "Lou",
+      "townsfolk": true,
+      "line": "\"I know every band in this city. Most of 'em owe me money.\"",
+      "schedule": {
+        "afternoon": "rocktroit",
+        "evening": "rocktroit_bar",
+        "late": "rocktroit_bar"
+      },
+      "town": "rocktroit"
     }
   ]
 }

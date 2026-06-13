@@ -24,6 +24,8 @@ import { openShop, busk, openVenue, openStore, openStoreCategory } from "./shop.
 import { openRecruit } from "./band.js";
 import { openPerform } from "./shows.js";
 import { playWorldSfx } from "./worldaudio.js";
+import { currentSlot } from "./calendar.js";
+import { openDialogue } from "./dialogue.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -43,6 +45,7 @@ let cssW = 0, cssH = 0, originX = 0, originY = 0;
 let room = null, furniture = [], exits = [], blocked = null;
 let player = { x: 4, y: 3, fx: 4, fy: 3, facing: 1 };
 let movers = [], roads = [];   // ambient world life (Step 24.1) — regenerated per scene, not saved
+let npcMovers = [], lastSlot = null;   // scheduled NPCs in this scene (Step 24.4)
 let path = [], pendingInteract = null;
 let hovered = null;
 let arranging = false, held = null;
@@ -102,6 +105,7 @@ function syncToState() {
   exits = room.exits || [];
   rebuildBlocked();
   buildWorld();
+  buildSceneNPCs();
 
   const saved = s.player?.tile;
   const start = saved && isFree(saved.x, saved.y) ? saved : firstFreeTile();
@@ -169,6 +173,8 @@ function onClick(e) {
   if (!inBounds(t.x, t.y)) return;
   if (arranging) { handleArrangeClick(t); return; }
 
+  const who = npcAt(t.x, t.y);
+  if (who) { approachAndInteract(who); return; }
   const obj = objectAt(t.x, t.y);
   if (obj) { approachAndInteract(obj); return; }
   if (isFree(t.x, t.y)) walkTo(t.x, t.y, null);
@@ -178,8 +184,10 @@ function onHover(e) {
   const p = ptr(e);
   const t = toTile(p.x, p.y);
   const obj = objectAt(t.x, t.y);
+  const npc = obj ? null : npcAt(t.x, t.y);
   const next = obj ? obj.id : null;
-  if (next !== hovered) { hovered = next; canvas.style.cursor = obj ? "pointer" : "default"; requestRender(); }
+  if (next !== hovered) { hovered = next; requestRender(); }
+  canvas.style.cursor = (obj || npc) ? "pointer" : "default";
 }
 function onKey(e) {
   const ae = document.activeElement;
@@ -376,7 +384,7 @@ function interact(obj) {
       openVenue(obj.venueId);
       break;
     case "flavor":
-      toast(obj.flavor || obj.name, "info");
+      openDialogue(obj.npcId, obj);
       break;
     case "exit":
       travel(obj.to, obj.spawn);
@@ -485,9 +493,10 @@ function frame(ts) {
   const dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016;
   lastTs = ts;
   update(dt);
+  if (lastSlot !== null && currentSlot() !== lastSlot) buildSceneNPCs();
   updateMovers(dt);
   draw();
-  if (path.length || movers.length) requestRender();
+  if (path.length || movers.length || npcMovers.length) requestRender();
 }
 
 function draw() {
@@ -504,6 +513,7 @@ function draw() {
   for (const o of furniture) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y });
   for (const o of exits) ents.push({ kind: "obj", o, depth: o.tile.x + o.tile.y - 0.5 });
   for (const m of movers) ents.push({ kind: "mover", m, depth: m.x + m.y + 0.35 });
+  for (const m of npcMovers) ents.push({ kind: "mover", m, depth: m.x + m.y + 0.36 });
   ents.push({ kind: "player", depth: player.x + player.y + 0.4 });
   ents.sort((a, b) => a.depth - b.depth);
   for (const e of ents) e.kind === "player" ? drawPlayer() : e.kind === "mover" ? drawMover(e.m) : drawObject(e.o);
@@ -845,13 +855,16 @@ function buildWorld() {
   const nPed = Math.min(4, amb.pedestrians || 0);
   for (let i = 0; i < nPed; i++) movers.push(makeWanderer("ped", 1.0));
 }
-function updateMovers(dt) { for (const m of movers) m.kind === "car" ? updateCar(m, dt) : updateWanderer(m, dt); }
+function updateMovers(dt) {
+  for (const m of movers) m.kind === "car" ? updateCar(m, dt) : updateWanderer(m, dt);
+  for (const m of npcMovers) if (!m.posted) updateWanderer(m, dt);
+}
 function updateCar(m, dt) {
   m.t += m.dir * (m.speed / roadLen(m.road)) * dt;
   if (m.t > 1) m.t -= 1; else if (m.t < 0) m.t += 1;
   const px = m.x, py = m.y; posCar(m);
   const sdx = (m.x - px) - (m.y - py); if (Math.abs(sdx) > 0.0001) m.facing = sdx >= 0 ? 1 : -1;
-  if (m.t >= 0.5 && !m.passed) { m.passed = true; if (Math.random() < 0.5) playWorldSfx("car_pass", 0.5); } else if (m.t < 0.45) m.passed = false;
+  if (m.t >= 0.5 && !m.passed) { m.passed = true; if (Math.random() < 0.5) playWorldSfx("car_pass", 0.5, 0.82 + Math.random() * 0.42); } else if (m.t < 0.45) m.passed = false;
 }
 function updateWanderer(m, dt) {
   if (m.kind === "dog") { m.bark = (m.bark == null ? 9 + Math.random() * 12 : m.bark - dt); if (m.bark <= 0) { playWorldSfx("dog_bark", 0.6); m.bark = 18 + Math.random() * 30; } }
@@ -873,6 +886,7 @@ function drawMover(m) {
   const c = toScreen(m.x, m.y);
   if (m.kind === "car") return drawCar(c.x, c.y, m.facing);
   if (m.kind === "dog") return drawDog(c.x, c.y, m.facing);
+  if (m.kind === "npc") { shadow(c.x, c.y, 12, 6); return flipped(c.x, m.facing, () => npcFigure(c.x, c.y, { npcId: m.npcId })); }
   return drawPed(c.x, c.y, m.facing);
 }
 function drawCar(cx, cy, facing) {
@@ -913,4 +927,46 @@ function drawPed(cx, cy, facing) {
     ctx.fillStyle = "#3a2f49"; ctx.fillRect(cx - 6, cy - 37, 12, 4);
     ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 2, cy - 31, 1.2, 0, Math.PI * 2); ctx.fill();
   });
+}
+
+// ============================================================
+// NPC routines (Step 24.4): scheduled NPCs inhabit walkable scenes by
+// time-of-day. Each NPC's per-slot `schedule` says which scene they're in
+// (and optionally a fixed `post` tile for workers); everyone else wanders
+// via the mover system. Recruitable musicians keep their talk/recruit flow;
+// flavor townsfolk show a line. Re-evaluated on scene entry + slot change.
+// ============================================================
+function scheduleResolve(npc, slot) {
+  const sc = npc.schedule && npc.schedule[slot];
+  if (!sc || sc === "away") return null;
+  if (typeof sc === "string") return { at: sc, post: null };
+  return { at: sc.at, post: sc.post || null };
+}
+function npcRecruited(id) { return (getState().musicians || []).some((m) => m.id === id && m.bandId); }
+function freeSceneTile() {
+  const w = room.size?.w || 8, h = room.size?.h || 6;
+  for (let i = 0; i < 30; i++) { const x = Math.floor(Math.random() * w), y = Math.floor(Math.random() * h); if (isFree(x, y)) return { x, y }; }
+  return firstFreeTile();
+}
+function buildSceneNPCs() {
+  npcMovers = [];
+  const here = getState().location, slot = currentSlot();
+  lastSlot = slot;
+  for (const npc of ((DATA.npcs && DATA.npcs.npcs) || [])) {
+    const r = scheduleResolve(npc, slot);
+    if (!r || r.at !== here) continue;
+    if (!npc.townsfolk && npcRecruited(npc.id)) continue;        // they're in your band now
+    const posted = !!(r.post && Array.isArray(r.post) && isFree(r.post[0], r.post[1]));
+    const spot = posted ? { x: r.post[0], y: r.post[1] } : freeSceneTile();
+    npcMovers.push({
+      kind: "npc", npcId: npc.id, name: npc.name || npc.id,
+      interact: npc.townsfolk ? "flavor" : "talk", flavor: npc.line || npc.name || "",
+      posted, x: spot.x, y: spot.y, speed: 0.85, target: null, pause: Math.random() * 2, facing: 1
+    });
+  }
+}
+function npcAt(tx, ty) {
+  const m = npcMovers.find((mv) => Math.round(mv.x) === tx && Math.round(mv.y) === ty);
+  if (!m) return null;
+  return { id: m.npcId, tile: { x: tx, y: ty }, interact: m.interact, npcId: m.npcId, name: m.name, flavor: m.flavor };
 }

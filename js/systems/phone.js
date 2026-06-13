@@ -23,6 +23,7 @@ import { exportSave, importSave, exportFull, importFull, saveToSlot } from "../e
 import { loadTape } from "./tape.js";
 import { toast, logHistory } from "../ui/toast.js";
 import { isAdminUnlocked, tryUnlock, adminPanelHTML, bindAdminPanel } from "./admin.js";
+import { setWorldAudioEnabled, worldAudioEnabled } from "./worldaudio.js";
 
 const APP_META = {
   tasks:    { label: "Tasks",   glyph: "✓",  accent: "#ffd23f" },
@@ -199,6 +200,11 @@ function renderSettings() {
       <label class="btn btn-file">Load a Tape (add to library)<input type="file" id="set-loadtape" accept="application/json" hidden></label>
     </div>
     <div class="set-block">
+      <div class="set-label">Audio</div>
+      <button class="btn" id="set-worldaudio">World audio: ${worldAudioEnabled() ? "On" : "Off"}</button>
+      <p class="set-note">Ambient street/world sound (cars, the dog, scene tone). Off by default. This never affects loop playback, the metronome, or the DAW.</p>
+    </div>
+    <div class="set-block">
       <div class="set-label">Game</div>
       <button class="btn btn-danger" id="set-new">New Game</button>
     </div>
@@ -249,6 +255,9 @@ function renderSettings() {
   });
   document.getElementById("set-new").addEventListener("click", () => {
     if (confirm("Start a new game? Save first if you care about this one.")) emit("game:requestNew");
+  });
+  document.getElementById("set-worldaudio").addEventListener("click", () => {
+    const on = !worldAudioEnabled(); setWorldAudioEnabled(on); toast(`World audio ${on ? "on" : "off"}.`, "info"); renderSettings();
   });
 
   if (isAdminUnlocked()) {

@@ -1,6 +1,5 @@
 {
   "_comment": "All spoken/written text lives here so you can rewrite the whole game's voice without touching code. Two shapes: 'lines' = simple text banks (random or sequential), 'trees' = branching NPC conversations used later when you talk to people in town.",
-
   "lines": {
     "phone_boot": [
       "NEW PHONE WHO DIS. (it's the same cracked phone, you just turned it on)",
@@ -13,9 +12,8 @@
       "your gear's safe with me. for now. $350 buys it back. tick tock. - Sal"
     ]
   },
-
   "trees": {
-    "_comment": "Example branching conversation. Used in a later step when you walk up to an NPC. Each node has text + choices; a choice can goto another node, run effects, or end.",
+    "_comment": "Branching NPC conversations, keyed by NPC id (or any tree id). Fully data-driven. Each tree: speaker, an entry resolver (optional 'entry':[{node,when}] picks the first node whose 'when' passes; else 'start'), and nodes{ id:{ text, effects[], choices[] } }. A choice has text, optional 'when', optional 'effects', and either 'goto' or 'end'. when keys: minRapport/maxRapport, flag/flagNot, minReleases/minFame/minFans, slot, town. effect types: rapport{amount}, flagSet{flag,value}, toast{text,kind}. Auto (node-entry) rapport is granted at most once per in-game day per NPC; choice rapport always applies.",
     "example_recruit": {
       "speaker": "Brian",
       "start": "n0",
@@ -23,14 +21,294 @@
         "n0": {
           "text": "You the one putting up flyers? I hit things for a living. Drums, mostly.",
           "choices": [
-            { "text": "Want in on a band?", "goto": "n1" },
-            { "text": "Never mind.", "end": true }
+            {
+              "text": "Want in on a band?",
+              "goto": "n1"
+            },
+            {
+              "text": "Never mind.",
+              "end": true
+            }
           ]
         },
         "n1": {
           "text": "Maybe. I don't play hungry, though. Bring snacks to practice and we'll talk.",
           "choices": [
-            { "text": "Deal.", "effects": [{ "type": "flagSet", "flag": "met_brian", "value": true }], "end": true }
+            {
+              "text": "Deal.",
+              "effects": [
+                {
+                  "type": "flagSet",
+                  "flag": "met_brian",
+                  "value": true
+                }
+              ],
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_sal": {
+      "speaker": "Sal",
+      "start": "neutral",
+      "entry": [
+        {
+          "node": "warm",
+          "when": {
+            "minRapport": 5
+          }
+        },
+        {
+          "node": "neutral"
+        }
+      ],
+      "nodes": {
+        "neutral": {
+          "text": "Sal wipes the bar. \"You again. The stage is for bands with a record and a crowd. You'll get there.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "The EP's coming. Soon.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "goto": "prove"
+            },
+            {
+              "text": "(head off)",
+              "end": true
+            }
+          ]
+        },
+        "prove": {
+          "text": "\"Heard that before. Prove it and the good nights are yours.\"",
+          "choices": [
+            {
+              "text": "(nod)",
+              "end": true
+            }
+          ]
+        },
+        "warm": {
+          "text": "Sal actually smiles. \"There's my favorite headache. Pick a night, it's yours.\"",
+          "choices": [
+            {
+              "text": "(grin)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_deb": {
+      "speaker": "Deb",
+      "start": "fan",
+      "nodes": {
+        "fan": {
+          "text": "Deb lights up. \"You're in a band, yeah? I'm at every show. EVERY one.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Means a lot, thanks.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "goto": "more"
+            },
+            {
+              "text": "(wave)",
+              "end": true
+            }
+          ]
+        },
+        "more": {
+          "text": "\"Put me on the list and I'll drag ten people. Promise.\"",
+          "choices": [
+            {
+              "text": "Deal.",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_walt": {
+      "speaker": "Walt",
+      "start": "any",
+      "entry": [
+        {
+          "node": "morning",
+          "when": {
+            "slot": "morning"
+          }
+        },
+        {
+          "node": "any"
+        }
+      ],
+      "nodes": {
+        "morning": {
+          "text": "Walt nods. \"Only quiet hour in this town. Don't go ruining it.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "(nod back)",
+              "end": true
+            }
+          ]
+        },
+        "any": {
+          "text": "\"Lotta racket lately. Some of it's even music, I'll give you that.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ha \u2014 thanks?",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 1
+                }
+              ],
+              "end": true
+            },
+            {
+              "text": "(move on)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_hank": {
+      "speaker": "Hank",
+      "start": "hank",
+      "entry": [
+        {
+          "node": "busy",
+          "when": {
+            "slot": "late"
+          }
+        },
+        {
+          "node": "hank"
+        }
+      ],
+      "nodes": {
+        "hank": {
+          "text": "Hank slides a glass down the bar. \"Foundry crowd's tough. They'll let you know if you're any good.\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Good to know.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 1
+                }
+              ],
+              "end": true
+            }
+          ]
+        },
+        "busy": {
+          "text": "Hank's slammed. \"Talk later \u2014 unless you're buying.\"",
+          "choices": [
+            {
+              "text": "(later)",
+              "end": true
+            }
+          ]
+        }
+      }
+    },
+    "npc_lou": {
+      "speaker": "Lou",
+      "start": "lou",
+      "entry": [
+        {
+          "node": "warm",
+          "when": {
+            "minRapport": 4
+          }
+        },
+        {
+          "node": "lou"
+        }
+      ],
+      "nodes": {
+        "lou": {
+          "text": "Lou leans in. \"I know every band in this city. Most of 'em owe me. You new?\"",
+          "effects": [
+            {
+              "type": "rapport",
+              "amount": 1
+            }
+          ],
+          "choices": [
+            {
+              "text": "Just getting started.",
+              "effects": [
+                {
+                  "type": "rapport",
+                  "amount": 2
+                }
+              ],
+              "goto": "tip"
+            },
+            {
+              "text": "(keep walking)",
+              "end": true
+            }
+          ]
+        },
+        "tip": {
+          "text": "\"Stick around. I hear things \u2014 who's hiring, who's splitting up.\"",
+          "choices": [
+            {
+              "text": "I'll remember that.",
+              "end": true
+            }
+          ]
+        },
+        "warm": {
+          "text": "\"There's my favorite up-and-comer. Word's getting around about you.\"",
+          "choices": [
+            {
+              "text": "(grin)",
+              "end": true
+            }
           ]
         }
       }
