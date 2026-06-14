@@ -1,0 +1,69 @@
+{
+  "_comment": "Room (Step 26.4): Bathroom",
+  "id": "apartment_bath",
+  "name": "Bathroom",
+  "size": {
+    "w": 6,
+    "h": 5
+  },
+  "ambient": "home",
+  "exits": [
+    {
+      "id": "door",
+      "name": "Back",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "apartment",
+      "spawn": {
+        "x": 6,
+        "y": 3
+      },
+      "solid": true
+    }
+  ],
+  "objects": [
+    {
+      "id": "pd_apartment_bath_toilet",
+      "name": "Toilet",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "toilet",
+      "sprite": "assets/img/objects/decor/toilet.png"
+    },
+    {
+      "id": "pd_apartment_bath_pedestal_sink",
+      "name": "Pedestal Sink",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "pedestal_sink",
+      "sprite": "assets/img/objects/decor/pedestal_sink.png"
+    },
+    {
+      "id": "pd_apartment_bath_shower_stall",
+      "name": "Shower Stall",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "shower_stall",
+      "sprite": "assets/img/objects/decor/shower_stall.png"
+    },
+    {
+      "id": "pd_apartment_bath_towel_rack",
+      "name": "Towel Rack",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "towel_rack",
+      "sprite": "assets/img/objects/decor/towel_rack.png"
+    }
+  ]
+}

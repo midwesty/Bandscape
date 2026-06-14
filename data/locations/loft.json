@@ -134,6 +134,66 @@
         "x": 5,
         "y": 6
       }
+    },
+    {
+      "id": "loft_kitchen",
+      "name": "Loft Kitchen",
+      "tile": {
+        "x": 8,
+        "y": 3
+      },
+      "interact": "enter",
+      "to": "loft_kitchen",
+      "spawn": {
+        "x": 3,
+        "y": 4
+      },
+      "solid": true
+    },
+    {
+      "id": "loft_bath",
+      "name": "Loft Bath",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "interact": "enter",
+      "to": "loft_bath",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
+    },
+    {
+      "id": "loft_bed",
+      "name": "Loft Bed",
+      "tile": {
+        "x": 8,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "loft_bed",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
+    },
+    {
+      "id": "loft_balcony",
+      "name": "Loft Balcony",
+      "tile": {
+        "x": 1,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "loft_balcony",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
     }
   ]
 }

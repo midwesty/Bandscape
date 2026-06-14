@@ -383,7 +383,7 @@ function buyAndSend(spec) {
   if (money() < t.price) { toast("Can't afford that yet.", "warn"); return; }
   const s = getState();
   s.placedObjects = s.placedObjects || {};
-  const loc = p.location;
+  const loc = (d.room && p.rooms && p.rooms[d.room]) ? p.rooms[d.room] : p.location;
   if (!s.placedObjects[loc]) s.placedObjects[loc] = JSON.parse(JSON.stringify((DATA.locations[loc] && DATA.locations[loc].objects) || []));
   const arr = s.placedObjects[loc];
   addStat("money", -t.price);
@@ -473,7 +473,7 @@ function buyAndSendDecor(spec) {
   if (money() < d.price) { toast("Can't afford that yet.", "warn"); return; }
   const s = getState();
   s.placedObjects = s.placedObjects || {};
-  const loc = p.location;
+  const loc = (d.room && p.rooms && p.rooms[d.room]) ? p.rooms[d.room] : p.location;
   if (!s.placedObjects[loc]) s.placedObjects[loc] = JSON.parse(JSON.stringify((DATA.locations[loc] && DATA.locations[loc].objects) || []));
   const arr = s.placedObjects[loc];
   const tile = freeTile(loc, arr, d.footprint);

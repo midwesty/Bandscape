@@ -169,6 +169,21 @@
         "x": 5,
         "y": 6
       }
+    },
+    {
+      "id": "apartment_bath",
+      "name": "Apartment Bath",
+      "tile": {
+        "x": 6,
+        "y": 3
+      },
+      "interact": "enter",
+      "to": "apartment_bath",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
     }
   ]
 }

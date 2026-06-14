@@ -1,0 +1,79 @@
+{
+  "_comment": "Room (Step 26.4): Bathroom",
+  "id": "loft_bath",
+  "name": "Bathroom",
+  "size": {
+    "w": 6,
+    "h": 5
+  },
+  "ambient": "home",
+  "exits": [
+    {
+      "id": "door",
+      "name": "Back",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "loft",
+      "spawn": {
+        "x": 1,
+        "y": 3
+      },
+      "solid": true
+    }
+  ],
+  "objects": [
+    {
+      "id": "pd_loft_bath_toilet",
+      "name": "Toilet",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "toilet",
+      "sprite": "assets/img/objects/decor/toilet.png"
+    },
+    {
+      "id": "pd_loft_bath_pedestal_sink",
+      "name": "Pedestal Sink",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "pedestal_sink",
+      "sprite": "assets/img/objects/decor/pedestal_sink.png"
+    },
+    {
+      "id": "pd_loft_bath_clawfoot_tub",
+      "name": "Clawfoot Tub",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "clawfoot_tub",
+      "sprite": "assets/img/objects/decor/clawfoot_tub.png"
+    },
+    {
+      "id": "pd_loft_bath_vanity_mirror",
+      "name": "Vanity Mirror",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "vanity_mirror",
+      "sprite": "assets/img/objects/decor/vanity_mirror.png"
+    },
+    {
+      "id": "pd_loft_bath_towel_rack",
+      "name": "Towel Rack",
+      "tile": {
+        "x": 4,
+        "y": 2
+      },
+      "decorId": "towel_rack",
+      "sprite": "assets/img/objects/decor/towel_rack.png"
+    }
+  ]
+}

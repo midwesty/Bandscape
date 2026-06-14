@@ -167,9 +167,26 @@ function inBounds(x, y) {
   return x >= 0 && y >= 0 && x < w && y < h;
 }
 function isFree(x, y) { return inBounds(x, y) && !blocked[y][x]; }
+function coversTile(o, x, y) {              // Step 26.3.1: an object occupies every tile of its footprint
+  if (!o || !o.tile) return false;
+  const f = footOf(o);
+  return x >= o.tile.x && x < o.tile.x + f.w && y >= o.tile.y && y < o.tile.y + f.h;
+}
+function footprintFree(o, ax, ay) {         // would o's whole footprint fit (free + off the player) anchored here?
+  const f = footOf(o), px = Math.round(player.x), py = Math.round(player.y);
+  for (let dy = 0; dy < f.h; dy++) for (let dx = 0; dx < f.w; dx++) { const x = ax + dx, y = ay + dy; if (!isFree(x, y) || (x === px && y === py)) return false; }
+  return true;
+}
+function nearestApproachTo(obj) {           // closest free tile beside ANY footprint tile
+  const f = footOf(obj), seen = new Set(), cands = [];
+  for (let dy = 0; dy < f.h; dy++) for (let dx = 0; dx < f.w; dx++) {
+    const tx = obj.tile.x + dx, ty = obj.tile.y + dy;
+    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = tx + ox, ny = ty + oy, k = nx + "," + ny; if (seen.has(k) || !isFree(nx, ny)) continue; seen.add(k); cands.push({ x: nx, y: ny, d: Math.hypot(nx - player.x, ny - player.y) }); }
+  }
+  return cands.sort((a, b) => a.d - b.d)[0] || null;
+}
 function objectAt(x, y) {
-  return furniture.find((o) => o.tile && o.tile.x === x && o.tile.y === y)
-      || exits.find((o) => o.tile && o.tile.x === x && o.tile.y === y) || null;
+  return furniture.find((o) => coversTile(o, x, y)) || exits.find((o) => coversTile(o, x, y)) || null;
 }
 
 // ---- input ----
@@ -229,7 +246,7 @@ function setArrange(on) {
 function handleArrangeClick(t) {
   if (held) {
     const onPlayer = Math.round(player.x) === t.x && Math.round(player.y) === t.y;
-    if (isFree(t.x, t.y) && !onPlayer) {
+    if (footprintFree(held, t.x, t.y)) {
       held.tile = { x: t.x, y: t.y };
       held = null;
       rebuildBlocked();
@@ -241,7 +258,7 @@ function handleArrangeClick(t) {
     requestRender();
     return;
   }
-  const f = furniture.find((o) => o.tile.x === t.x && o.tile.y === t.y);
+  const f = furniture.find((o) => coversTile(o, t.x, t.y));
   if (f) {
     held = f;
     rebuildBlocked(held); // free its current tile so it can move/return
@@ -278,7 +295,7 @@ function walkTo(tx, ty, interact) {
 }
 function approachAndInteract(obj) {
   if ((obj.interact === "exit" || obj.to) && isFree(obj.tile.x, obj.tile.y)) { walkTo(obj.tile.x, obj.tile.y, obj); return; }
-  const spot = nearestFreeNeighbor(obj.tile.x, obj.tile.y);
+  const spot = nearestApproachTo(obj);
   if (!spot) { interact(obj); return; }
   walkTo(spot.x, spot.y, obj);
 }
@@ -549,13 +566,12 @@ function drawArrangeOverlay(w, h) {
   if (!arranging) return;
   if (held) {
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const onPlayer = Math.round(player.x) === x && Math.round(player.y) === y;
-      if (isFree(x, y) && !onPlayer) { const c = toScreen(x, y); diamond(c.x, c.y, "rgba(124,252,155,0.16)", "rgba(124,252,155,0.5)"); }
+      if (footprintFree(held, x, y)) { const c = toScreen(x, y); diamond(c.x, c.y, "rgba(124,252,155,0.16)", "rgba(124,252,155,0.5)"); }
     }
-    const hc = toScreen(held.tile.x, held.tile.y);
-    diamond(hc.x, hc.y, "rgba(255,210,63,0.22)", C.yellow);
+    const hf = footOf(held);
+    for (let dy = 0; dy < hf.h; dy++) for (let dx = 0; dx < hf.w; dx++) { const c = toScreen(held.tile.x + dx, held.tile.y + dy); diamond(c.x, c.y, "rgba(255,210,63,0.22)", C.yellow); }
   } else {
-    for (const o of furniture) { const c = toScreen(o.tile.x, o.tile.y); diamond(c.x, c.y, null, "rgba(255,210,63,0.55)"); }
+    for (const o of furniture) { const f = footOf(o); for (let dy = 0; dy < f.h; dy++) for (let dx = 0; dx < f.w; dx++) { const c = toScreen(o.tile.x + dx, o.tile.y + dy); diamond(c.x, c.y, null, "rgba(255,210,63,0.55)"); } }
   }
 }
 function drawWalls(w, h) {

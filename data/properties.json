@@ -20,7 +20,10 @@
         "Storage crate",
         "Hand-me-down laptop"
       ],
-      "blurb": "A cramped one-room walkup. The radiator clanks all night. It's home \u2014 for now."
+      "blurb": "A cramped one-room walkup. The radiator clanks all night. It's home \u2014 for now.",
+      "rooms": {
+        "bath": "apartment_bath"
+      }
     },
     {
       "id": "apt_nice",
@@ -42,7 +45,13 @@
         "Pro laptop / DAW",
         "Space for a full kit"
       ],
-      "blurb": "High ceilings, big windows, and floor space for a whole band's worth of gear. The kind of place that makes you feel like you've finally arrived."
+      "blurb": "High ceilings, big windows, and floor space for a whole band's worth of gear. The kind of place that makes you feel like you've finally arrived.",
+      "rooms": {
+        "kitchen": "loft_kitchen",
+        "bath": "loft_bath",
+        "bedroom": "loft_bed",
+        "balcony": "loft_balcony"
+      }
     },
     {
       "id": "apt_rock",
@@ -64,7 +73,12 @@
         "Laptop / DAW",
         "Industrial square footage"
       ],
-      "blurb": "A raw warehouse unit in the heart of Rocktroit. Loud neighbors who don't mind loud music. A real base in the big city."
+      "blurb": "A raw warehouse unit in the heart of Rocktroit. Loud neighbors who don't mind loud music. A real base in the big city.",
+      "rooms": {
+        "kitchen": "rock_loft_kitchen",
+        "bath": "rock_loft_bath",
+        "bedroom": "rock_loft_bed"
+      }
     }
   ]
 }

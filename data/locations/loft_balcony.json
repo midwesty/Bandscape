@@ -1,0 +1,84 @@
+{
+  "_comment": "Room (Step 26.4): Balcony",
+  "id": "loft_balcony",
+  "name": "Balcony",
+  "size": {
+    "w": 6,
+    "h": 5
+  },
+  "ambient": "home",
+  "exits": [
+    {
+      "id": "door",
+      "name": "Back",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "loft",
+      "spawn": {
+        "x": 1,
+        "y": 4
+      },
+      "solid": true
+    }
+  ],
+  "objects": [
+    {
+      "id": "pd_loft_balcony_recliner",
+      "name": "Recliner",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "recliner",
+      "sprite": "assets/img/objects/decor/recliner.png"
+    },
+    {
+      "id": "pd_loft_balcony_monstera",
+      "name": "Monstera",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "monstera",
+      "sprite": "assets/img/objects/decor/monstera.png"
+    },
+    {
+      "id": "pd_loft_balcony_hanging_fern",
+      "name": "Hanging Fern",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "hanging_fern",
+      "sprite": "assets/img/objects/decor/hanging_fern.png"
+    },
+    {
+      "id": "pd_loft_balcony_cactus_trio",
+      "name": "Cactus Trio",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "cactus_trio",
+      "sprite": "assets/img/objects/decor/cactus_trio.png"
+    },
+    {
+      "id": "pd_loft_balcony_string_lights",
+      "name": "String Lights",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "string_lights",
+      "sprite": "assets/img/objects/decor/string_lights.png"
+    }
+  ],
+  "world": {
+    "ambient": {
+      "pedestrians": 0
+    }
+  }
+}

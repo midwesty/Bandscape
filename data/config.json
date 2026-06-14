@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.26.3 (Step 26.3: multi-tile footprints \u2014 beds/sofas/counters/tables/tubs occupy & block their real size, render as proper 3D boxes, sort by front edge; bought items drop only where they fit; pre-placed d\u00e9cor re-laid-out safely)",
+  "version": "0.26.4 (Step 26.4: multi-room homes \u2014 studio+bathroom; Rocktroit loft+kitchen/bath/bedroom; Loft+kitchen/bath/bedroom/balcony, linked by doors, pre-dressed, scaling with price; d\u00e9cor auto-routes to the right room)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

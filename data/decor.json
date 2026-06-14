@@ -176,7 +176,8 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/toaster_oven.png",
-      "desc": "Toast, reheats, minor fire hazard."
+      "desc": "Toast, reheats, minor fire hazard.",
+      "room": "kitchen"
     },
     "microwave": {
       "name": "Microwave",
@@ -185,7 +186,8 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/microwave.png",
-      "desc": "3am ramen's best friend."
+      "desc": "3am ramen's best friend.",
+      "room": "kitchen"
     },
     "mini_fridge": {
       "name": "Mini Fridge",
@@ -194,7 +196,8 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/mini_fridge.png",
-      "desc": "Cold drinks, cold leftovers, cold truth."
+      "desc": "Cold drinks, cold leftovers, cold truth.",
+      "room": "kitchen"
     },
     "espresso_machine": {
       "name": "Espresso Machine",
@@ -203,7 +206,8 @@
       "vibe": 4,
       "tier": 2,
       "sprite": "assets/img/objects/decor/espresso_machine.png",
-      "desc": "Caffeine on tap. Songwriting fuel."
+      "desc": "Caffeine on tap. Songwriting fuel.",
+      "room": "kitchen"
     },
     "full_range": {
       "name": "Full Range Stove",
@@ -212,7 +216,8 @@
       "vibe": 6,
       "tier": 3,
       "sprite": "assets/img/objects/decor/full_range.png",
-      "desc": "An actual stove. You've made it."
+      "desc": "An actual stove. You've made it.",
+      "room": "kitchen"
     },
     "kitchen_island": {
       "name": "Kitchen Island",
@@ -225,7 +230,8 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "room": "kitchen"
     },
     "towel_rack": {
       "name": "Towel Rack",
@@ -234,7 +240,8 @@
       "vibe": 1,
       "tier": 1,
       "sprite": "assets/img/objects/decor/towel_rack.png",
-      "desc": "Holds towels. Revolutionary."
+      "desc": "Holds towels. Revolutionary.",
+      "room": "bath"
     },
     "toilet": {
       "name": "Toilet",
@@ -243,7 +250,8 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/toilet.png",
-      "desc": "Non-negotiable. Truly essential."
+      "desc": "Non-negotiable. Truly essential.",
+      "room": "bath"
     },
     "pedestal_sink": {
       "name": "Pedestal Sink",
@@ -252,7 +260,8 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/pedestal_sink.png",
-      "desc": "Porcelain. A touch fancy."
+      "desc": "Porcelain. A touch fancy.",
+      "room": "bath"
     },
     "vanity_mirror": {
       "name": "Vanity Mirror",
@@ -261,7 +270,8 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/vanity_mirror.png",
-      "desc": "Lit edges. Rockstar selfies."
+      "desc": "Lit edges. Rockstar selfies.",
+      "room": "bath"
     },
     "shower_stall": {
       "name": "Glass Shower",
@@ -270,7 +280,8 @@
       "vibe": 5,
       "tier": 3,
       "sprite": "assets/img/objects/decor/shower_stall.png",
-      "desc": "Hot water, finally reliable."
+      "desc": "Hot water, finally reliable.",
+      "room": "bath"
     },
     "clawfoot_tub": {
       "name": "Clawfoot Tub",
@@ -283,7 +294,8 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "room": "bath"
     },
     "vintage_radio": {
       "name": "Vintage Radio",
@@ -658,6 +670,20 @@
       "tier": 1,
       "sprite": "assets/img/objects/decor/menu_board.png",
       "desc": "Chalk wisdom. Today's special: vibes."
+    },
+    "queen_bed": {
+      "name": "Queen Bed",
+      "category": "seating",
+      "price": 280,
+      "vibe": 4,
+      "tier": 2,
+      "footprint": [
+        2,
+        2
+      ],
+      "sprite": "assets/img/objects/decor/queen_bed.png",
+      "desc": "Where the touring dreams (and naps) happen.",
+      "room": "bedroom"
     }
   }
 }

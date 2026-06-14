@@ -124,6 +124,51 @@
         "x": 5,
         "y": 6
       }
+    },
+    {
+      "id": "rock_loft_kitchen",
+      "name": "Rock Loft Kitchen",
+      "tile": {
+        "x": 8,
+        "y": 3
+      },
+      "interact": "enter",
+      "to": "rock_loft_kitchen",
+      "spawn": {
+        "x": 3,
+        "y": 4
+      },
+      "solid": true
+    },
+    {
+      "id": "rock_loft_bath",
+      "name": "Rock Loft Bath",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "interact": "enter",
+      "to": "rock_loft_bath",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
+    },
+    {
+      "id": "rock_loft_bed",
+      "name": "Rock Loft Bed",
+      "tile": {
+        "x": 8,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "rock_loft_bed",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "solid": true
     }
   ]
 }

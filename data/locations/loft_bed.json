@@ -1,0 +1,79 @@
+{
+  "_comment": "Room (Step 26.4): Bedroom",
+  "id": "loft_bed",
+  "name": "Bedroom",
+  "size": {
+    "w": 7,
+    "h": 5
+  },
+  "ambient": "home",
+  "exits": [
+    {
+      "id": "door",
+      "name": "Back",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "interact": "enter",
+      "to": "loft",
+      "spawn": {
+        "x": 8,
+        "y": 4
+      },
+      "solid": true
+    }
+  ],
+  "objects": [
+    {
+      "id": "pd_loft_bed_queen_bed",
+      "name": "Queen Bed",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "queen_bed",
+      "sprite": "assets/img/objects/decor/queen_bed.png"
+    },
+    {
+      "id": "pd_loft_bed_side_table",
+      "name": "Side Table",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "side_table",
+      "sprite": "assets/img/objects/decor/side_table.png"
+    },
+    {
+      "id": "pd_loft_bed_floor_lamp",
+      "name": "Floor Lamp",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "floor_lamp",
+      "sprite": "assets/img/objects/decor/floor_lamp.png"
+    },
+    {
+      "id": "pd_loft_bed_wall_mirror",
+      "name": "Wall Mirror",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "decorId": "wall_mirror",
+      "sprite": "assets/img/objects/decor/wall_mirror.png"
+    },
+    {
+      "id": "pd_loft_bed_persian_rug",
+      "name": "Persian Rug",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "decorId": "persian_rug",
+      "sprite": "assets/img/objects/decor/persian_rug.png"
+    }
+  ]
+}

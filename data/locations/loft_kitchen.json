@@ -1,0 +1,79 @@
+{
+  "_comment": "Room (Step 26.4): Kitchen",
+  "id": "loft_kitchen",
+  "name": "Kitchen",
+  "size": {
+    "w": 7,
+    "h": 6
+  },
+  "ambient": "home",
+  "exits": [
+    {
+      "id": "door",
+      "name": "Back",
+      "tile": {
+        "x": 3,
+        "y": 5
+      },
+      "interact": "enter",
+      "to": "loft",
+      "spawn": {
+        "x": 8,
+        "y": 3
+      },
+      "solid": true
+    }
+  ],
+  "objects": [
+    {
+      "id": "pd_loft_kitchen_full_range",
+      "name": "Full Range",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "full_range",
+      "sprite": "assets/img/objects/decor/full_range.png"
+    },
+    {
+      "id": "pd_loft_kitchen_mini_fridge",
+      "name": "Mini Fridge",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "mini_fridge",
+      "sprite": "assets/img/objects/decor/mini_fridge.png"
+    },
+    {
+      "id": "pd_loft_kitchen_kitchen_island",
+      "name": "Kitchen Island",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "kitchen_island",
+      "sprite": "assets/img/objects/decor/kitchen_island.png"
+    },
+    {
+      "id": "pd_loft_kitchen_microwave",
+      "name": "Microwave",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "decorId": "microwave",
+      "sprite": "assets/img/objects/decor/microwave.png"
+    },
+    {
+      "id": "pd_loft_kitchen_espresso_machine",
+      "name": "Espresso Machine",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "espresso_machine",
+      "sprite": "assets/img/objects/decor/espresso_machine.png"
+    }
+  ]
+}
