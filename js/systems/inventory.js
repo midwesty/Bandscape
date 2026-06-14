@@ -29,6 +29,14 @@ let selected = null;        // { key, index }
 let isOpen = false;
 
 const CONTAINER_NAMES = { inventory: "Pockets", fridge: "Fridge", storage: "Storage Crate" };
+// Per-property keys (loft_fridge, rock_beer, …) get a sensible inferred name.
+function containerName(key) {
+  if (CONTAINER_NAMES[key]) return CONTAINER_NAMES[key];
+  if (/beer|minifridge/i.test(key)) return "Mini Fridge";
+  if (/fridge/i.test(key)) return "Fridge";
+  if (/storage|crate/i.test(key)) return "Storage Crate";
+  return "Pockets";
+}
 
 // ---- data helpers ----
 function itemDef(id) {
@@ -46,7 +54,8 @@ function containerRef(key) {
 function capacity(key) {
   const cfg = DATA.config.inventory || {};
   if (key === "inventory") return cfg.pocketSlots || 12;
-  if (key === "fridge") return cfg.fridgeSlots || 24;
+  if (/beer|minifridge/i.test(key)) return cfg.minifridgeSlots || 24;
+  if (/fridge/i.test(key)) return cfg.fridgeSlots || 24;
   return cfg.storageSlots || 24;
 }
 
@@ -59,6 +68,12 @@ export function giveItem(key, itemId, qty) {
   for (const st of arr) { if (remaining <= 0) break; if (st.item === itemId && st.qty < max) { const add = Math.min(max - st.qty, remaining); st.qty += add; remaining -= add; } }
   while (remaining > 0 && arr.length < cap) { const add = Math.min(max, remaining); arr.push({ item: itemId, qty: add }); remaining -= add; }
   return remaining; // leftover that didn't fit
+}
+
+// apply an item's onUse effects without consuming a stack (used by kitchen.js eat-now)
+export function consumeUse(itemId) {
+  const def = itemDef(itemId);
+  if (def && def.onUse && def.onUse.length) applyEffects(def.onUse);
 }
 
 function applyEffects(effects) {
@@ -105,11 +120,11 @@ function moveStack(fromKey, fromIndex, toKey) {
   if (!st) return;
   const leftover = giveItem(toKey, st.item, st.qty);
   const moved = st.qty - leftover;
-  if (moved <= 0) { toast(`No room in the ${CONTAINER_NAMES[toKey]}.`, "warn"); return; }
+  if (moved <= 0) { toast(`No room in the ${containerName(toKey)}.`, "warn"); return; }
   st.qty = leftover;
   if (st.qty <= 0) { from.splice(fromIndex, 1); selected = null; }
   emit("item:moved", { item: st.item, from: fromKey, to: toKey });
-  if (leftover > 0) toast(`Only some fit in the ${CONTAINER_NAMES[toKey]}.`, "warn");
+  if (leftover > 0) toast(`Only some fit in the ${containerName(toKey)}.`, "warn");
   commit();
 }
 
@@ -170,7 +185,7 @@ function render() {
   overlay.innerHTML = `
     <div class="inv-modal">
       <div class="inv-head">
-        <span class="inv-title">${mode === "container" ? CONTAINER_NAMES[otherKey] : "POCKETS"}</span>
+        <span class="inv-title">${mode === "container" ? containerName(otherKey) : "POCKETS"}</span>
         <button class="phone-nav" id="inv-close">✕</button>
       </div>
       <div class="inv-body">${panes.map(paneHTML).join("")}</div>
@@ -203,7 +218,7 @@ function paneHTML(key) {
   }
   return `
     <div class="inv-pane" data-container="${key}">
-      <div class="inv-pane-title">${CONTAINER_NAMES[key]} <span class="muted">${arr.length}/${cap}</span></div>
+      <div class="inv-pane-title">${containerName(key)} <span class="muted">${arr.length}/${cap}</span></div>
       <div class="inv-grid">${slots.join("")}</div>
     </div>`;
 }
@@ -220,7 +235,7 @@ function actionBarHTML() {
     <div class="inv-btns">
       ${canUse ? `<button class="btn inv-act" data-act="use">Use</button>` : ""}
       ${st.qty > 1 ? `<button class="btn inv-act" data-act="split">Split</button>` : ""}
-      ${moveTo ? `<button class="btn inv-act" data-act="move">→ ${CONTAINER_NAMES[moveTo]}</button>` : ""}
+      ${moveTo ? `<button class="btn inv-act" data-act="move">→ ${containerName(moveTo)}</button>` : ""}
       <button class="btn inv-act" data-act="drop">${def._instr ? "Place here" : "Drop"}</button>
     </div>`;
 }

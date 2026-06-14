@@ -1,1033 +1,1062 @@
 {
- "_comment": "ITEM CATALOG \u2014 fully data-driven. Add an item = add an entry here; the inventory, shops, and effects all read this file, no code changes. 'icon' points at assets/img/items/<file>; a labeled placeholder is drawn until you drop the real PNG in. onUse effect types: statAdd {stat,value}, conditionAdd {conditionId}, conditionRemove {conditionId}, addiction {substance,value}, oneOf {effects:[[...],[...]]} (picks one at random), flagSet {flag,value}.",
- "_schema": {
-  "name": "display name",
-  "category": "food|drink|booze|tobacco|drug|gear|material",
-  "type": "consumable|gear|material",
-  "icon": "path",
-  "tags": [
-   "..."
-  ],
-  "stackMax": 10,
-  "value": 0,
-  "desc": "flavor",
-  "substance": "(optional) addiction key",
-  "onUse": [
-   "array of effect objects"
-  ]
- },
- "items": {
-  "pizza_slice": {
-   "name": "Pizza Slice",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/pizza.png",
-   "tags": [
-    "food",
-    "drummer_fav"
-   ],
-   "stackMax": 10,
-   "value": 3,
-   "desc": "Cold. The breakfast of degenerates.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 40
-    },
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 10
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "carb_load"
-    }
-   ]
+  "_comment": "ITEM CATALOG \u2014 fully data-driven. Add an item = add an entry here; the inventory, shops, and effects all read this file, no code changes. 'icon' points at assets/img/items/<file>; a labeled placeholder is drawn until you drop the real PNG in. onUse effect types: statAdd {stat,value}, conditionAdd {conditionId}, conditionRemove {conditionId}, addiction {substance,value}, oneOf {effects:[[...],[...]]} (picks one at random), flagSet {flag,value}.",
+  "_schema": {
+    "name": "display name",
+    "category": "food|drink|booze|tobacco|drug|gear|material",
+    "type": "consumable|gear|material",
+    "icon": "path",
+    "tags": [
+      "..."
+    ],
+    "stackMax": 10,
+    "value": 0,
+    "desc": "flavor",
+    "substance": "(optional) addiction key",
+    "onUse": [
+      "array of effect objects"
+    ]
   },
-  "ramen_cup": {
-   "name": "Cup Ramen",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/ramen.png",
-   "tags": [
-    "food"
-   ],
-   "stackMax": 10,
-   "value": 2,
-   "desc": "90% sodium, 10% hope.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 35
-    },
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": -10
-    }
-   ]
-  },
-  "gas_station_burrito": {
-   "name": "Gas Station Burrito",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/burrito.png",
-   "tags": [
-    "food",
-    "risky"
-   ],
-   "stackMax": 10,
-   "value": 4,
-   "desc": "Rotated under a heat lamp since the Obama years.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 45
-    },
-    {
-     "type": "oneOf",
-     "effects": [
-      [
-       {
-        "type": "conditionAdd",
-        "conditionId": "carb_load"
-       }
+  "items": {
+    "pizza_slice": {
+      "name": "Pizza Slice",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/pizza.png",
+      "tags": [
+        "food",
+        "drummer_fav"
       ],
-      [
-       {
-        "type": "statAdd",
-        "stat": "health",
-        "value": -9
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "queasy"
-       }
+      "stackMax": 10,
+      "value": 3,
+      "desc": "Cold. The breakfast of degenerates.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 40
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 10
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "carb_load"
+        }
       ]
-     ]
-    }
-   ]
-  },
-  "energy_bar": {
-   "name": "Energy Bar",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/energybar.png",
-   "tags": [
-    "food"
-   ],
-   "stackMax": 10,
-   "value": 3,
-   "desc": "Tastes like a yoga mat. Works though.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 20
     },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 10
-    }
-   ]
-  },
-  "candy_bar": {
-   "name": "Candy Bar",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/candy.png",
-   "tags": [
-    "food"
-   ],
-   "stackMax": 10,
-   "value": 2,
-   "desc": "Dinner of champions, allegedly.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 18
-    },
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 6
-    }
-   ]
-  },
-  "cold_fries": {
-   "name": "Cold Fries",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/fries.png",
-   "tags": [
-    "food"
-   ],
-   "stackMax": 10,
-   "value": 2,
-   "desc": "Found them in your jacket. Bonus.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 25
-    },
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 3
-    }
-   ]
-  },
-  "protein_shake": {
-   "name": "Protein Shake",
-   "category": "food",
-   "type": "consumable",
-   "icon": "assets/img/items/shake.png",
-   "tags": [
-    "food",
-    "booster"
-   ],
-   "stackMax": 10,
-   "value": 5,
-   "desc": "Chalk-flavored self-improvement.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 15
-    },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 12
-    },
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": 3
-    }
-   ]
-  },
-  "water": {
-   "name": "Water",
-   "category": "drink",
-   "type": "consumable",
-   "icon": "assets/img/items/water.png",
-   "tags": [
-    "drink"
-   ],
-   "stackMax": 10,
-   "value": 1,
-   "desc": "Hydration is kinda metal.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 50
-    }
-   ]
-  },
-  "juice": {
-   "name": "Juice Box",
-   "category": "drink",
-   "type": "consumable",
-   "icon": "assets/img/items/juice.png",
-   "tags": [
-    "drink"
-   ],
-   "stackMax": 10,
-   "value": 2,
-   "desc": "Sweet and sticky, like last night's set.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 35
-    },
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 5
-    }
-   ]
-  },
-  "soda": {
-   "name": "Soda",
-   "category": "drink",
-   "type": "consumable",
-   "icon": "assets/img/items/soda.png",
-   "tags": [
-    "drink"
-   ],
-   "stackMax": 10,
-   "value": 2,
-   "desc": "Sugar, caffeine, regret.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 30
-    },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 8
-    }
-   ]
-  },
-  "energy_drink": {
-   "name": "Energy Drink",
-   "category": "drink",
-   "type": "consumable",
-   "icon": "assets/img/items/energydrink.png",
-   "tags": [
-    "drink",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 4,
-   "substance": "caffeine",
-   "desc": "Wings not included. Anxiety is.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 20
-    },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 22
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "jittery"
-    },
-    {
-     "type": "addiction",
-     "substance": "caffeine",
-     "value": 3
-    }
-   ]
-  },
-  "coffee": {
-   "name": "Coffee",
-   "category": "drink",
-   "type": "consumable",
-   "icon": "assets/img/items/coffee.png",
-   "tags": [
-    "drink",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 3,
-   "substance": "caffeine",
-   "desc": "The only functioning band member.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 18
-    },
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 10
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "caffeinated"
-    },
-    {
-     "type": "addiction",
-     "substance": "caffeine",
-     "value": 2
-    }
-   ]
-  },
-  "beer": {
-   "name": "Beer",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/beer.png",
-   "tags": [
-    "drink",
-    "booze",
-    "bassist_fav",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 4,
-   "substance": "alcohol",
-   "desc": "Warm, flat, and somehow perfect.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 30
-    },
-    {
-     "type": "statAdd",
-     "stat": "inebriation",
-     "value": 22
-    },
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 10
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "buzzed"
-    },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 2
-    }
-   ]
-  },
-  "tallboy": {
-   "name": "Tallboy",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/tallboy.png",
-   "tags": [
-    "drink",
-    "booze",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 5,
-   "substance": "alcohol",
-   "desc": "Two beers in a trench coat.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "inebriation",
-     "value": 32
-    },
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 20
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "drunk"
-    },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 3
-    }
-   ]
-  },
-  "cheap_wine": {
-   "name": "Box Wine",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/wine.png",
-   "tags": [
-    "booze",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 6,
-   "substance": "alcohol",
-   "desc": "A fine vintage. The box says so.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "inebriation",
-     "value": 30
-    },
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 6
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "drunk"
-    },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 3
-    }
-   ]
-  },
-  "whiskey_shot": {
-   "name": "Whiskey Shot",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/whiskey.png",
-   "tags": [
-    "booze",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 6,
-   "substance": "alcohol",
-   "desc": "Liquid courage, sold by the thimble.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "inebriation",
-     "value": 40
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "drunk"
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "liquid_confidence"
-    },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 4
-    }
-   ]
-  },
-  "well_vodka": {
-   "name": "Well Vodka",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/vodka.png",
-   "tags": [
-    "booze",
-    "vice"
-   ],
-   "stackMax": 10,
-   "value": 7,
-   "substance": "alcohol",
-   "desc": "Tastes like a hospital. Hits like one too.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "inebriation",
-     "value": 48
-    },
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -3
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "wasted"
-    },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 5
-    }
-   ]
-  },
-  "mystery_punch": {
-   "name": "Party Punch",
-   "category": "booze",
-   "type": "consumable",
-   "icon": "assets/img/items/punch.png",
-   "tags": [
-    "booze",
-    "vice",
-    "risky"
-   ],
-   "stackMax": 10,
-   "value": 5,
-   "substance": "alcohol",
-   "desc": "Someone made it in a cooler. Nobody knows what's in it.",
-   "onUse": [
-    {
-     "type": "oneOf",
-     "effects": [
-      [
-       {
-        "type": "statAdd",
-        "stat": "inebriation",
-        "value": 30
-       },
-       {
-        "type": "statAdd",
-        "stat": "mood",
-        "value": 10
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "drunk"
-       }
+    "ramen_cup": {
+      "name": "Cup Ramen",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/ramen.png",
+      "tags": [
+        "food"
       ],
-      [
-       {
-        "type": "statAdd",
-        "stat": "inebriation",
-        "value": 55
-       },
-       {
-        "type": "statAdd",
-        "stat": "health",
-        "value": -10
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "wasted"
-       }
+      "stackMax": 10,
+      "value": 2,
+      "desc": "90% sodium, 10% hope.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 35
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": -10
+        }
       ]
-     ]
     },
-    {
-     "type": "addiction",
-     "substance": "alcohol",
-     "value": 3
-    }
-   ]
-  },
-  "smokes": {
-   "name": "Cigarettes",
-   "category": "tobacco",
-   "type": "consumable",
-   "icon": "assets/img/items/smokes.png",
-   "tags": [
-    "vice",
-    "tobacco"
-   ],
-   "stackMax": 20,
-   "value": 8,
-   "substance": "nicotine",
-   "desc": "You light up. The cough adds authenticity.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -2
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "chill"
-    },
-    {
-     "type": "addiction",
-     "substance": "nicotine",
-     "value": 4
-    }
-   ]
-  },
-  "loose_cigarette": {
-   "name": "Loose Cigarette",
-   "category": "tobacco",
-   "type": "consumable",
-   "icon": "assets/img/items/cig.png",
-   "tags": [
-    "vice",
-    "tobacco"
-   ],
-   "stackMax": 20,
-   "value": 1,
-   "substance": "nicotine",
-   "desc": "Bummed off a stranger outside the venue.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -2
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "chill"
-    },
-    {
-     "type": "addiction",
-     "substance": "nicotine",
-     "value": 4
-    }
-   ]
-  },
-  "vape_pen": {
-   "name": "Vape Pen",
-   "category": "tobacco",
-   "type": "consumable",
-   "icon": "assets/img/items/vape.png",
-   "tags": [
-    "vice",
-    "tobacco"
-   ],
-   "stackMax": 5,
-   "value": 12,
-   "substance": "nicotine",
-   "desc": "Cotton-candy flavored lung damage.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -1
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "chill"
-    },
-    {
-     "type": "addiction",
-     "substance": "nicotine",
-     "value": 3
-    }
-   ]
-  },
-  "cheap_cigar": {
-   "name": "Cheap Cigar",
-   "category": "tobacco",
-   "type": "consumable",
-   "icon": "assets/img/items/cigar.png",
-   "tags": [
-    "vice",
-    "tobacco"
-   ],
-   "stackMax": 10,
-   "value": 6,
-   "substance": "nicotine",
-   "desc": "For celebrating, or pretending you have something to celebrate.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -3
-    },
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 8
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "chill"
-    }
-   ]
-  },
-  "mystery_pills": {
-   "name": "Definitely Vitamins",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/pills.png",
-   "tags": [
-    "vice",
-    "drug",
-    "risky"
-   ],
-   "stackMax": 10,
-   "value": 9,
-   "desc": "Unlabeled baggie. Your roadie swears by them.",
-   "onUse": [
-    {
-     "type": "oneOf",
-     "effects": [
-      [
-       {
-        "type": "statAdd",
-        "stat": "mood",
-        "value": 14
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "euphoric"
-       }
+    "gas_station_burrito": {
+      "name": "Gas Station Burrito",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/burrito.png",
+      "tags": [
+        "food",
+        "risky"
       ],
-      [
-       {
-        "type": "statAdd",
-        "stat": "health",
-        "value": -10
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "queasy"
-       }
-      ],
-      [
-       {
-        "type": "statAdd",
-        "stat": "energy",
-        "value": 20
-       },
-       {
-        "type": "conditionAdd",
-        "conditionId": "wired"
-       }
+      "stackMax": 10,
+      "value": 4,
+      "desc": "Rotated under a heat lamp since the Obama years.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 45
+        },
+        {
+          "type": "oneOf",
+          "effects": [
+            [
+              {
+                "type": "conditionAdd",
+                "conditionId": "carb_load"
+              }
+            ],
+            [
+              {
+                "type": "statAdd",
+                "stat": "health",
+                "value": -9
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "queasy"
+              }
+            ]
+          ]
+        }
       ]
-     ]
+    },
+    "energy_bar": {
+      "name": "Energy Bar",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/energybar.png",
+      "tags": [
+        "food"
+      ],
+      "stackMax": 10,
+      "value": 3,
+      "desc": "Tastes like a yoga mat. Works though.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 20
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 10
+        }
+      ]
+    },
+    "candy_bar": {
+      "name": "Candy Bar",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/candy.png",
+      "tags": [
+        "food"
+      ],
+      "stackMax": 10,
+      "value": 2,
+      "desc": "Dinner of champions, allegedly.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 18
+        },
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 6
+        }
+      ]
+    },
+    "cold_fries": {
+      "name": "Cold Fries",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/fries.png",
+      "tags": [
+        "food"
+      ],
+      "stackMax": 10,
+      "value": 2,
+      "desc": "Found them in your jacket. Bonus.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 25
+        },
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 3
+        }
+      ]
+    },
+    "protein_shake": {
+      "name": "Protein Shake",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/shake.png",
+      "tags": [
+        "food",
+        "booster"
+      ],
+      "stackMax": 10,
+      "value": 5,
+      "desc": "Chalk-flavored self-improvement.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 15
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 12
+        },
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": 3
+        }
+      ]
+    },
+    "water": {
+      "name": "Water",
+      "category": "drink",
+      "type": "consumable",
+      "icon": "assets/img/items/water.png",
+      "tags": [
+        "drink"
+      ],
+      "stackMax": 10,
+      "value": 1,
+      "desc": "Hydration is kinda metal.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 50
+        }
+      ]
+    },
+    "juice": {
+      "name": "Juice Box",
+      "category": "drink",
+      "type": "consumable",
+      "icon": "assets/img/items/juice.png",
+      "tags": [
+        "drink"
+      ],
+      "stackMax": 10,
+      "value": 2,
+      "desc": "Sweet and sticky, like last night's set.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 35
+        },
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 5
+        }
+      ]
+    },
+    "soda": {
+      "name": "Soda",
+      "category": "drink",
+      "type": "consumable",
+      "icon": "assets/img/items/soda.png",
+      "tags": [
+        "drink"
+      ],
+      "stackMax": 10,
+      "value": 2,
+      "desc": "Sugar, caffeine, regret.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 30
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 8
+        }
+      ]
+    },
+    "energy_drink": {
+      "name": "Energy Drink",
+      "category": "drink",
+      "type": "consumable",
+      "icon": "assets/img/items/energydrink.png",
+      "tags": [
+        "drink",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 4,
+      "substance": "caffeine",
+      "desc": "Wings not included. Anxiety is.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 20
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 22
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "jittery"
+        },
+        {
+          "type": "addiction",
+          "substance": "caffeine",
+          "value": 3
+        }
+      ]
+    },
+    "coffee": {
+      "name": "Coffee",
+      "category": "drink",
+      "type": "consumable",
+      "icon": "assets/img/items/coffee.png",
+      "tags": [
+        "drink",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 3,
+      "substance": "caffeine",
+      "desc": "The only functioning band member.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 18
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 10
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "caffeinated"
+        },
+        {
+          "type": "addiction",
+          "substance": "caffeine",
+          "value": 2
+        }
+      ]
+    },
+    "beer": {
+      "name": "Beer",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/beer.png",
+      "tags": [
+        "drink",
+        "booze",
+        "bassist_fav",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 4,
+      "substance": "alcohol",
+      "desc": "Warm, flat, and somehow perfect.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 30
+        },
+        {
+          "type": "statAdd",
+          "stat": "inebriation",
+          "value": 22
+        },
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 10
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "buzzed"
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 2
+        }
+      ]
+    },
+    "tallboy": {
+      "name": "Tallboy",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/tallboy.png",
+      "tags": [
+        "drink",
+        "booze",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 5,
+      "substance": "alcohol",
+      "desc": "Two beers in a trench coat.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "inebriation",
+          "value": 32
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 20
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "drunk"
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 3
+        }
+      ]
+    },
+    "cheap_wine": {
+      "name": "Box Wine",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/wine.png",
+      "tags": [
+        "booze",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 6,
+      "substance": "alcohol",
+      "desc": "A fine vintage. The box says so.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "inebriation",
+          "value": 30
+        },
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 6
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "drunk"
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 3
+        }
+      ]
+    },
+    "whiskey_shot": {
+      "name": "Whiskey Shot",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/whiskey.png",
+      "tags": [
+        "booze",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 6,
+      "substance": "alcohol",
+      "desc": "Liquid courage, sold by the thimble.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "inebriation",
+          "value": 40
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "drunk"
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "liquid_confidence"
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 4
+        }
+      ]
+    },
+    "well_vodka": {
+      "name": "Well Vodka",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/vodka.png",
+      "tags": [
+        "booze",
+        "vice"
+      ],
+      "stackMax": 10,
+      "value": 7,
+      "substance": "alcohol",
+      "desc": "Tastes like a hospital. Hits like one too.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "inebriation",
+          "value": 48
+        },
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -3
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "wasted"
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 5
+        }
+      ]
+    },
+    "mystery_punch": {
+      "name": "Party Punch",
+      "category": "booze",
+      "type": "consumable",
+      "icon": "assets/img/items/punch.png",
+      "tags": [
+        "booze",
+        "vice",
+        "risky"
+      ],
+      "stackMax": 10,
+      "value": 5,
+      "substance": "alcohol",
+      "desc": "Someone made it in a cooler. Nobody knows what's in it.",
+      "onUse": [
+        {
+          "type": "oneOf",
+          "effects": [
+            [
+              {
+                "type": "statAdd",
+                "stat": "inebriation",
+                "value": 30
+              },
+              {
+                "type": "statAdd",
+                "stat": "mood",
+                "value": 10
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "drunk"
+              }
+            ],
+            [
+              {
+                "type": "statAdd",
+                "stat": "inebriation",
+                "value": 55
+              },
+              {
+                "type": "statAdd",
+                "stat": "health",
+                "value": -10
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "wasted"
+              }
+            ]
+          ]
+        },
+        {
+          "type": "addiction",
+          "substance": "alcohol",
+          "value": 3
+        }
+      ]
+    },
+    "smokes": {
+      "name": "Cigarettes",
+      "category": "tobacco",
+      "type": "consumable",
+      "icon": "assets/img/items/smokes.png",
+      "tags": [
+        "vice",
+        "tobacco"
+      ],
+      "stackMax": 20,
+      "value": 8,
+      "substance": "nicotine",
+      "desc": "You light up. The cough adds authenticity.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -2
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "chill"
+        },
+        {
+          "type": "addiction",
+          "substance": "nicotine",
+          "value": 4
+        }
+      ]
+    },
+    "loose_cigarette": {
+      "name": "Loose Cigarette",
+      "category": "tobacco",
+      "type": "consumable",
+      "icon": "assets/img/items/cig.png",
+      "tags": [
+        "vice",
+        "tobacco"
+      ],
+      "stackMax": 20,
+      "value": 1,
+      "substance": "nicotine",
+      "desc": "Bummed off a stranger outside the venue.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -2
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "chill"
+        },
+        {
+          "type": "addiction",
+          "substance": "nicotine",
+          "value": 4
+        }
+      ]
+    },
+    "vape_pen": {
+      "name": "Vape Pen",
+      "category": "tobacco",
+      "type": "consumable",
+      "icon": "assets/img/items/vape.png",
+      "tags": [
+        "vice",
+        "tobacco"
+      ],
+      "stackMax": 5,
+      "value": 12,
+      "substance": "nicotine",
+      "desc": "Cotton-candy flavored lung damage.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -1
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "chill"
+        },
+        {
+          "type": "addiction",
+          "substance": "nicotine",
+          "value": 3
+        }
+      ]
+    },
+    "cheap_cigar": {
+      "name": "Cheap Cigar",
+      "category": "tobacco",
+      "type": "consumable",
+      "icon": "assets/img/items/cigar.png",
+      "tags": [
+        "vice",
+        "tobacco"
+      ],
+      "stackMax": 10,
+      "value": 6,
+      "substance": "nicotine",
+      "desc": "For celebrating, or pretending you have something to celebrate.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -3
+        },
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 8
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "chill"
+        }
+      ]
+    },
+    "mystery_pills": {
+      "name": "Definitely Vitamins",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/pills.png",
+      "tags": [
+        "vice",
+        "drug",
+        "risky"
+      ],
+      "stackMax": 10,
+      "value": 9,
+      "desc": "Unlabeled baggie. Your roadie swears by them.",
+      "onUse": [
+        {
+          "type": "oneOf",
+          "effects": [
+            [
+              {
+                "type": "statAdd",
+                "stat": "mood",
+                "value": 14
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "euphoric"
+              }
+            ],
+            [
+              {
+                "type": "statAdd",
+                "stat": "health",
+                "value": -10
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "queasy"
+              }
+            ],
+            [
+              {
+                "type": "statAdd",
+                "stat": "energy",
+                "value": 20
+              },
+              {
+                "type": "conditionAdd",
+                "conditionId": "wired"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    "study_buddy": {
+      "name": "Study Buddy",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/studybuddy.png",
+      "tags": [
+        "vice",
+        "drug"
+      ],
+      "stackMax": 10,
+      "value": 12,
+      "substance": "stimulant",
+      "desc": "A friend's prescription. Allegedly helps you 'focus on the music.'",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": 25
+        },
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 5
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "wired"
+        },
+        {
+          "type": "addiction",
+          "substance": "stimulant",
+          "value": 6
+        }
+      ]
+    },
+    "mellow_yellow": {
+      "name": "Mellow Yellow",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/mellow.png",
+      "tags": [
+        "vice",
+        "drug"
+      ],
+      "stackMax": 10,
+      "value": 8,
+      "desc": "A little pill that turns the volume of the world down.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 15
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": -15
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "mellow"
+        }
+      ]
+    },
+    "green_buds": {
+      "name": "Green Buds",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/buds.png",
+      "tags": [
+        "vice",
+        "drug"
+      ],
+      "stackMax": 10,
+      "value": 10,
+      "desc": "Smells like a Phish parking lot.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 14
+        },
+        {
+          "type": "statAdd",
+          "stat": "energy",
+          "value": -10
+        },
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 8
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "baked"
+        }
+      ]
+    },
+    "stardust": {
+      "name": "Stardust",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/stardust.png",
+      "tags": [
+        "vice",
+        "drug",
+        "risky"
+      ],
+      "stackMax": 10,
+      "value": 18,
+      "substance": "stimulant",
+      "desc": "Makes the whole night feel like the encore. The morning disagrees.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 25
+        },
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -8
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "euphoric"
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "comedown"
+        },
+        {
+          "type": "addiction",
+          "substance": "stimulant",
+          "value": 8
+        }
+      ]
+    },
+    "painkillers": {
+      "name": "Numb-B-Gone",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/painkiller.png",
+      "tags": [
+        "vice",
+        "drug"
+      ],
+      "stackMax": 10,
+      "value": 11,
+      "substance": "painkiller",
+      "desc": "For the back you wrecked hauling your own amp.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "mood",
+          "value": 12
+        },
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": -2
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "numb"
+        },
+        {
+          "type": "addiction",
+          "substance": "painkiller",
+          "value": 6
+        }
+      ]
+    },
+    "sunday_tonic": {
+      "name": "Sunday Morning Tonic",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/tonic.png",
+      "tags": [
+        "booster",
+        "remedy"
+      ],
+      "stackMax": 10,
+      "value": 9,
+      "desc": "Tastes vile. Erases your sins.",
+      "onUse": [
+        {
+          "type": "conditionRemove",
+          "conditionId": "hungover"
+        },
+        {
+          "type": "conditionRemove",
+          "conditionId": "queasy"
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 30
+        },
+        {
+          "type": "statAdd",
+          "stat": "health",
+          "value": 5
+        }
+      ]
+    },
+    "multivitamin": {
+      "name": "Multivitamin",
+      "category": "drug",
+      "type": "consumable",
+      "icon": "assets/img/items/vitamin.png",
+      "tags": [
+        "booster"
+      ],
+      "stackMax": 20,
+      "value": 3,
+      "desc": "Your mom would be proud.",
+      "onUse": [
+        {
+          "type": "conditionAdd",
+          "conditionId": "vitamin_boost"
+        }
+      ]
+    },
+    "guitar_picks": {
+      "name": "Guitar Picks",
+      "category": "gear",
+      "type": "gear",
+      "icon": "assets/img/items/picks.png",
+      "tags": [
+        "gear"
+      ],
+      "stackMax": 50,
+      "value": 1,
+      "desc": "You will lose all of these. It is your destiny.",
+      "onUse": []
+    },
+    "duct_tape": {
+      "name": "Duct Tape",
+      "category": "material",
+      "type": "material",
+      "icon": "assets/img/items/ducttape.png",
+      "tags": [
+        "material"
+      ],
+      "stackMax": 10,
+      "value": 4,
+      "desc": "Holds your gear, your set list, and your life together.",
+      "onUse": []
+    },
+    "blank_tape": {
+      "name": "Blank Tape",
+      "category": "gear",
+      "type": "tool",
+      "icon": "assets/img/items/blank_tape.png",
+      "tags": [
+        "tape",
+        "studio"
+      ],
+      "stackMax": 99,
+      "value": 5,
+      "desc": "A blank cassette. Burn your music to it to share with friends \u2014 or to back a track up off the machine."
+    },
+    "hot_meal": {
+      "name": "Hot Meal",
+      "category": "food",
+      "type": "consumable",
+      "icon": "assets/img/items/hot_meal.png",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "stackMax": 10,
+      "value": 0,
+      "desc": "A real, hot, home-cooked meal. Leftovers keep in the fridge.",
+      "onUse": [
+        {
+          "type": "statAdd",
+          "stat": "hunger",
+          "value": 55
+        },
+        {
+          "type": "statAdd",
+          "stat": "thirst",
+          "value": 5
+        },
+        {
+          "type": "conditionAdd",
+          "conditionId": "hot_meal"
+        }
+      ]
     }
-   ]
-  },
-  "study_buddy": {
-   "name": "Study Buddy",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/studybuddy.png",
-   "tags": [
-    "vice",
-    "drug"
-   ],
-   "stackMax": 10,
-   "value": 12,
-   "substance": "stimulant",
-   "desc": "A friend's prescription. Allegedly helps you 'focus on the music.'",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": 25
-    },
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 5
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "wired"
-    },
-    {
-     "type": "addiction",
-     "substance": "stimulant",
-     "value": 6
-    }
-   ]
-  },
-  "mellow_yellow": {
-   "name": "Mellow Yellow",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/mellow.png",
-   "tags": [
-    "vice",
-    "drug"
-   ],
-   "stackMax": 10,
-   "value": 8,
-   "desc": "A little pill that turns the volume of the world down.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 15
-    },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": -15
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "mellow"
-    }
-   ]
-  },
-  "green_buds": {
-   "name": "Green Buds",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/buds.png",
-   "tags": [
-    "vice",
-    "drug"
-   ],
-   "stackMax": 10,
-   "value": 10,
-   "desc": "Smells like a Phish parking lot.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 14
-    },
-    {
-     "type": "statAdd",
-     "stat": "energy",
-     "value": -10
-    },
-    {
-     "type": "statAdd",
-     "stat": "hunger",
-     "value": 8
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "baked"
-    }
-   ]
-  },
-  "stardust": {
-   "name": "Stardust",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/stardust.png",
-   "tags": [
-    "vice",
-    "drug",
-    "risky"
-   ],
-   "stackMax": 10,
-   "value": 18,
-   "substance": "stimulant",
-   "desc": "Makes the whole night feel like the encore. The morning disagrees.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 25
-    },
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -8
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "euphoric"
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "comedown"
-    },
-    {
-     "type": "addiction",
-     "substance": "stimulant",
-     "value": 8
-    }
-   ]
-  },
-  "painkillers": {
-   "name": "Numb-B-Gone",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/painkiller.png",
-   "tags": [
-    "vice",
-    "drug"
-   ],
-   "stackMax": 10,
-   "value": 11,
-   "substance": "painkiller",
-   "desc": "For the back you wrecked hauling your own amp.",
-   "onUse": [
-    {
-     "type": "statAdd",
-     "stat": "mood",
-     "value": 12
-    },
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": -2
-    },
-    {
-     "type": "conditionAdd",
-     "conditionId": "numb"
-    },
-    {
-     "type": "addiction",
-     "substance": "painkiller",
-     "value": 6
-    }
-   ]
-  },
-  "sunday_tonic": {
-   "name": "Sunday Morning Tonic",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/tonic.png",
-   "tags": [
-    "booster",
-    "remedy"
-   ],
-   "stackMax": 10,
-   "value": 9,
-   "desc": "Tastes vile. Erases your sins.",
-   "onUse": [
-    {
-     "type": "conditionRemove",
-     "conditionId": "hungover"
-    },
-    {
-     "type": "conditionRemove",
-     "conditionId": "queasy"
-    },
-    {
-     "type": "statAdd",
-     "stat": "thirst",
-     "value": 30
-    },
-    {
-     "type": "statAdd",
-     "stat": "health",
-     "value": 5
-    }
-   ]
-  },
-  "multivitamin": {
-   "name": "Multivitamin",
-   "category": "drug",
-   "type": "consumable",
-   "icon": "assets/img/items/vitamin.png",
-   "tags": [
-    "booster"
-   ],
-   "stackMax": 20,
-   "value": 3,
-   "desc": "Your mom would be proud.",
-   "onUse": [
-    {
-     "type": "conditionAdd",
-     "conditionId": "vitamin_boost"
-    }
-   ]
-  },
-  "guitar_picks": {
-   "name": "Guitar Picks",
-   "category": "gear",
-   "type": "gear",
-   "icon": "assets/img/items/picks.png",
-   "tags": [
-    "gear"
-   ],
-   "stackMax": 50,
-   "value": 1,
-   "desc": "You will lose all of these. It is your destiny.",
-   "onUse": []
-  },
-  "duct_tape": {
-   "name": "Duct Tape",
-   "category": "material",
-   "type": "material",
-   "icon": "assets/img/items/ducttape.png",
-   "tags": [
-    "material"
-   ],
-   "stackMax": 10,
-   "value": 4,
-   "desc": "Holds your gear, your set list, and your life together.",
-   "onUse": []
-  },
-  "blank_tape": {
-   "name": "Blank Tape",
-   "category": "gear",
-   "type": "tool",
-   "icon": "assets/img/items/blank_tape.png",
-   "tags": [
-    "tape",
-    "studio"
-   ],
-   "stackMax": 99,
-   "value": 5,
-   "desc": "A blank cassette. Burn your music to it to share with friends \u2014 or to back a track up off the machine."
   }
- }
 }

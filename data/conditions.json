@@ -1,24 +1,220 @@
 {
-  "_comment": "Buffs / debuffs / statuses. Applied by items, sleep, and events. 'onApply' fires once; 'perHour' ticks each game hour while active; 'durationHours' is how long it lasts. Add your own freely — items reference them by id via conditionAdd.",
+  "_comment": "Buffs / debuffs / statuses. Applied by items, sleep, and events. 'onApply' fires once; 'perHour' ticks each game hour while active; 'durationHours' is how long it lasts. Add your own freely \u2014 items reference them by id via conditionAdd.",
   "conditions": {
-    "well_rested":       { "name": "Well Rested",      "kind": "buff",   "icon": "moon",  "durationHours": 6, "perHour": { "mood": 1 },               "onApply": {},               "toast": "You actually slept. Wild." },
-    "exhausted":         { "name": "Exhausted",        "kind": "debuff", "icon": "skull", "durationHours": 4, "perHour": { "mood": -2 },              "onApply": {},               "toast": "You can barely keep your eyes open." },
-    "hungover":          { "name": "Hungover",         "kind": "debuff", "icon": "skull", "durationHours": 5, "perHour": { "mood": -1, "thirst": -2 },"onApply": { "health": -5 }, "toast": "Everything is too loud and too bright." },
-    "carb_load":         { "name": "Carb Loaded",      "kind": "buff",   "icon": "star",  "durationHours": 2, "perHour": { "mood": 1 },               "onApply": {},               "toast": "Carbs: a love language." },
-    "liquid_confidence": { "name": "Liquid Confidence","kind": "buff",   "icon": "star",  "durationHours": 2, "perHour": {},                          "onApply": { "mood": 8 },    "toast": "You feel like a rockstar. Results may vary." },
-
-    "chill":             { "name": "Chill",            "kind": "buff",   "icon": "leaf",  "durationHours": 3, "perHour": {},                          "onApply": { "mood": 4 } },
-    "buzzed":            { "name": "Buzzed",           "kind": "buff",   "icon": "beer",  "durationHours": 2, "perHour": {},                          "onApply": { "mood": 5 } },
-    "drunk":             { "name": "Drunk",            "kind": "status", "icon": "beer",  "durationHours": 3, "perHour": { "thirst": -2 },            "onApply": { "mood": 6 },    "toast": "The room develops a gentle tilt." },
-    "wasted":            { "name": "Wasted",           "kind": "debuff", "icon": "skull", "durationHours": 4, "perHour": { "health": -2, "mood": -2 },"onApply": { "mood": 4 },    "toast": "This is a tomorrow problem." },
-    "jittery":           { "name": "Jittery",          "kind": "debuff", "icon": "bolt",  "durationHours": 2, "perHour": { "mood": -2 },              "onApply": {} },
-    "caffeinated":       { "name": "Caffeinated",      "kind": "buff",   "icon": "bolt",  "durationHours": 3, "perHour": {},                          "onApply": { "mood": 2 } },
-    "mellow":            { "name": "Mellow",           "kind": "buff",   "icon": "leaf",  "durationHours": 3, "perHour": { "mood": 1 },               "onApply": {} },
-    "baked":             { "name": "Baked",            "kind": "buff",   "icon": "leaf",  "durationHours": 3, "perHour": {},                          "onApply": { "mood": 4 },    "toast": "Whoa. The amp hum is, like, beautiful." },
-    "euphoric":          { "name": "Euphoric",         "kind": "buff",   "icon": "star",  "durationHours": 1, "perHour": {},                          "onApply": { "mood": 10 },   "toast": "Tonight is THE night. (It is a Tuesday.)" },
-    "comedown":          { "name": "Comedown",         "kind": "debuff", "icon": "skull", "durationHours": 5, "perHour": { "mood": -3 },              "onApply": {},               "toast": "...and there it goes." },
-    "numb":              { "name": "Numb",             "kind": "status", "icon": "pill",  "durationHours": 3, "perHour": {},                          "onApply": { "mood": 4 } },
-    "queasy":            { "name": "Queasy",           "kind": "debuff", "icon": "skull", "durationHours": 3, "perHour": { "health": -2, "mood": -2 },"onApply": {},               "toast": "That was a mistake." },
-    "vitamin_boost":     { "name": "Vitamin Boost",    "kind": "buff",   "icon": "plus",  "durationHours": 6, "perHour": { "health": 1 },             "onApply": {} }
+    "well_rested": {
+      "name": "Well Rested",
+      "kind": "buff",
+      "icon": "moon",
+      "durationHours": 6,
+      "perHour": {
+        "mood": 1
+      },
+      "onApply": {},
+      "toast": "You actually slept. Wild."
+    },
+    "exhausted": {
+      "name": "Exhausted",
+      "kind": "debuff",
+      "icon": "skull",
+      "durationHours": 4,
+      "perHour": {
+        "mood": -2
+      },
+      "onApply": {},
+      "toast": "You can barely keep your eyes open."
+    },
+    "hungover": {
+      "name": "Hungover",
+      "kind": "debuff",
+      "icon": "skull",
+      "durationHours": 5,
+      "perHour": {
+        "mood": -1,
+        "thirst": -2
+      },
+      "onApply": {
+        "health": -5
+      },
+      "toast": "Everything is too loud and too bright."
+    },
+    "carb_load": {
+      "name": "Carb Loaded",
+      "kind": "buff",
+      "icon": "star",
+      "durationHours": 2,
+      "perHour": {
+        "mood": 1
+      },
+      "onApply": {},
+      "toast": "Carbs: a love language."
+    },
+    "liquid_confidence": {
+      "name": "Liquid Confidence",
+      "kind": "buff",
+      "icon": "star",
+      "durationHours": 2,
+      "perHour": {},
+      "onApply": {
+        "mood": 8
+      },
+      "toast": "You feel like a rockstar. Results may vary."
+    },
+    "chill": {
+      "name": "Chill",
+      "kind": "buff",
+      "icon": "leaf",
+      "durationHours": 3,
+      "perHour": {},
+      "onApply": {
+        "mood": 4
+      }
+    },
+    "buzzed": {
+      "name": "Buzzed",
+      "kind": "buff",
+      "icon": "beer",
+      "durationHours": 2,
+      "perHour": {},
+      "onApply": {
+        "mood": 5
+      }
+    },
+    "drunk": {
+      "name": "Drunk",
+      "kind": "status",
+      "icon": "beer",
+      "durationHours": 3,
+      "perHour": {
+        "thirst": -2
+      },
+      "onApply": {
+        "mood": 6
+      },
+      "toast": "The room develops a gentle tilt."
+    },
+    "wasted": {
+      "name": "Wasted",
+      "kind": "debuff",
+      "icon": "skull",
+      "durationHours": 4,
+      "perHour": {
+        "health": -2,
+        "mood": -2
+      },
+      "onApply": {
+        "mood": 4
+      },
+      "toast": "This is a tomorrow problem."
+    },
+    "jittery": {
+      "name": "Jittery",
+      "kind": "debuff",
+      "icon": "bolt",
+      "durationHours": 2,
+      "perHour": {
+        "mood": -2
+      },
+      "onApply": {}
+    },
+    "caffeinated": {
+      "name": "Caffeinated",
+      "kind": "buff",
+      "icon": "bolt",
+      "durationHours": 3,
+      "perHour": {},
+      "onApply": {
+        "mood": 2
+      },
+      "speedMult": 1.4
+    },
+    "mellow": {
+      "name": "Mellow",
+      "kind": "buff",
+      "icon": "leaf",
+      "durationHours": 3,
+      "perHour": {
+        "mood": 1
+      },
+      "onApply": {}
+    },
+    "baked": {
+      "name": "Baked",
+      "kind": "buff",
+      "icon": "leaf",
+      "durationHours": 3,
+      "perHour": {},
+      "onApply": {
+        "mood": 4
+      },
+      "toast": "Whoa. The amp hum is, like, beautiful."
+    },
+    "euphoric": {
+      "name": "Euphoric",
+      "kind": "buff",
+      "icon": "star",
+      "durationHours": 1,
+      "perHour": {},
+      "onApply": {
+        "mood": 10
+      },
+      "toast": "Tonight is THE night. (It is a Tuesday.)"
+    },
+    "comedown": {
+      "name": "Comedown",
+      "kind": "debuff",
+      "icon": "skull",
+      "durationHours": 5,
+      "perHour": {
+        "mood": -3
+      },
+      "onApply": {},
+      "toast": "...and there it goes."
+    },
+    "numb": {
+      "name": "Numb",
+      "kind": "status",
+      "icon": "pill",
+      "durationHours": 3,
+      "perHour": {},
+      "onApply": {
+        "mood": 4
+      }
+    },
+    "queasy": {
+      "name": "Queasy",
+      "kind": "debuff",
+      "icon": "skull",
+      "durationHours": 3,
+      "perHour": {
+        "health": -2,
+        "mood": -2
+      },
+      "onApply": {},
+      "toast": "That was a mistake."
+    },
+    "vitamin_boost": {
+      "name": "Vitamin Boost",
+      "kind": "buff",
+      "icon": "plus",
+      "durationHours": 6,
+      "perHour": {
+        "health": 1
+      },
+      "onApply": {}
+    },
+    "hot_meal": {
+      "name": "Hot Meal",
+      "kind": "buff",
+      "icon": "star",
+      "durationHours": 5,
+      "perHour": {
+        "hunger": 3
+      },
+      "onApply": {
+        "mood": 3,
+        "health": 2
+      },
+      "toast": "A hot meal. You feel human again."
+    }
   }
 }

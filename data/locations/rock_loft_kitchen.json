@@ -33,7 +33,9 @@
         "y": 1
       },
       "decorId": "full_range",
-      "sprite": "assets/img/objects/decor/full_range.png"
+      "sprite": "assets/img/objects/decor/full_range.png",
+      "interact": "cook",
+      "fridgeId": "rock_fridge"
     },
     {
       "id": "pd_rock_loft_kitchen_mini_fridge",
@@ -43,7 +45,9 @@
         "y": 1
       },
       "decorId": "mini_fridge",
-      "sprite": "assets/img/objects/decor/mini_fridge.png"
+      "sprite": "assets/img/objects/decor/mini_fridge.png",
+      "interact": "beerfridge",
+      "containerId": "rock_beer"
     },
     {
       "id": "pd_rock_loft_kitchen_kitchen_island",
@@ -63,7 +67,8 @@
         "y": 1
       },
       "decorId": "microwave",
-      "sprite": "assets/img/objects/decor/microwave.png"
+      "sprite": "assets/img/objects/decor/microwave.png",
+      "interact": "microwave"
     },
     {
       "id": "pd_rock_loft_kitchen_toaster_oven",

@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.26.5 (furniture glow-up: each item now has a recognizable per-item shape in a clean iso style \u2014 couch/fridge/TV/toilet/lamp/plant/table/etc., data-driven via shape+color, PNG-overridable fallback; room doors moved flush to the back wall and rendered as standing doorframes instead of floor trapdoors)",
+  "version": "0.27.0 (functional food & drink: cook hot meals at the fridge/stove using a grocery stock you restock; leftovers keep in the fridge (2 servings/meal); espresso machine makes free coffee; microwave heats cheap cold food for the Hot Meal bonus; mini fridge is a beer stash you stock/fill/pull from; Caffeinated now adds a movement-speed boost; all numbers data-driven via config.cooking + items/conditions)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -44,7 +44,8 @@
     "_comment": "A 'slot' holds one stack. Pockets are small so the fridge/crate matter.",
     "pocketSlots": 12,
     "fridgeSlots": 24,
-    "storageSlots": 24
+    "storageSlots": 24,
+    "minifridgeSlots": 24
   },
   "apps": {
     "_comment": "true = working app, false = shows a 'coming soon' teaser. Later steps flip these on.",
@@ -253,5 +254,22 @@
     "liveCoverRate": 0.4,
     "liveFameFactor": 3
   },
-  "useSprites": false
+  "useSprites": false,
+  "cooking": {
+    "groceriesPerMeal": 1,
+    "servings": 2,
+    "restockQty": 6,
+    "restockCost": 60,
+    "startGroceries": 4,
+    "groceryCap": 24,
+    "microwaveHunger": 38,
+    "beerPackQty": 6,
+    "beerPackCost": 18,
+    "heatable": [
+      "pizza_slice",
+      "ramen_cup",
+      "cold_fries",
+      "gas_station_burrito"
+    ]
+  }
 }

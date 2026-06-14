@@ -33,7 +33,9 @@
         "y": 1
       },
       "decorId": "full_range",
-      "sprite": "assets/img/objects/decor/full_range.png"
+      "sprite": "assets/img/objects/decor/full_range.png",
+      "interact": "cook",
+      "fridgeId": "loft_fridge"
     },
     {
       "id": "pd_loft_kitchen_mini_fridge",
@@ -43,7 +45,9 @@
         "y": 1
       },
       "decorId": "mini_fridge",
-      "sprite": "assets/img/objects/decor/mini_fridge.png"
+      "sprite": "assets/img/objects/decor/mini_fridge.png",
+      "interact": "beerfridge",
+      "containerId": "loft_beer"
     },
     {
       "id": "pd_loft_kitchen_kitchen_island",
@@ -63,7 +67,8 @@
         "y": 1
       },
       "decorId": "microwave",
-      "sprite": "assets/img/objects/decor/microwave.png"
+      "sprite": "assets/img/objects/decor/microwave.png",
+      "interact": "microwave"
     },
     {
       "id": "pd_loft_kitchen_espresso_machine",
@@ -73,7 +78,8 @@
         "y": 2
       },
       "decorId": "espresso_machine",
-      "sprite": "assets/img/objects/decor/espresso_machine.png"
+      "sprite": "assets/img/objects/decor/espresso_machine.png",
+      "interact": "coffee"
     }
   ]
 }

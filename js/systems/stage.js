@@ -26,6 +26,7 @@ import { openPerform } from "./shows.js";
 import { playWorldSfx } from "./worldaudio.js";
 import { bookedCommitments, currentDay, currentSlot } from "./calendar.js";
 import { openDialogue } from "./dialogue.js";
+import { useFridge, cookMeal, makeCoffee, microwaveFood, useBeerFridge } from "./kitchen.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -185,6 +186,15 @@ function nearestApproachTo(obj) {           // closest free tile beside ANY foot
   }
   return cands.sort((a, b) => a.d - b.d)[0] || null;
 }
+function speedMult() {           // Step 27.0: Caffeinated (or any condition w/ speedMult) speeds you up
+  const s = getState();
+  let m = 1;
+  for (const c of (s && s.conditions) || []) {
+    const d = DATA.conditions && DATA.conditions.conditions && DATA.conditions.conditions[c.id];
+    if (d && d.speedMult) m = Math.max(m, d.speedMult);
+  }
+  return m;
+}
 function objectAt(x, y) {
   return furniture.find((o) => coversTile(o, x, y)) || exits.find((o) => coversTile(o, x, y)) || null;
 }
@@ -329,7 +339,7 @@ function update(dt) {
   const target = path[0];
   const dx = target.x - player.x, dy = target.y - player.y;
   const dist = Math.hypot(dx, dy);
-  const step = SPEED * dt;
+  const step = SPEED * dt * speedMult();
   if (dist <= step) {
     player.x = target.x; player.y = target.y;
     path.shift();
@@ -367,6 +377,21 @@ function interact(obj) {
       break;
     case "container":
       openContainerView(obj.containerId || "storage");
+      break;
+    case "fridge":
+      useFridge(obj.containerId || "fridge");
+      break;
+    case "cook":
+      cookMeal(obj.fridgeId || "fridge");
+      break;
+    case "coffee":
+      makeCoffee();
+      break;
+    case "microwave":
+      microwaveFood();
+      break;
+    case "beerfridge":
+      useBeerFridge(obj.containerId || "minifridge");
       break;
     case "pickup":
       pickUpFloorItem(obj);

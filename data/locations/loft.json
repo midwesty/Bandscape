@@ -26,7 +26,7 @@
         "y": 1
       },
       "sprite": "assets/img/objects/fridge.png",
-      "interact": "container",
+      "interact": "fridge",
       "containerId": "loft_fridge"
     },
     {
@@ -118,7 +118,8 @@
         "y": 2
       },
       "decorId": "espresso_machine",
-      "sprite": "assets/img/objects/decor/espresso_machine.png"
+      "sprite": "assets/img/objects/decor/espresso_machine.png",
+      "interact": "coffee"
     }
   ],
   "exits": [
