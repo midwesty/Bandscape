@@ -137,7 +137,7 @@
     },
     {
       "id": "loft_kitchen",
-      "name": "Loft Kitchen",
+      "name": "Kitchen",
       "tile": {
         "x": 8,
         "y": 3
@@ -148,11 +148,13 @@
         "x": 3,
         "y": 4
       },
-      "solid": true
+      "solid": true,
+      "door": true,
+      "label": "KITCHEN"
     },
     {
       "id": "loft_bath",
-      "name": "Loft Bath",
+      "name": "Bathroom",
       "tile": {
         "x": 1,
         "y": 3
@@ -163,11 +165,13 @@
         "x": 3,
         "y": 3
       },
-      "solid": true
+      "solid": true,
+      "door": true,
+      "label": "BATH"
     },
     {
       "id": "loft_bed",
-      "name": "Loft Bed",
+      "name": "Bedroom",
       "tile": {
         "x": 8,
         "y": 4
@@ -178,11 +182,13 @@
         "x": 3,
         "y": 3
       },
-      "solid": true
+      "solid": true,
+      "door": true,
+      "label": "BEDROOM"
     },
     {
       "id": "loft_balcony",
-      "name": "Loft Balcony",
+      "name": "Balcony",
       "tile": {
         "x": 1,
         "y": 4
@@ -193,7 +199,9 @@
         "x": 3,
         "y": 3
       },
-      "solid": true
+      "solid": true,
+      "door": true,
+      "label": "BALCONY"
     }
   ]
 }

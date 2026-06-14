@@ -621,6 +621,7 @@ function drawProc(o, cx, cy) {
   if (o.interact === "talk" || o.interact === "storeclerk" || o.interact === "decorclerk") return npcFigure(cx, cy, o);
   if (o.interact === "stage") return stageShape(cx, cy);
   if (o.decorId) return drawDecor(o, cx, cy);
+  if (o.door) return doorway(cx, cy, o.label || o.name);
   if (o.instrumentId) {
     switch (o.instrumentId) {
       case "guitar": return stringed(cx, cy, C.orange);
@@ -686,7 +687,7 @@ function isoBox(x, y, w, h, height, top, lft, rgt) {   // a 3D box spanning a w�
 function drawDecorBox(o, cat, f) {              // multi-tile décor renders as a properly-sized box
   const x = o.tile.x, y = o.tile.y;
   const M = {
-    seating:    { h: 10, top: "#5e4480", lft: "#4a3568", rgt: "#3a2954" },
+    seating:    { h: 10, top: "#c07248", lft: "#9c5836", rgt: "#7e4529" },
     kitchen:    { h: 20, top: "#cfd6dd", lft: "#9aa3ad", rgt: "#7c858f" },
     tables:     { h: 9,  top: "#8a6a44", lft: "#6e5230", rgt: "#54401f" },
     bath:       { h: 11, top: "#eaf2f6", lft: "#c4d2da", rgt: "#a8b8c2" },
@@ -715,8 +716,8 @@ function drawDecor(o, cx, cy) {
   const lit = (def.glow && def.glow.color) || C.yellow;
   switch (cat) {
     case "seating":
-      cuboid(cx, cy, 18, 9, 9, "#5e4480", "#4a3568", "#3a2954");
-      cuboid(cx - 6, cy - 3, 12, 6, 9, "#6e54a0", "#56407e", "#43306a"); break;
+      cuboid(cx, cy, 18, 9, 9, "#c07248", "#9c5836", "#7e4529");
+      cuboid(cx - 6, cy - 3, 12, 6, 9, "#d4895f", "#ad6a44", "#8a5436"); break;
     case "lighting":
       ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 20); ctx.stroke();
       ctx.fillStyle = lit; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 26, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
@@ -872,12 +873,14 @@ function stageShape(cx, cy) {
   ctx.fillStyle = C.yellow; ctx.fillRect(cx + 13, cy - 19, 6, 6);
 }
 // short, floor-level threshold — never occludes furniture behind it
-function doorway(cx, cy) {
+function doorway(cx, cy, label) {
+  label = String(label || "OUT").toUpperCase().slice(0, 7);
   diamond(cx, cy, "#191324", C.yellow);
-  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - 11, cy - 15, 22, 15);
-  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(cx - 11, cy - 15, 22, 15);
-  ctx.fillStyle = C.yellow; ctx.font = "700 8px 'Arial Narrow', sans-serif"; ctx.textAlign = "center";
-  ctx.fillText("OUT", cx, cy - 5); ctx.textAlign = "left";
+  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - 14, cy - 16, 28, 16);
+  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(cx - 14, cy - 16, 28, 16);
+  ctx.fillStyle = C.yellow; ctx.textAlign = "center";
+  ctx.font = `700 ${label.length > 5 ? 6 : 8}px 'Arial Narrow', sans-serif`;
+  ctx.fillText(label, cx, cy - 5); ctx.textAlign = "left";
 }
 function outlineObject(cx, cy) {
   ctx.strokeStyle = C.green; ctx.lineWidth = 2;
@@ -938,6 +941,7 @@ function objectAt2(id) { return furniture.find((x) => x.id === id) || exits.find
 
 function getImage(path) {
   if (!path) return null;
+  if (!(DATA.config && DATA.config.useSprites)) return null;   // no PNG art yet -> use code shapes, skip 404 requests
   if (imgCache.has(path)) return imgCache.get(path);
   const img = new Image();
   img._ok = false;

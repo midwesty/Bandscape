@@ -172,7 +172,7 @@
     },
     {
       "id": "apartment_bath",
-      "name": "Apartment Bath",
+      "name": "Bathroom",
       "tile": {
         "x": 6,
         "y": 3
@@ -183,7 +183,9 @@
         "x": 3,
         "y": 3
       },
-      "solid": true
+      "solid": true,
+      "door": true,
+      "label": "BATH"
     }
   ]
 }

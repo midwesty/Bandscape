@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.26.4 (Step 26.4: multi-room homes \u2014 studio+bathroom; Rocktroit loft+kitchen/bath/bedroom; Loft+kitchen/bath/bedroom/balcony, linked by doors, pre-dressed, scaling with price; d\u00e9cor auto-routes to the right room)",
+  "version": "0.26.4.2 (fix: room doors render as labeled doorways \u2014 KITCHEN/BATH/BEDROOM/BALCONY \u2014 so multi-room is visible/usable; couches recolored from placeholder-purple to warm tones)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -252,5 +252,6 @@
     "fameFactor": 0.02,
     "liveCoverRate": 0.4,
     "liveFameFactor": 3
-  }
+  },
+  "useSprites": false
 }
