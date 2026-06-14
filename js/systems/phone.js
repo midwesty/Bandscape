@@ -24,6 +24,8 @@ import { loadTape } from "./tape.js";
 import { toast, logHistory } from "../ui/toast.js";
 import { isAdminUnlocked, tryUnlock, adminPanelHTML, bindAdminPanel } from "./admin.js";
 import { setWorldAudioEnabled, worldAudioEnabled } from "./worldaudio.js";
+import { setWorldMusicEnabled, worldMusicEnabled } from "./worldradio.js";
+import { currentSource, stopSong } from "./songplayer.js";
 
 const APP_META = {
   tasks:    { label: "Tasks",   glyph: "✓",  accent: "#ffd23f" },
@@ -76,6 +78,7 @@ export function openPhone() {
 
 export function closePhone() {
   openState = false;
+  if (currentSource() === "phone") stopSong();   // putting the phone away hands the airwaves back to the radio
   phoneEl.classList.remove("open");
   document.body.classList.remove("modal-open");
   setTimeout(() => phoneEl.classList.add("hidden"), 250);
@@ -201,8 +204,10 @@ function renderSettings() {
     </div>
     <div class="set-block">
       <div class="set-label">Audio</div>
-      <button class="btn" id="set-worldaudio">World audio: ${worldAudioEnabled() ? "On" : "Off"}</button>
-      <p class="set-note">Ambient street/world sound (cars, the dog, scene tone). Off by default. This never affects loop playback, the metronome, or the DAW.</p>
+      <button class="btn" id="set-worldaudio">World sounds: ${worldAudioEnabled() ? "On" : "Off"}</button>
+      <p class="set-note">Ambient street/scene sound (cars, the dog, room tone). Off by default.</p>
+      <button class="btn" id="set-worldmusic">World music: ${worldMusicEnabled() ? "On" : "Off"}</button>
+      <p class="set-note">Lo-fi radio in bars and shops, playing your released tracks. On by default. Neither toggle ever affects the music you play on your phone, your loops, or the DAW.</p>
     </div>
     <div class="set-block">
       <div class="set-label">Game</div>
@@ -258,6 +263,9 @@ function renderSettings() {
   });
   document.getElementById("set-worldaudio").addEventListener("click", () => {
     const on = !worldAudioEnabled(); setWorldAudioEnabled(on); toast(`World audio ${on ? "on" : "off"}.`, "info"); renderSettings();
+  });
+  document.getElementById("set-worldmusic").addEventListener("click", () => {
+    const on = !worldMusicEnabled(); setWorldMusicEnabled(on); toast(`World music ${on ? "on" : "off"}.`, "info"); renderSettings();
   });
 
   if (isAdminUnlocked()) {

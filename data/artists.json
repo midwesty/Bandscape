@@ -1,0 +1,41 @@
+{
+  "_comment": "Flavor rival artists for the Streamr FAN side (Step 27.1). Names + genres + release stream counts only — no audio. They populate charts and have browsable artist pages so your band rises among a scene. Editable freely; add/remove artists or releases here.",
+  "rivals": [
+    { "id": "riv_parking_lot_gods", "name": "Parking Lot Gods", "genre": "Garage Punk",
+      "releases": [
+        { "title": "Asphalt Hymns", "type": "EP", "streams": 412050 },
+        { "title": "Meter Maid", "type": "Single", "streams": 158300 },
+        { "title": "Four Door Cathedral", "type": "Album", "streams": 690400 }
+      ] },
+    { "id": "riv_the_dishwashers", "name": "The Dishwashers", "genre": "Post-Punk",
+      "releases": [
+        { "title": "Rinse Cycle", "type": "Album", "streams": 271800 },
+        { "title": "Hot Water", "type": "Single", "streams": 94200 }
+      ] },
+    { "id": "riv_velvet_lawnmower", "name": "Velvet Lawnmower", "genre": "Shoegaze",
+      "releases": [
+        { "title": "Two-Stroke Heaven", "type": "EP", "streams": 503300 },
+        { "title": "Bagger", "type": "Single", "streams": 122900 }
+      ] },
+    { "id": "riv_casserole", "name": "Casserole", "genre": "Indie Folk",
+      "releases": [
+        { "title": "Tuesday's Leftovers", "type": "Album", "streams": 188400 },
+        { "title": "Preheat", "type": "Single", "streams": 61500 }
+      ] },
+    { "id": "riv_dial_tone_revival", "name": "Dial Tone Revival", "genre": "Synthwave",
+      "releases": [
+        { "title": "Please Hold", "type": "EP", "streams": 845600 },
+        { "title": "Busy Signal", "type": "Single", "streams": 233100 }
+      ] },
+    { "id": "riv_the_landlords", "name": "The Landlords", "genre": "Hardcore",
+      "releases": [
+        { "title": "Security Deposit", "type": "Album", "streams": 357700 },
+        { "title": "Eviction Notice", "type": "Single", "streams": 140900 }
+      ] },
+    { "id": "riv_soft_serve", "name": "Soft Serve", "genre": "Bedroom Pop",
+      "releases": [
+        { "title": "Brain Freeze", "type": "EP", "streams": 299000 },
+        { "title": "Twist Cone", "type": "Single", "streams": 77800 }
+      ] }
+  ]
+}

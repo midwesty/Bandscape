@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.27.0 (functional food & drink: cook hot meals at the fridge/stove using a grocery stock you restock; leftovers keep in the fridge (2 servings/meal); espresso machine makes free coffee; microwave heats cheap cold food for the Hot Meal bonus; mini fridge is a beer stash you stock/fill/pull from; Caffeinated now adds a movement-speed boost; all numbers data-driven via config.cooking + items/conditions)",
+  "version": "0.27.2 (world radio: bars/shops auto-play a lo-fi, popularity-weighted pick from your released tracks; hearing your own song pops a toast + small mood/fans bump, rate-limited; phone playback always overrides the radio, which resumes when you stop/finish/close the phone; new Settings toggles for World music (radio) and World sounds (ambient) \u2014 neither touches phone/DAW/loop playback)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -260,7 +260,7 @@
     "servings": 2,
     "restockQty": 6,
     "restockCost": 60,
-    "startGroceries": 4,
+    "startGroceries": 0,
     "groceryCap": 24,
     "microwaveHunger": 38,
     "beerPackQty": 6,
@@ -271,5 +271,18 @@
       "cold_fries",
       "gas_station_burrito"
     ]
+  },
+  "radio": {
+    "scenes": [
+      "venue",
+      "rocktroit_bar",
+      "musicstore",
+      "arcade",
+      "thrift"
+    ],
+    "volume": 0.32,
+    "toastMinGapHours": 3,
+    "mood": 3,
+    "fans": 2
   }
 }

@@ -69,7 +69,9 @@ export function cookMeal(key) {
 
 // Fridge tap: choose to cook, otherwise open the food/leftovers storage.
 export function useFridge(key) {
-  if (confirm("Cook a hot meal here? OK = cook, Cancel = open the fridge.")) cookMeal(key);
+  const c = cfg(), qty = c.restockQty || 6, cost = c.restockCost || 60;
+  if (confirm(`Fridge — ${groceryCount(key)} groceries on hand.\n\nOK = cook a hot meal   ·   Cancel = more options`)) { cookMeal(key); return; }
+  if (confirm(`OK = restock groceries (+${qty} for $${cost})   ·   Cancel = open the fridge`)) restockGroceries(key);
   else openContainerView(key);
 }
 

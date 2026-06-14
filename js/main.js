@@ -10,6 +10,7 @@ import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { putAudio } from "./engine/audiostore.js";
 import { ensureGear } from "./systems/gear.js";
 import { initWorldAudio } from "./systems/worldaudio.js";
+import { initWorldRadio } from "./systems/worldradio.js";
 import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock, initTimeControls } from "./systems/time.js";
@@ -131,6 +132,7 @@ function enterGame(isNew) {
   ensureScene();         // Step 23.1: buzz, venue discovery, contacts (seeds Ralph)
   ensureDecorDefaults(); // Step 26.1: pre-dressed decor reaches existing saves
   initWorldAudio();      // Step 24.2: ambient world sound (idempotent)
+  initWorldRadio();      // Step 27.2: lo-fi radio in public spaces (idempotent)
   migrateInlineAudio();  // Step 18.0: move any inline audio into IndexedDB (off the localStorage quota)
   initObjectives();
   initPhone();
