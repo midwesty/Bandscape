@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.26.4.2 (fix: room doors render as labeled doorways \u2014 KITCHEN/BATH/BEDROOM/BALCONY \u2014 so multi-room is visible/usable; couches recolored from placeholder-purple to warm tones)",
+  "version": "0.26.5 (furniture glow-up: each item now has a recognizable per-item shape in a clean iso style \u2014 couch/fridge/TV/toilet/lamp/plant/table/etc., data-driven via shape+color, PNG-overridable fallback; room doors moved flush to the back wall and rendered as standing doorframes instead of floor trapdoors)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {

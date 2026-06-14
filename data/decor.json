@@ -36,7 +36,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "bed",
+      "color": "#8a6a8a"
     },
     "beanbag": {
       "name": "Beanbag Chair",
@@ -45,7 +47,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/beanbag.png",
-      "desc": "Swallows you whole. In a good way."
+      "desc": "Swallows you whole. In a good way.",
+      "shape": "chair",
+      "color": "#c0506a"
     },
     "papasan": {
       "name": "Papasan Chair",
@@ -54,7 +58,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/papasan.png",
-      "desc": "The bowl chair. Peak dorm luxury."
+      "desc": "The bowl chair. Peak dorm luxury.",
+      "shape": "chair",
+      "color": "#9a7a4a"
     },
     "recliner": {
       "name": "Worn Recliner",
@@ -63,7 +69,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/recliner.png",
-      "desc": "Reclines into another dimension."
+      "desc": "Reclines into another dimension.",
+      "shape": "chair",
+      "color": "#8a5a3a"
     },
     "leather_sofa": {
       "name": "Leather Sofa",
@@ -76,7 +84,9 @@
       "footprint": [
         3,
         1
-      ]
+      ],
+      "shape": "couch",
+      "color": "#7a4a32"
     },
     "sectional": {
       "name": "Modular Sectional",
@@ -89,7 +99,9 @@
       "footprint": [
         2,
         2
-      ]
+      ],
+      "shape": "couch",
+      "color": "#6a6472"
     },
     "lava_lamp": {
       "name": "Lava Lamp",
@@ -102,7 +114,9 @@
       "glow": {
         "color": "#ff4fa3",
         "r": 34
-      }
+      },
+      "shape": "orb",
+      "color": "#ff7a3d"
     },
     "string_lights": {
       "name": "String Lights",
@@ -115,7 +129,9 @@
       "glow": {
         "color": "#ffd27f",
         "r": 40
-      }
+      },
+      "shape": "strip",
+      "color": "#ffd98a"
     },
     "salt_lamp": {
       "name": "Salt Lamp",
@@ -128,7 +144,9 @@
       "glow": {
         "color": "#ff9a52",
         "r": 30
-      }
+      },
+      "shape": "orb",
+      "color": "#ff9a8a"
     },
     "floor_lamp": {
       "name": "Arc Floor Lamp",
@@ -141,7 +159,9 @@
       "glow": {
         "color": "#fff0c2",
         "r": 36
-      }
+      },
+      "shape": "lamp",
+      "color": "#ffe6a0"
     },
     "neon_sign": {
       "name": "Neon Sign",
@@ -154,7 +174,9 @@
       "glow": {
         "color": "#3df2ff",
         "r": 46
-      }
+      },
+      "shape": "strip",
+      "color": "#ff5ea8"
     },
     "disco_ball": {
       "name": "Disco Ball",
@@ -167,7 +189,9 @@
       "glow": {
         "color": "#c9a0ff",
         "r": 48
-      }
+      },
+      "shape": "orb",
+      "color": "#cfe8ff"
     },
     "toaster_oven": {
       "name": "Toaster Oven",
@@ -177,7 +201,9 @@
       "tier": 1,
       "sprite": "assets/img/objects/decor/toaster_oven.png",
       "desc": "Toast, reheats, minor fire hazard.",
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "appliance",
+      "color": "#9aa3ad"
     },
     "microwave": {
       "name": "Microwave",
@@ -187,7 +213,9 @@
       "tier": 1,
       "sprite": "assets/img/objects/decor/microwave.png",
       "desc": "3am ramen's best friend.",
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "appliance",
+      "color": "#3a3540"
     },
     "mini_fridge": {
       "name": "Mini Fridge",
@@ -197,7 +225,9 @@
       "tier": 2,
       "sprite": "assets/img/objects/decor/mini_fridge.png",
       "desc": "Cold drinks, cold leftovers, cold truth.",
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "fridge",
+      "color": "#dfe3e8"
     },
     "espresso_machine": {
       "name": "Espresso Machine",
@@ -207,7 +237,9 @@
       "tier": 2,
       "sprite": "assets/img/objects/decor/espresso_machine.png",
       "desc": "Caffeine on tap. Songwriting fuel.",
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "appliance",
+      "color": "#2b2533"
     },
     "full_range": {
       "name": "Full Range Stove",
@@ -217,7 +249,9 @@
       "tier": 3,
       "sprite": "assets/img/objects/decor/full_range.png",
       "desc": "An actual stove. You've made it.",
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "stove",
+      "color": "#cfd6dd"
     },
     "kitchen_island": {
       "name": "Kitchen Island",
@@ -231,7 +265,9 @@
         2,
         1
       ],
-      "room": "kitchen"
+      "room": "kitchen",
+      "shape": "counter",
+      "color": "#caa56b"
     },
     "towel_rack": {
       "name": "Towel Rack",
@@ -241,7 +277,9 @@
       "tier": 1,
       "sprite": "assets/img/objects/decor/towel_rack.png",
       "desc": "Holds towels. Revolutionary.",
-      "room": "bath"
+      "room": "bath",
+      "shape": "rack",
+      "color": "#caa56b"
     },
     "toilet": {
       "name": "Toilet",
@@ -251,7 +289,9 @@
       "tier": 1,
       "sprite": "assets/img/objects/decor/toilet.png",
       "desc": "Non-negotiable. Truly essential.",
-      "room": "bath"
+      "room": "bath",
+      "shape": "toilet",
+      "color": "#eef2f6"
     },
     "pedestal_sink": {
       "name": "Pedestal Sink",
@@ -261,7 +301,9 @@
       "tier": 2,
       "sprite": "assets/img/objects/decor/pedestal_sink.png",
       "desc": "Porcelain. A touch fancy.",
-      "room": "bath"
+      "room": "bath",
+      "shape": "sink",
+      "color": "#eef2f6"
     },
     "vanity_mirror": {
       "name": "Vanity Mirror",
@@ -271,7 +313,9 @@
       "tier": 2,
       "sprite": "assets/img/objects/decor/vanity_mirror.png",
       "desc": "Lit edges. Rockstar selfies.",
-      "room": "bath"
+      "room": "bath",
+      "shape": "mirror",
+      "color": "#cfe6f0"
     },
     "shower_stall": {
       "name": "Glass Shower",
@@ -281,7 +325,9 @@
       "tier": 3,
       "sprite": "assets/img/objects/decor/shower_stall.png",
       "desc": "Hot water, finally reliable.",
-      "room": "bath"
+      "room": "bath",
+      "shape": "shower",
+      "color": "#bfe0ea"
     },
     "clawfoot_tub": {
       "name": "Clawfoot Tub",
@@ -295,7 +341,9 @@
         2,
         1
       ],
-      "room": "bath"
+      "room": "bath",
+      "shape": "tub",
+      "color": "#eef2f6"
     },
     "vintage_radio": {
       "name": "Vintage Radio",
@@ -304,7 +352,9 @@
       "vibe": 3,
       "tier": 1,
       "sprite": "assets/img/objects/decor/vintage_radio.png",
-      "desc": "Crackly AM warmth."
+      "desc": "Crackly AM warmth.",
+      "shape": "deck",
+      "color": "#8a6a44"
     },
     "boombox": {
       "name": "Boombox",
@@ -313,7 +363,9 @@
       "vibe": 3,
       "tier": 1,
       "sprite": "assets/img/objects/decor/boombox.png",
-      "desc": "Shoulder-mounted, obviously."
+      "desc": "Shoulder-mounted, obviously.",
+      "shape": "deck",
+      "color": "#4a4852"
     },
     "gaming_console": {
       "name": "Game Console",
@@ -322,7 +374,9 @@
       "vibe": 4,
       "tier": 2,
       "sprite": "assets/img/objects/decor/gaming_console.png",
-      "desc": "Tour-bus boredom, solved."
+      "desc": "Tour-bus boredom, solved.",
+      "shape": "deck",
+      "color": "#33323a"
     },
     "turntable": {
       "name": "Turntable",
@@ -331,7 +385,9 @@
       "vibe": 5,
       "tier": 2,
       "sprite": "assets/img/objects/decor/turntable.png",
-      "desc": "Vinyl ritual. Studied crate-digger energy."
+      "desc": "Vinyl ritual. Studied crate-digger energy.",
+      "shape": "deck",
+      "color": "#2b2533"
     },
     "flatscreen_tv": {
       "name": "Flatscreen TV",
@@ -340,7 +396,9 @@
       "vibe": 4,
       "tier": 3,
       "sprite": "assets/img/objects/decor/flatscreen_tv.png",
-      "desc": "Wall-mounted, cinematic."
+      "desc": "Wall-mounted, cinematic.",
+      "shape": "tv",
+      "color": "#15131a"
     },
     "studio_monitor": {
       "name": "Studio Monitor",
@@ -349,7 +407,9 @@
       "vibe": 6,
       "tier": 3,
       "sprite": "assets/img/objects/decor/studio_monitor.png",
-      "desc": "Flat response. Hear everything."
+      "desc": "Flat response. Hear everything.",
+      "shape": "tv",
+      "color": "#15131a"
     },
     "band_poster": {
       "name": "Band Poster",
@@ -358,7 +418,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/band_poster.png",
-      "desc": "Your heroes, watching you work."
+      "desc": "Your heroes, watching you work.",
+      "shape": "art",
+      "color": "#ff5ea8"
     },
     "wall_mirror": {
       "name": "Wall Mirror",
@@ -367,7 +429,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/wall_mirror.png",
-      "desc": "Doubles the room, doubles the vibe."
+      "desc": "Doubles the room, doubles the vibe.",
+      "shape": "mirror",
+      "color": "#cfe6f0"
     },
     "neon_clock": {
       "name": "Neon Wall Clock",
@@ -380,7 +444,9 @@
       "glow": {
         "color": "#7CFC9B",
         "r": 24
-      }
+      },
+      "shape": "clock",
+      "color": "#5ee8d0"
     },
     "tapestry": {
       "name": "Tapestry",
@@ -389,7 +455,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/tapestry.png",
-      "desc": "Hides the wall damage. Adds mystery."
+      "desc": "Hides the wall damage. Adds mystery.",
+      "shape": "art",
+      "color": "#c06a3a"
     },
     "bookshelf": {
       "name": "Loaded Bookshelf",
@@ -398,7 +466,9 @@
       "vibe": 4,
       "tier": 3,
       "sprite": "assets/img/objects/decor/bookshelf.png",
-      "desc": "Looks smart. Occasionally read."
+      "desc": "Looks smart. Occasionally read.",
+      "shape": "shelf",
+      "color": "#8a6a44"
     },
     "framed_gold_record": {
       "name": "Framed Gold Record",
@@ -407,7 +477,9 @@
       "vibe": 8,
       "tier": 3,
       "sprite": "assets/img/objects/decor/framed_gold_record.png",
-      "desc": "The dream, on the wall."
+      "desc": "The dream, on the wall.",
+      "shape": "art",
+      "color": "#ffd23f"
     },
     "succulent_set": {
       "name": "Succulent Set",
@@ -416,7 +488,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/succulent_set.png",
-      "desc": "Nearly unkillable. Nearly."
+      "desc": "Nearly unkillable. Nearly.",
+      "shape": "cactus",
+      "color": "#5aaa6a"
     },
     "cactus_trio": {
       "name": "Cactus Trio",
@@ -425,7 +499,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/cactus_trio.png",
-      "desc": "Prickly little roommates."
+      "desc": "Prickly little roommates.",
+      "shape": "cactus",
+      "color": "#4a9a5a"
     },
     "snake_plant": {
       "name": "Snake Plant",
@@ -434,7 +510,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/snake_plant.png",
-      "desc": "Cleans the air, asks for nothing."
+      "desc": "Cleans the air, asks for nothing.",
+      "shape": "plant",
+      "color": "#3a7a4a"
     },
     "hanging_fern": {
       "name": "Hanging Fern",
@@ -443,7 +521,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/hanging_fern.png",
-      "desc": "Cascading green from above."
+      "desc": "Cascading green from above.",
+      "shape": "plant",
+      "color": "#4a9a5a"
     },
     "monstera": {
       "name": "Monstera",
@@ -452,7 +532,9 @@
       "vibe": 4,
       "tier": 3,
       "sprite": "assets/img/objects/decor/monstera.png",
-      "desc": "The influencer plant. Big leaves, big vibe."
+      "desc": "The influencer plant. Big leaves, big vibe.",
+      "shape": "plant",
+      "color": "#3a8a4a"
     },
     "bonsai": {
       "name": "Bonsai",
@@ -461,7 +543,9 @@
       "vibe": 5,
       "tier": 3,
       "sprite": "assets/img/objects/decor/bonsai.png",
-      "desc": "Tiny tree, enormous calm."
+      "desc": "Tiny tree, enormous calm.",
+      "shape": "plant",
+      "color": "#4a8a3a"
     },
     "vinyl_mat": {
       "name": "Vinyl Floor Mat",
@@ -470,7 +554,9 @@
       "vibe": 1,
       "tier": 1,
       "sprite": "assets/img/objects/decor/vinyl_mat.png",
-      "desc": "Wipes clean. Practical."
+      "desc": "Wipes clean. Practical.",
+      "shape": "rug",
+      "color": "#444a52"
     },
     "runner_rug": {
       "name": "Runner Rug",
@@ -479,7 +565,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/runner_rug.png",
-      "desc": "Ties the hallway together."
+      "desc": "Ties the hallway together.",
+      "shape": "rug",
+      "color": "#3a5a8a"
     },
     "shag_rug": {
       "name": "Shag Rug",
@@ -488,7 +576,9 @@
       "vibe": 3,
       "tier": 2,
       "sprite": "assets/img/objects/decor/shag_rug.png",
-      "desc": "Toes love it. Vacuum hates it."
+      "desc": "Toes love it. Vacuum hates it.",
+      "shape": "rug",
+      "color": "#caa56b"
     },
     "cowhide_rug": {
       "name": "Cowhide Rug",
@@ -497,7 +587,9 @@
       "vibe": 4,
       "tier": 2,
       "sprite": "assets/img/objects/decor/cowhide_rug.png",
-      "desc": "Bold. Polarizing. Cozy."
+      "desc": "Bold. Polarizing. Cozy.",
+      "shape": "rug",
+      "color": "#d8c0a0"
     },
     "persian_rug": {
       "name": "Persian Rug",
@@ -506,7 +598,9 @@
       "vibe": 6,
       "tier": 3,
       "sprite": "assets/img/objects/decor/persian_rug.png",
-      "desc": "Hand-knotted history underfoot."
+      "desc": "Hand-knotted history underfoot.",
+      "shape": "rug",
+      "color": "#8a3a5c"
     },
     "tatami_mat": {
       "name": "Tatami Mat",
@@ -515,7 +609,9 @@
       "vibe": 4,
       "tier": 3,
       "sprite": "assets/img/objects/decor/tatami_mat.png",
-      "desc": "Calm, woven, intentional."
+      "desc": "Calm, woven, intentional.",
+      "shape": "rug",
+      "color": "#b8a060"
     },
     "coffee_table": {
       "name": "Coffee Table",
@@ -524,7 +620,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/coffee_table.png",
-      "desc": "Holds drinks, magazines, and your feet."
+      "desc": "Holds drinks, magazines, and your feet.",
+      "shape": "table",
+      "color": "#8a6a44"
     },
     "side_table": {
       "name": "Side Table",
@@ -533,7 +631,9 @@
       "vibe": 1,
       "tier": 1,
       "sprite": "assets/img/objects/decor/side_table.png",
-      "desc": "A lamp's best friend."
+      "desc": "A lamp's best friend.",
+      "shape": "table",
+      "color": "#9a7a4a"
     },
     "dining_table": {
       "name": "Dining Table",
@@ -546,7 +646,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "table",
+      "color": "#8a6a44"
     },
     "writing_desk": {
       "name": "Writing Desk",
@@ -559,7 +661,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "table",
+      "color": "#7a5a36"
     },
     "console_table": {
       "name": "Console Table",
@@ -572,7 +676,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "table",
+      "color": "#9a7a4a"
     },
     "drafting_table": {
       "name": "Drafting Table",
@@ -581,7 +687,9 @@
       "vibe": 4,
       "tier": 3,
       "sprite": "assets/img/objects/decor/drafting_table.png",
-      "desc": "Tilt it, light it, pretend you're an architect."
+      "desc": "Tilt it, light it, pretend you're an architect.",
+      "shape": "table",
+      "color": "#5a5560"
     },
     "shop_shelf": {
       "name": "Shop Shelving",
@@ -594,7 +702,9 @@
       "footprint": [
         1,
         2
-      ]
+      ],
+      "shape": "shelf",
+      "color": "#6a6472"
     },
     "shopping_cart": {
       "name": "Shopping Cart",
@@ -603,7 +713,9 @@
       "vibe": 1,
       "tier": 1,
       "sprite": "assets/img/objects/decor/shopping_cart.png",
-      "desc": "One wheel has a mind of its own."
+      "desc": "One wheel has a mind of its own.",
+      "shape": "cart",
+      "color": "#aab0b8"
     },
     "checkout_counter": {
       "name": "Checkout Counter",
@@ -616,7 +728,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "counter",
+      "color": "#4a4458"
     },
     "display_case": {
       "name": "Display Case",
@@ -629,7 +743,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "case",
+      "color": "#bfe0ea"
     },
     "bar_booth": {
       "name": "Bar Booth",
@@ -642,7 +758,9 @@
       "footprint": [
         2,
         1
-      ]
+      ],
+      "shape": "booth",
+      "color": "#7a3a3a"
     },
     "cafe_table": {
       "name": "Caf\u00e9 Table",
@@ -651,7 +769,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/caf\u00e9_table.png",
-      "desc": "Wobbles unless you fold a napkin under it."
+      "desc": "Wobbles unless you fold a napkin under it.",
+      "shape": "table",
+      "color": "#3a3540"
     },
     "merch_rack": {
       "name": "Merch Rack",
@@ -660,7 +780,9 @@
       "vibe": 2,
       "tier": 1,
       "sprite": "assets/img/objects/decor/merch_rack.png",
-      "desc": "Tees, totes, and unsold dreams."
+      "desc": "Tees, totes, and unsold dreams.",
+      "shape": "rack",
+      "color": "#888e98"
     },
     "menu_board": {
       "name": "Menu Board",
@@ -669,7 +791,9 @@
       "vibe": 1,
       "tier": 1,
       "sprite": "assets/img/objects/decor/menu_board.png",
-      "desc": "Chalk wisdom. Today's special: vibes."
+      "desc": "Chalk wisdom. Today's special: vibes.",
+      "shape": "sign",
+      "color": "#2a2a2a"
     },
     "queen_bed": {
       "name": "Queen Bed",
@@ -683,7 +807,9 @@
       ],
       "sprite": "assets/img/objects/decor/queen_bed.png",
       "desc": "Where the touring dreams (and naps) happen.",
-      "room": "bedroom"
+      "room": "bedroom",
+      "shape": "bed",
+      "color": "#d8d2e0"
     }
   }
 }

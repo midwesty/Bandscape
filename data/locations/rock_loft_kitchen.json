@@ -18,8 +18,8 @@
       "interact": "enter",
       "to": "rock_loft",
       "spawn": {
-        "x": 8,
-        "y": 3
+        "x": 7,
+        "y": 2
       },
       "solid": true
     }

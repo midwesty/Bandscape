@@ -18,8 +18,8 @@
       "interact": "enter",
       "to": "apartment",
       "spawn": {
-        "x": 6,
-        "y": 3
+        "x": 4,
+        "y": 2
       },
       "solid": true
     }

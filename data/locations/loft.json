@@ -140,7 +140,7 @@
       "name": "Kitchen",
       "tile": {
         "x": 8,
-        "y": 3
+        "y": 0
       },
       "interact": "enter",
       "to": "loft_kitchen",
@@ -156,8 +156,8 @@
       "id": "loft_bath",
       "name": "Bathroom",
       "tile": {
-        "x": 1,
-        "y": 3
+        "x": 2,
+        "y": 0
       },
       "interact": "enter",
       "to": "loft_bath",
@@ -173,8 +173,8 @@
       "id": "loft_bed",
       "name": "Bedroom",
       "tile": {
-        "x": 8,
-        "y": 4
+        "x": 6,
+        "y": 0
       },
       "interact": "enter",
       "to": "loft_bed",
@@ -190,8 +190,8 @@
       "id": "loft_balcony",
       "name": "Balcony",
       "tile": {
-        "x": 1,
-        "y": 4
+        "x": 4,
+        "y": 0
       },
       "interact": "enter",
       "to": "loft_balcony",

@@ -174,8 +174,8 @@
       "id": "apartment_bath",
       "name": "Bathroom",
       "tile": {
-        "x": 6,
-        "y": 3
+        "x": 4,
+        "y": 0
       },
       "interact": "enter",
       "to": "apartment_bath",

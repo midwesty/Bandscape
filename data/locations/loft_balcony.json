@@ -18,8 +18,8 @@
       "interact": "enter",
       "to": "loft",
       "spawn": {
-        "x": 1,
-        "y": 4
+        "x": 4,
+        "y": 2
       },
       "solid": true
     }

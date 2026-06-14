@@ -129,8 +129,8 @@
       "id": "rock_loft_kitchen",
       "name": "Kitchen",
       "tile": {
-        "x": 8,
-        "y": 3
+        "x": 7,
+        "y": 0
       },
       "interact": "enter",
       "to": "rock_loft_kitchen",
@@ -146,8 +146,8 @@
       "id": "rock_loft_bath",
       "name": "Bathroom",
       "tile": {
-        "x": 1,
-        "y": 3
+        "x": 3,
+        "y": 0
       },
       "interact": "enter",
       "to": "rock_loft_bath",
@@ -163,8 +163,8 @@
       "id": "rock_loft_bed",
       "name": "Bedroom",
       "tile": {
-        "x": 8,
-        "y": 4
+        "x": 5,
+        "y": 0
       },
       "interact": "enter",
       "to": "rock_loft_bed",

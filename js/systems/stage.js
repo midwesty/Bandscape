@@ -684,27 +684,216 @@ function isoBox(x, y, w, h, height, top, lft, rgt) {   // a 3D box spanning a w�
   ctx.beginPath(); ctx.moveTo(up(N).x, up(N).y); ctx.lineTo(up(E).x, up(E).y); ctx.lineTo(up(S).x, up(S).y); ctx.lineTo(up(W).x, up(W).y); ctx.closePath(); ctx.fill();
   ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.stroke();
 }
-function drawDecorBox(o, cat, f) {              // multi-tile décor renders as a properly-sized box
-  const x = o.tile.x, y = o.tile.y;
-  const M = {
-    seating:    { h: 10, top: "#c07248", lft: "#9c5836", rgt: "#7e4529" },
-    kitchen:    { h: 20, top: "#cfd6dd", lft: "#9aa3ad", rgt: "#7c858f" },
-    tables:     { h: 9,  top: "#8a6a44", lft: "#6e5230", rgt: "#54401f" },
-    bath:       { h: 11, top: "#eaf2f6", lft: "#c4d2da", rgt: "#a8b8c2" },
-    commercial: { h: 16, top: "#4a4458", lft: "#3a3546", rgt: "#2e2a38" },
-  };
-  const m = M[cat] || { h: 12, top: C.purple, lft: "#6e54a0", rgt: "#523f78" };
-  isoBox(x, y, f.w, f.h, m.h, m.top, m.lft, m.rgt);
-  if (cat === "bath") { const c = toScreen(x + (f.w - 1) / 2, y + (f.h - 1) / 2); ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(c.x, c.y - m.h, 9 * f.w, 4.5, 0, 0, Math.PI * 2); ctx.fill(); }
+// ---- décor: per-item recognizable iso forms (Step 26.5 glow-up) ----
+// Each item declares a `shape` (form) + `color` in data/decor.json; these code
+// shapes are the fallback beneath any future drop-in PNG art (useSprites flag).
+function shade(hex, m) {                          // tint/shade a #rrggbb toward black/white
+  if (!hex || hex[0] !== "#" || hex.length < 7) return hex || "#888";
+  const n = parseInt(hex.slice(1), 16);
+  const c = (v) => Math.max(0, Math.min(255, Math.round(v * m)));
+  return "rgb(" + c((n >> 16) & 255) + "," + c((n >> 8) & 255) + "," + c(n & 255) + ")";
 }
+function body3d(o, f, h, col) {                   // solid iso box spanning the footprint
+  isoBox(o.tile.x, o.tile.y, f.w, f.h, h, col, shade(col, 0.78), shade(col, 0.6));
+}
+function slab(o, f, top) {                        // 4 corner pts of footprint raised by `top`
+  const a = toScreen(o.tile.x - 0.5, o.tile.y - 0.5);
+  const b = toScreen(o.tile.x + f.w - 0.5, o.tile.y - 0.5);
+  const c = toScreen(o.tile.x + f.w - 0.5, o.tile.y + f.h - 0.5);
+  const d = toScreen(o.tile.x - 0.5, o.tile.y + f.h - 0.5);
+  return { a, b, c, d, top };
+}
+
+function fCouch(o, cx, cy, col, f) {
+  body3d(o, f, 7, col);
+  cuboid(cx, cy - 7, f.w * 7 + 6, 5, 11, shade(col, 1.12), shade(col, 0.9), shade(col, 0.72));
+}
+function fChair(o, cx, cy, col, f) {
+  cuboid(cx, cy, 12, 6, 6, col, shade(col, 0.8), shade(col, 0.62));
+  cuboid(cx, cy - 6, 11, 4, 10, shade(col, 1.1), shade(col, 0.86), shade(col, 0.7));
+}
+function fBed(o, cx, cy, col, f) {
+  body3d(o, f, 6, col);
+  cuboid(cx, cy - 7, f.w * 6 + 4, 4, 8, shade(col, 0.7), shade(col, 0.55), shade(col, 0.44)); // headboard
+  const pc = toScreen(o.tile.x, o.tile.y);
+  ctx.fillStyle = "#f2eef8"; ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.ellipse(pc.x, pc.y - 8, 8, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+function fLamp(o, cx, cy, col, f) {
+  ctx.strokeStyle = C.line; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 26); ctx.stroke();
+  ctx.fillStyle = "#cfc8d6";
+  ctx.beginPath(); ctx.moveTo(cx - 9, cy - 26); ctx.lineTo(cx + 9, cy - 26);
+  ctx.lineTo(cx + 6, cy - 36); ctx.lineTo(cx - 6, cy - 36); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.stroke();
+}
+function fOrb(o, cx, cy, col, f) {
+  cuboid(cx, cy, 5, 3, 5, "#33303a", "#26242c", "#1c1a20");
+  ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.ellipse(cx, cy - 13, 7, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+function fStrip(o, cx, cy, col, f) {
+  ctx.fillStyle = col; ctx.strokeStyle = shade(col, 0.7); ctx.lineWidth = 2;
+  ctx.fillRect(cx - 13, cy - 26, 26, 9); ctx.strokeRect(cx - 13, cy - 26, 26, 9);
+  ctx.fillStyle = "#fff6d8";
+  [-9, -3, 3, 9].forEach((dx) => { ctx.beginPath(); ctx.arc(cx + dx, cy - 21, 1.6, 0, Math.PI * 2); ctx.fill(); });
+}
+function fFridge(o, cx, cy, col, f) {
+  cuboid(cx, cy, 11, 6, 30, col, shade(col, 0.8), shade(col, 0.62));
+  ctx.strokeStyle = shade(col, 0.55); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 11, cy - 12); ctx.lineTo(cx + 11, cy - 12); ctx.stroke();
+  ctx.fillStyle = "#7c858f"; ctx.fillRect(cx + 5, cy - 26, 2.5, 9); ctx.fillRect(cx + 5, cy - 9, 2.5, 6);
+}
+function fStove(o, cx, cy, col, f) {
+  cuboid(cx, cy, 13, 7, 16, col, shade(col, 0.8), shade(col, 0.62));
+  ctx.fillStyle = "#2a2730";
+  [[-5, -2], [5, 2]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.ellipse(cx + dx, cy - 16 + dy, 3.5, 2, 0, 0, Math.PI * 2); ctx.fill(); });
+  ctx.fillStyle = "#3a3540"; ctx.fillRect(cx - 6, cy - 10, 12, 5);
+}
+function fCounter(o, cx, cy, col, f) {
+  body3d(o, f, 14, col);
+}
+function fAppliance(o, cx, cy, col, f) {
+  cuboid(cx, cy, 11, 6, 11, col, shade(col, 0.8), shade(col, 0.62));
+  ctx.fillStyle = "#5a7a8a"; ctx.fillRect(cx - 7, cy - 9, 9, 6);
+  ctx.fillStyle = "#d8d2e0"; [cy - 8, cy - 5].forEach((yy) => { ctx.beginPath(); ctx.arc(cx + 6, yy, 1.2, 0, Math.PI * 2); ctx.fill(); });
+}
+function fTv(o, cx, cy, col, f) {
+  cuboid(cx, cy, 4, 3, 3, "#3a3540", "#2a2730", "#1f1c24");
+  ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  ctx.fillRect(cx - 13, cy - 26, 26, 18); ctx.strokeRect(cx - 13, cy - 26, 26, 18);
+  ctx.fillStyle = "#2d6ad6"; ctx.fillRect(cx - 11, cy - 24, 22, 14);
+  ctx.fillStyle = "rgba(255,255,255,0.12)";
+  ctx.beginPath(); ctx.moveTo(cx - 11, cy - 24); ctx.lineTo(cx - 2, cy - 24); ctx.lineTo(cx - 9, cy - 10); ctx.lineTo(cx - 11, cy - 10); ctx.closePath(); ctx.fill();
+}
+function fDeck(o, cx, cy, col, f) {
+  cuboid(cx, cy, 13, 7, 6, col, shade(col, 0.8), shade(col, 0.62));
+  ctx.fillStyle = "#1c1a20"; ctx.beginPath(); ctx.ellipse(cx - 4, cy - 7, 4, 2.4, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#d8d2e0"; ctx.beginPath(); ctx.arc(cx - 4, cy - 7, 0.8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#5a5560"; ctx.lineWidth = 1;
+  [cx + 2, cx + 5, cx + 8].forEach((xx) => { ctx.beginPath(); ctx.moveTo(xx, cy - 9); ctx.lineTo(xx, cy - 5); ctx.stroke(); });
+}
+function fToilet(o, cx, cy, col, f) {
+  cuboid(cx - 4, cy - 3, 5, 4, 14, col, shade(col, 0.82), shade(col, 0.66));   // tank behind
+  cuboid(cx, cy, 9, 6, 7, col, shade(col, 0.82), shade(col, 0.66));            // bowl
+  ctx.fillStyle = "#dfe6ec"; ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.ellipse(cx, cy - 7, 6, 3.2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+function fSink(o, cx, cy, col, f) {
+  cuboid(cx, cy, 4, 3, 13, shade(col, 0.9), shade(col, 0.75), shade(col, 0.6));
+  cuboid(cx, cy - 13, 9, 5, 4, col, shade(col, 0.85), shade(col, 0.7));
+  ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(cx, cy - 15, 5, 2.4, 0, 0, Math.PI * 2); ctx.fill();
+}
+function fTub(o, cx, cy, col, f) {
+  body3d(o, f, 9, col);
+  const c = toScreen(o.tile.x + (f.w - 1) / 2, o.tile.y + (f.h - 1) / 2);
+  ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(c.x, c.y - 9, 9 * f.w, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#cdb46a"; [[-12, 2], [12, 2]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(c.x + dx, c.y + dy, 2, 0, Math.PI * 2); ctx.fill(); });
+}
+function fShower(o, cx, cy, col, f) {
+  cuboid(cx, cy, 11, 6, 26, "rgba(190,224,234,0.32)", "rgba(150,195,212,0.30)", "rgba(120,165,185,0.30)");
+  ctx.fillStyle = "#9aa3ad"; ctx.beginPath(); ctx.arc(cx - 5, cy - 24, 2.5, 0, Math.PI * 2); ctx.fill();
+}
+function fRack(o, cx, cy, col, f) {
+  ctx.strokeStyle = shade(col, 0.7); ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx - 11, cy - 22); ctx.lineTo(cx + 11, cy - 22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - 11, cy); ctx.lineTo(cx - 11, cy - 22); ctx.moveTo(cx + 11, cy); ctx.lineTo(cx + 11, cy - 22); ctx.stroke();
+  const cc = ["#ff6b9b", "#4fc3f7", "#7CFC9B", "#ffd23f"];
+  [-8, -3, 2, 7].forEach((dx, i) => { ctx.fillStyle = cc[i % 4]; ctx.fillRect(cx + dx - 2, cy - 21, 4, 11); });
+}
+function fPlant(o, cx, cy, col, f) {
+  cuboid(cx, cy, 6, 4, 6, "#8a5a36", "#6e472a", "#543620");
+  ctx.fillStyle = col; ctx.strokeStyle = shade(col, 0.6); ctx.lineWidth = 1.2;
+  [[-5, -16, -0.5], [0, -20, 0], [5, -16, 0.5]].forEach(([dx, dy, rot]) => {
+    ctx.save(); ctx.translate(cx + dx, cy + dy); ctx.rotate(rot);
+    ctx.beginPath(); ctx.ellipse(0, 0, 4, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+  });
+}
+function fCactus(o, cx, cy, col, f) {
+  cuboid(cx, cy, 6, 4, 5, "#9a6a3a", "#7c5430", "#604124");
+  ctx.fillStyle = col; ctx.strokeStyle = shade(col, 0.6); ctx.lineWidth = 1.2;
+  [[-4, 12], [2, 16], [6, 10]].forEach(([dx, h]) => {
+    ctx.beginPath(); ctx.ellipse(cx + dx, cy - 5 - h * 0.5, 3, h * 0.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  });
+}
+function fRug(o, cx, cy, col, f) {
+  for (let i = 0; i < f.w; i++) for (let j = 0; j < f.h; j++) {
+    const c = toScreen(o.tile.x + i, o.tile.y + j); diamond(c.x, c.y, col, shade(col, 0.55));
+  }
+}
+function fArt(o, cx, cy, col, f) {
+  ctx.fillStyle = "#2a2433"; ctx.fillRect(cx - 11, cy - 30, 22, 24);
+  ctx.fillStyle = col; ctx.fillRect(cx - 9, cy - 28, 18, 20);
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 11, cy - 30, 22, 24);
+}
+function fMirror(o, cx, cy, col, f) {
+  ctx.fillStyle = "#9aa3ad"; ctx.fillRect(cx - 9, cy - 30, 18, 26);
+  const g = ctx.createLinearGradient(cx - 8, cy - 28, cx + 8, cy - 6);
+  g.addColorStop(0, "#dff0f6"); g.addColorStop(0.5, "#9fc3d6"); g.addColorStop(1, "#cfe6f0");
+  ctx.fillStyle = g; ctx.fillRect(cx - 7, cy - 28, 14, 22);
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 9, cy - 30, 18, 26);
+}
+function fClock(o, cx, cy, col, f) {
+  ctx.fillStyle = "#15131a"; ctx.beginPath(); ctx.arc(cx, cy - 20, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy - 20, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy - 26); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx + 5, cy - 20); ctx.stroke();
+}
+function fShelf(o, cx, cy, col, f) {
+  body3d(o, f, 26, col);
+  const cc = ["#ff6b9b", "#4fc3f7", "#7CFC9B", "#ffd23f", "#b388ff"];
+  [-10, -7, -4, -1].forEach((dx, i) => { ctx.fillStyle = cc[i % 5]; ctx.fillRect(cx + dx, cy - 23, 2.2, 6); });
+  ctx.strokeStyle = shade(col, 0.5); ctx.lineWidth = 1;
+  [9, 17].forEach((hh) => { ctx.beginPath(); ctx.moveTo(cx - 12, cy - hh); ctx.lineTo(cx, cy - hh + 6); ctx.stroke(); });
+}
+function fTable(o, cx, cy, col, f) {
+  const s = slab(o, f, 11);
+  const corners = [s.a, s.b, s.c, s.d];
+  ctx.strokeStyle = shade(col, 0.5); ctx.lineWidth = 2.5;
+  corners.forEach((p) => { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - s.top); ctx.stroke(); });
+  ctx.fillStyle = col;
+  ctx.beginPath(); ctx.moveTo(s.a.x, s.a.y - s.top); ctx.lineTo(s.b.x, s.b.y - s.top);
+  ctx.lineTo(s.c.x, s.c.y - s.top); ctx.lineTo(s.d.x, s.d.y - s.top); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.fillStyle = shade(col, 0.7);
+  ctx.beginPath(); ctx.moveTo(s.d.x, s.d.y - s.top); ctx.lineTo(s.c.x, s.c.y - s.top);
+  ctx.lineTo(s.c.x, s.c.y - s.top + 3); ctx.lineTo(s.d.x, s.d.y - s.top + 3); ctx.closePath(); ctx.fill();
+}
+function fCart(o, cx, cy, col, f) {
+  ctx.strokeStyle = shade(col, 0.55); ctx.lineWidth = 1.8; ctx.strokeRect(cx - 8, cy - 15, 16, 11);
+  ctx.beginPath(); ctx.moveTo(cx - 8, cy - 4); ctx.lineTo(cx - 6, cy); ctx.moveTo(cx + 8, cy - 4); ctx.lineTo(cx + 6, cy); ctx.stroke();
+  ctx.fillStyle = C.line; [[-5, 1], [5, 1]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, 2, 0, Math.PI * 2); ctx.fill(); });
+  ctx.strokeStyle = shade(col, 0.75); ctx.lineWidth = 0.8;
+  [-4, 0, 4].forEach((dx) => { ctx.beginPath(); ctx.moveTo(cx + dx, cy - 15); ctx.lineTo(cx + dx, cy - 4); ctx.stroke(); });
+}
+function fBooth(o, cx, cy, col, f) {
+  body3d(o, f, 6, col);
+  cuboid(cx, cy - 6, f.w * 7 + 4, 4, 13, shade(col, 1.1), shade(col, 0.85), shade(col, 0.68));
+}
+function fCase(o, cx, cy, col, f) {
+  isoBox(o.tile.x, o.tile.y, f.w, f.h, 16, "rgba(190,224,234,0.32)", "rgba(150,195,212,0.30)", "rgba(120,165,185,0.30)");
+  ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.fillRect(cx - 3, cy - 12, 2, 8);
+}
+function fSign(o, cx, cy, col, f) {
+  ctx.strokeStyle = "#3a3540"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 10); ctx.stroke();
+  ctx.fillStyle = col; ctx.fillRect(cx - 11, cy - 28, 22, 18);
+  ctx.strokeStyle = "#caa56b"; ctx.lineWidth = 1.5; ctx.strokeRect(cx - 11, cy - 28, 22, 18);
+  ctx.strokeStyle = "rgba(230,230,230,0.7)"; ctx.lineWidth = 1;
+  [-23, -19, -15].forEach((yy) => { ctx.beginPath(); ctx.moveTo(cx - 8, cy + yy); ctx.lineTo(cx + 6, cy + yy); ctx.stroke(); });
+}
+
+const DECOR_FORMS = {
+  couch: fCouch, chair: fChair, bed: fBed, lamp: fLamp, orb: fOrb, strip: fStrip,
+  fridge: fFridge, stove: fStove, counter: fCounter, appliance: fAppliance, tv: fTv, deck: fDeck,
+  toilet: fToilet, sink: fSink, tub: fTub, shower: fShower, rack: fRack, plant: fPlant,
+  cactus: fCactus, rug: fRug, art: fArt, mirror: fMirror, clock: fClock, shelf: fShelf,
+  table: fTable, cart: fCart, booth: fBooth, case: fCase, sign: fSign
+};
+
 function drawDecor(o, cx, cy) {
   const def = (DATA.decor && DATA.decor.items && DATA.decor.items[o.decorId]) || {};
-  const cat = def.category;
-  const _f = footOf(o);
-  if (_f.w > 1 || _f.h > 1) {                   // multi-tile -> proper iso box, then done
-    if (def.glow) { const g = def.glow, r = g.r || 30; ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.55; const gr = ctx.createRadialGradient(cx, cy - 16, 2, cx, cy - 16, r); gr.addColorStop(0, g.color); gr.addColorStop(1, "rgba(0,0,0,0)"); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(cx, cy - 16, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-    return drawDecorBox(o, cat, _f);
-  }
+  const f = footOf(o);
+  const col = def.color || "#9a7a4a";
   if (def.glow) {                              // real illumination: additive radial glow
     const g = def.glow, r = g.r || 30;
     ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.55;
@@ -713,65 +902,12 @@ function drawDecor(o, cx, cy) {
     ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, cy - 16, r, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
-  const lit = (def.glow && def.glow.color) || C.yellow;
-  switch (cat) {
-    case "seating":
-      cuboid(cx, cy, 18, 9, 9, "#c07248", "#9c5836", "#7e4529");
-      cuboid(cx - 6, cy - 3, 12, 6, 9, "#d4895f", "#ad6a44", "#8a5436"); break;
-    case "lighting":
-      ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 20); ctx.stroke();
-      ctx.fillStyle = lit; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy - 26, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
-    case "kitchen":
-      cuboid(cx, cy, 14, 7, 22, "#cfd6dd", "#9aa3ad", "#7c858f");
-      ctx.fillStyle = "#5a626b"; ctx.fillRect(cx + 5, cy - 18, 2, 12); break;
-    case "bath":
-      cuboid(cx, cy, 13, 7, 11, "#eaf2f6", "#c4d2da", "#a8b8c2");
-      ctx.fillStyle = "#bfe3ef"; ctx.beginPath(); ctx.ellipse(cx - 3, cy - 9, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill(); break;
-    case "electronics":
-      cuboid(cx, cy, 16, 8, 12, "#2b2533", "#211b29", "#1a1521");
-      ctx.fillStyle = C.blue; ctx.fillRect(cx - 9, cy - 20, 18, 9); break;
-    case "wall":
-      cuboid(cx, cy, 12, 5, 16, "#33293f", "#281f33", "#201929");
-      ctx.fillStyle = lit; ctx.fillRect(cx - 8, cy - 22, 16, 12);
-      ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 8, cy - 22, 16, 12); break;
-    case "plants":
-      cuboid(cx, cy, 7, 4, 7, "#7a5a36", "#5e4528", "#4a361f");
-      ctx.fillStyle = C.green; ctx.strokeStyle = C.line; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(cx, cy - 17, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); break;
-    case "floor":
-      diamond(cx, cy, "#8a3a5c", "#5f2540"); break;
-    case "tables": {
-      ctx.strokeStyle = C.line; ctx.lineWidth = 2;
-      [-10, 10].forEach((dx) => { ctx.beginPath(); ctx.moveTo(cx + dx, cy + 2); ctx.lineTo(cx + dx, cy - 7); ctx.stroke(); });
-      cuboid(cx, cy - 7, 13, 5, 3, "#8a6a44", "#6e5230", "#54401f");
-      break;
-    }
-    case "commercial": {
-      const id = o.decorId || "";
-      if (id === "shopping_cart") {
-        ctx.strokeStyle = C.line; ctx.lineWidth = 1.6;
-        ctx.strokeRect(cx - 8, cy - 15, 16, 11);
-        ctx.beginPath(); ctx.moveTo(cx - 8, cy - 4); ctx.lineTo(cx - 6, cy); ctx.moveTo(cx + 8, cy - 4); ctx.lineTo(cx + 6, cy); ctx.stroke();
-        ctx.fillStyle = C.line; [[-5, 1], [5, 1]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, 2, 0, Math.PI * 2); ctx.fill(); });
-      } else if (id === "bar_booth") {
-        cuboid(cx, cy, 16, 8, 6, "#5e3a3a", "#4a2d2d", "#3a2222");
-        cuboid(cx, cy - 6, 16, 4, 12, "#6e4444", "#563434", "#432828");
-      } else if (id === "display_case") {
-        cuboid(cx, cy, 12, 6, 15, "rgba(180,220,235,0.55)", "rgba(140,180,200,0.5)", "rgba(110,150,170,0.5)");
-      } else if (id === "merch_rack") {
-        ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - 12, cy - 20); ctx.lineTo(cx + 12, cy - 20); ctx.stroke();
-        const cc = [C.pink, C.blue, C.green, C.yellow];
-        [-8, -3, 2, 7].forEach((dx, i) => { ctx.fillStyle = cc[i % 4]; ctx.fillRect(cx + dx - 2, cy - 19, 4, 12); });
-      } else {
-        cuboid(cx, cy, 15, 6, 18, "#4a4458", "#3a3546", "#2e2a38");
-        ctx.strokeStyle = C.line; ctx.lineWidth = 1; [6, 12].forEach((h) => { ctx.beginPath(); ctx.moveTo(cx - 15, cy - h); ctx.lineTo(cx + 15, cy - h); ctx.stroke(); });
-      }
-      break;
-    }
-    default:
-      cuboid(cx, cy, 14, 7, 12, C.purple, "#6e54a0", "#523f78");
-  }
+  const fn = DECOR_FORMS[def.shape];
+  if (fn) return fn(o, cx, cy, col, f);
+  if (f.w > 1 || f.h > 1) return body3d(o, f, 12, col);
+  cuboid(cx, cy, 13, 6, 12, col, shade(col, 0.8), shade(col, 0.62));
 }
+
 function cuboid(cx, cy, fw, fh, hgt, top, lft, rgt) {
   ctx.beginPath(); ctx.moveTo(cx - fw, cy); ctx.lineTo(cx, cy + fh);
   ctx.lineTo(cx, cy + fh - hgt); ctx.lineTo(cx - fw, cy - hgt); ctx.closePath();
@@ -875,12 +1011,17 @@ function stageShape(cx, cy) {
 // short, floor-level threshold — never occludes furniture behind it
 function doorway(cx, cy, label) {
   label = String(label || "OUT").toUpperCase().slice(0, 7);
-  diamond(cx, cy, "#191324", C.yellow);
-  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - 14, cy - 16, 28, 16);
-  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(cx - 14, cy - 16, 28, 16);
+  // faint floor threshold (not a solid trapdoor)
+  diamond(cx, cy, "rgba(255,210,63,0.10)", "rgba(255,210,63,0.42)");
+  // standing vertical doorframe — reads as a door set into the wall
+  const fw = 13, fh = 32;
+  ctx.fillStyle = "#0c0812"; ctx.fillRect(cx - fw, cy - fh, fw * 2, fh);
+  ctx.fillStyle = "#15101c"; ctx.fillRect(cx - fw + 3, cy - fh + 3, fw * 2 - 6, fh - 5);
+  ctx.strokeStyle = C.yellow; ctx.lineWidth = 2.5; ctx.strokeRect(cx - fw, cy - fh, fw * 2, fh);
+  // label above the frame
   ctx.fillStyle = C.yellow; ctx.textAlign = "center";
-  ctx.font = `700 ${label.length > 5 ? 6 : 8}px 'Arial Narrow', sans-serif`;
-  ctx.fillText(label, cx, cy - 5); ctx.textAlign = "left";
+  ctx.font = `700 ${label.length > 5 ? 7 : 9}px 'Arial Narrow', sans-serif`;
+  ctx.fillText(label, cx, cy - fh - 3); ctx.textAlign = "left";
 }
 function outlineObject(cx, cy) {
   ctx.strokeStyle = C.green; ctx.lineWidth = 2;
