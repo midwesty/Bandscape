@@ -215,6 +215,31 @@
         "health": 2
       },
       "toast": "A hot meal. You feel human again."
+    },
+    "fresh": {
+      "name": "Fresh",
+      "kind": "buff",
+      "icon": "plus",
+      "durationHours": 6,
+      "perHour": {},
+      "onApply": {
+        "mood": 4,
+        "health": 2
+      },
+      "showDrawMult": 1.08,
+      "toast": "Clean, dry, and presentable. A novelty."
+    },
+    "primped": {
+      "name": "Primped",
+      "kind": "buff",
+      "icon": "star",
+      "durationHours": 3,
+      "perHour": {},
+      "onApply": {
+        "mood": 2
+      },
+      "showDrawMult": 1.12,
+      "toast": "Looking sharp."
     }
   }
 }

@@ -128,6 +128,14 @@ export function closeShow() {
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 
+function showBuffMult() {          // Step 27.3: Fresh/Primped (any condition w/ showDrawMult) lift the crowd
+  const s = getState(); let m = 1;
+  for (const c of (s && s.conditions) || []) {
+    const d = DATA.conditions && DATA.conditions.conditions && DATA.conditions.conditions[c.id];
+    if (d && d.showDrawMult) m *= d.showDrawMult;
+  }
+  return m;
+}
 function estimate(setIds, band, venueId) {
   band = band || perfBand || activeBand() || {};
   const cfg = DATA.config.shows;
@@ -136,7 +144,7 @@ function estimate(setIds, band, venueId) {
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
   const vRec = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId]) || {};
   const vm = vRec.drawMult || 1; const pm = vRec.payMult || 1; const relMult = relationshipDraw(vRec.town);
-  const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm * relMult);
+  const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm * relMult * showBuffMult());
   const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
   const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
   const qf = 0.4 + 0.6 * (avgQ / 100);

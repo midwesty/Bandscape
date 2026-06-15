@@ -8,7 +8,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, statDef, homeVibeHere } from "../engine/state.js";
+import { getState, addStat, statDef, homeVibeHere, homeAmbient, addRapport, activeBand, bandMembers } from "../engine/state.js";
 import { emit } from "../engine/bus.js";
 import { tickConditionsHour, pruneConditions, addCondition } from "./conditions.js";
 import { toast } from "../ui/toast.js";
@@ -97,6 +97,8 @@ function onHour() {
                  || (s.stats.thirst ?? 99) <= (rules.starvingThirstAt ?? 0);
   if (starving) addStat("health", -(rules.healthLossPerHourWhenStarving ?? 6));
   else addStat("health", rules.healthGainPerHourWhenOk ?? 1);
+  const well = homeAmbient("wellness"); if (well > 0) addStat("health", Math.min(3, Math.round(well * 0.18)));   // Step 27.3 plants
+  const ambMood = homeAmbient("mood"); if (ambMood > 0) addStat("mood", Math.min(3, Math.round(ambMood * 0.18)));
 
   tickConditionsHour();
   pruneConditions();
@@ -132,6 +134,8 @@ export function sleep({ forced = false } = {}) {
 
   const homeVibe = homeVibeHere();              // Step 26.1: décor pays off when you rest at home
   if (homeVibe > 0 && !forced) { addStat("mood", Math.min(12, Math.round(homeVibe * 0.4))); addStat("health", Math.min(6, Math.round(homeVibe * 0.2))); }
+  const rest = homeAmbient("rest"); if (rest > 0 && !forced) { addStat("mood", Math.min(8, Math.round(rest * 0.4))); addStat("health", Math.min(4, Math.round(rest * 0.2))); }  // Step 27.3
+  const social = homeAmbient("social"); if (social > 0 && !forced) { const ab = activeBand(); if (ab) for (const m of bandMembers(ab.id)) addRapport(m.id, Math.min(3, Math.round(social * 0.25))); }  // your place is the hang
 
   emit("day:advanced", { day: s.time.day, forced });
   emit("renderAll");

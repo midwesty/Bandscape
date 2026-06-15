@@ -27,6 +27,7 @@ import { playWorldSfx } from "./worldaudio.js";
 import { bookedCommitments, currentDay, currentSlot } from "./calendar.js";
 import { openDialogue } from "./dialogue.js";
 import { useFridge, cookMeal, makeCoffee, microwaveFood, useBeerFridge } from "./kitchen.js";
+import { shower, soak, primp, drinkWater, restSeat, useToilet } from "./rooms.js";
 
 const C = {
   floorA: "#221a2b", floorB: "#1c1626", floorEdge: "#3a2f49",
@@ -186,6 +187,7 @@ function nearestApproachTo(obj) {           // closest free tile beside ANY foot
   }
   return cands.sort((a, b) => a.d - b.d)[0] || null;
 }
+function decorUse(o) { return (o && o.decorId && DATA.decor && DATA.decor.items && DATA.decor.items[o.decorId] && DATA.decor.items[o.decorId].use) || null; }
 function speedMult() {           // Step 27.0: Caffeinated (or any condition w/ speedMult) speeds you up
   const s = getState();
   let m = 1;
@@ -367,7 +369,7 @@ function handleBus(obj) {
 
 // ---- interactions ----
 function interact(obj) {
-  const kind = obj.interact || (obj.to ? "exit" : null);
+  const kind = obj.interact || decorUse(obj) || (obj.to ? "exit" : null);
   switch (kind) {
     case "sleep":
       if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep();
@@ -392,6 +394,24 @@ function interact(obj) {
       break;
     case "beerfridge":
       useBeerFridge(obj.containerId || "minifridge");
+      break;
+    case "shower":
+      shower();
+      break;
+    case "soak":
+      soak();
+      break;
+    case "primp":
+      primp();
+      break;
+    case "drink":
+      drinkWater();
+      break;
+    case "rest":
+      restSeat();
+      break;
+    case "toilet":
+      useToilet();
       break;
     case "pickup":
       pickUpFloorItem(obj);

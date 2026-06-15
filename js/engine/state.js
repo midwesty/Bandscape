@@ -375,6 +375,21 @@ export function homeVibeHere() {        // Vibe of the owned/rented place you're
   const here = controlledProperties().find((p) => p.location === s.location);
   return here ? propVibe(here.location) : 0;
 }
+function propertyContaining(loc) {      // Step 27.3: the controlled property whose main scene OR any room is `loc`
+  return controlledProperties().find((p) => p.location === loc || Object.values(p.rooms || {}).includes(loc)) || null;
+}
+export function homeAmbient(tag) {      // Step 27.3: sum a décor ambient tag across the WHOLE property (any room), property-wide
+  const s = getState();
+  const here = propertyContaining(s.location); if (!here) return 0;
+  const decor = DATA.decor && DATA.decor.items; if (!decor) return 0;
+  const scenes = [here.location, ...Object.values(here.rooms || {})];
+  let sum = 0;
+  for (const loc of scenes) {
+    const arr = (s.placedObjects && s.placedObjects[loc]) || (DATA.locations[loc] && DATA.locations[loc].objects) || [];
+    for (const o of arr) { const dd = o && o.decorId && decor[o.decorId]; if (dd && dd.ambient && dd.ambient.tag === tag) sum += dd.ambient.amount || 0; }
+  }
+  return sum;
+}
 export function npcPerk(id) { const n = npcRoster().find((x) => x.id === id); return n ? n.perk || null : null; }
 export function addContact(c) {
   if (!c || !c.id) return false;

@@ -38,7 +38,12 @@
         1
       ],
       "shape": "bed",
-      "color": "#8a6a8a"
+      "color": "#8a6a8a",
+      "use": "sleep",
+      "ambient": {
+        "tag": "rest",
+        "amount": 2
+      }
     },
     "beanbag": {
       "name": "Beanbag Chair",
@@ -49,7 +54,8 @@
       "sprite": "assets/img/objects/decor/beanbag.png",
       "desc": "Swallows you whole. In a good way.",
       "shape": "chair",
-      "color": "#c0506a"
+      "color": "#c0506a",
+      "use": "rest"
     },
     "papasan": {
       "name": "Papasan Chair",
@@ -60,7 +66,8 @@
       "sprite": "assets/img/objects/decor/papasan.png",
       "desc": "The bowl chair. Peak dorm luxury.",
       "shape": "chair",
-      "color": "#9a7a4a"
+      "color": "#9a7a4a",
+      "use": "rest"
     },
     "recliner": {
       "name": "Worn Recliner",
@@ -71,7 +78,8 @@
       "sprite": "assets/img/objects/decor/recliner.png",
       "desc": "Reclines into another dimension.",
       "shape": "chair",
-      "color": "#8a5a3a"
+      "color": "#8a5a3a",
+      "use": "rest"
     },
     "leather_sofa": {
       "name": "Leather Sofa",
@@ -86,7 +94,12 @@
         1
       ],
       "shape": "couch",
-      "color": "#7a4a32"
+      "color": "#7a4a32",
+      "use": "rest",
+      "ambient": {
+        "tag": "social",
+        "amount": 2
+      }
     },
     "sectional": {
       "name": "Modular Sectional",
@@ -101,7 +114,12 @@
         2
       ],
       "shape": "couch",
-      "color": "#6a6472"
+      "color": "#6a6472",
+      "use": "rest",
+      "ambient": {
+        "tag": "social",
+        "amount": 3
+      }
     },
     "lava_lamp": {
       "name": "Lava Lamp",
@@ -116,7 +134,11 @@
         "r": 34
       },
       "shape": "orb",
-      "color": "#ff7a3d"
+      "color": "#ff7a3d",
+      "ambient": {
+        "tag": "mood",
+        "amount": 2
+      }
     },
     "string_lights": {
       "name": "String Lights",
@@ -131,7 +153,11 @@
         "r": 40
       },
       "shape": "strip",
-      "color": "#ffd98a"
+      "color": "#ffd98a",
+      "ambient": {
+        "tag": "rest",
+        "amount": 1
+      }
     },
     "salt_lamp": {
       "name": "Salt Lamp",
@@ -146,7 +172,11 @@
         "r": 30
       },
       "shape": "orb",
-      "color": "#ff9a8a"
+      "color": "#ff9a8a",
+      "ambient": {
+        "tag": "rest",
+        "amount": 2
+      }
     },
     "floor_lamp": {
       "name": "Arc Floor Lamp",
@@ -161,7 +191,11 @@
         "r": 36
       },
       "shape": "lamp",
-      "color": "#ffe6a0"
+      "color": "#ffe6a0",
+      "ambient": {
+        "tag": "mood",
+        "amount": 1
+      }
     },
     "neon_sign": {
       "name": "Neon Sign",
@@ -176,7 +210,11 @@
         "r": 46
       },
       "shape": "strip",
-      "color": "#ff5ea8"
+      "color": "#ff5ea8",
+      "ambient": {
+        "tag": "mood",
+        "amount": 2
+      }
     },
     "disco_ball": {
       "name": "Disco Ball",
@@ -191,7 +229,11 @@
         "r": 48
       },
       "shape": "orb",
-      "color": "#cfe8ff"
+      "color": "#cfe8ff",
+      "ambient": {
+        "tag": "mood",
+        "amount": 2
+      }
     },
     "toaster_oven": {
       "name": "Toaster Oven",
@@ -291,7 +333,8 @@
       "desc": "Non-negotiable. Truly essential.",
       "room": "bath",
       "shape": "toilet",
-      "color": "#eef2f6"
+      "color": "#eef2f6",
+      "use": "toilet"
     },
     "pedestal_sink": {
       "name": "Pedestal Sink",
@@ -303,7 +346,8 @@
       "desc": "Porcelain. A touch fancy.",
       "room": "bath",
       "shape": "sink",
-      "color": "#eef2f6"
+      "color": "#eef2f6",
+      "use": "drink"
     },
     "vanity_mirror": {
       "name": "Vanity Mirror",
@@ -315,7 +359,8 @@
       "desc": "Lit edges. Rockstar selfies.",
       "room": "bath",
       "shape": "mirror",
-      "color": "#cfe6f0"
+      "color": "#cfe6f0",
+      "use": "primp"
     },
     "shower_stall": {
       "name": "Glass Shower",
@@ -327,7 +372,8 @@
       "desc": "Hot water, finally reliable.",
       "room": "bath",
       "shape": "shower",
-      "color": "#bfe0ea"
+      "color": "#bfe0ea",
+      "use": "shower"
     },
     "clawfoot_tub": {
       "name": "Clawfoot Tub",
@@ -343,7 +389,8 @@
       ],
       "room": "bath",
       "shape": "tub",
-      "color": "#eef2f6"
+      "color": "#eef2f6",
+      "use": "soak"
     },
     "vintage_radio": {
       "name": "Vintage Radio",
@@ -420,7 +467,11 @@
       "sprite": "assets/img/objects/decor/band_poster.png",
       "desc": "Your heroes, watching you work.",
       "shape": "art",
-      "color": "#ff5ea8"
+      "color": "#ff5ea8",
+      "ambient": {
+        "tag": "mood",
+        "amount": 2
+      }
     },
     "wall_mirror": {
       "name": "Wall Mirror",
@@ -431,7 +482,8 @@
       "sprite": "assets/img/objects/decor/wall_mirror.png",
       "desc": "Doubles the room, doubles the vibe.",
       "shape": "mirror",
-      "color": "#cfe6f0"
+      "color": "#cfe6f0",
+      "use": "primp"
     },
     "neon_clock": {
       "name": "Neon Wall Clock",
@@ -457,7 +509,11 @@
       "sprite": "assets/img/objects/decor/tapestry.png",
       "desc": "Hides the wall damage. Adds mystery.",
       "shape": "art",
-      "color": "#c06a3a"
+      "color": "#c06a3a",
+      "ambient": {
+        "tag": "mood",
+        "amount": 1
+      }
     },
     "bookshelf": {
       "name": "Loaded Bookshelf",
@@ -468,7 +524,11 @@
       "sprite": "assets/img/objects/decor/bookshelf.png",
       "desc": "Looks smart. Occasionally read.",
       "shape": "shelf",
-      "color": "#8a6a44"
+      "color": "#8a6a44",
+      "ambient": {
+        "tag": "creativity",
+        "amount": 2
+      }
     },
     "framed_gold_record": {
       "name": "Framed Gold Record",
@@ -479,7 +539,11 @@
       "sprite": "assets/img/objects/decor/framed_gold_record.png",
       "desc": "The dream, on the wall.",
       "shape": "art",
-      "color": "#ffd23f"
+      "color": "#ffd23f",
+      "ambient": {
+        "tag": "creativity",
+        "amount": 1
+      }
     },
     "succulent_set": {
       "name": "Succulent Set",
@@ -490,7 +554,11 @@
       "sprite": "assets/img/objects/decor/succulent_set.png",
       "desc": "Nearly unkillable. Nearly.",
       "shape": "cactus",
-      "color": "#5aaa6a"
+      "color": "#5aaa6a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 1
+      }
     },
     "cactus_trio": {
       "name": "Cactus Trio",
@@ -501,7 +569,11 @@
       "sprite": "assets/img/objects/decor/cactus_trio.png",
       "desc": "Prickly little roommates.",
       "shape": "cactus",
-      "color": "#4a9a5a"
+      "color": "#4a9a5a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 2
+      }
     },
     "snake_plant": {
       "name": "Snake Plant",
@@ -512,7 +584,11 @@
       "sprite": "assets/img/objects/decor/snake_plant.png",
       "desc": "Cleans the air, asks for nothing.",
       "shape": "plant",
-      "color": "#3a7a4a"
+      "color": "#3a7a4a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 3
+      }
     },
     "hanging_fern": {
       "name": "Hanging Fern",
@@ -523,7 +599,11 @@
       "sprite": "assets/img/objects/decor/hanging_fern.png",
       "desc": "Cascading green from above.",
       "shape": "plant",
-      "color": "#4a9a5a"
+      "color": "#4a9a5a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 2
+      }
     },
     "monstera": {
       "name": "Monstera",
@@ -534,7 +614,11 @@
       "sprite": "assets/img/objects/decor/monstera.png",
       "desc": "The influencer plant. Big leaves, big vibe.",
       "shape": "plant",
-      "color": "#3a8a4a"
+      "color": "#3a8a4a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 3
+      }
     },
     "bonsai": {
       "name": "Bonsai",
@@ -545,7 +629,11 @@
       "sprite": "assets/img/objects/decor/bonsai.png",
       "desc": "Tiny tree, enormous calm.",
       "shape": "plant",
-      "color": "#4a8a3a"
+      "color": "#4a8a3a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 2
+      }
     },
     "vinyl_mat": {
       "name": "Vinyl Floor Mat",
@@ -567,7 +655,11 @@
       "sprite": "assets/img/objects/decor/runner_rug.png",
       "desc": "Ties the hallway together.",
       "shape": "rug",
-      "color": "#3a5a8a"
+      "color": "#3a5a8a",
+      "ambient": {
+        "tag": "rest",
+        "amount": 1
+      }
     },
     "shag_rug": {
       "name": "Shag Rug",
@@ -578,7 +670,11 @@
       "sprite": "assets/img/objects/decor/shag_rug.png",
       "desc": "Toes love it. Vacuum hates it.",
       "shape": "rug",
-      "color": "#caa56b"
+      "color": "#caa56b",
+      "ambient": {
+        "tag": "rest",
+        "amount": 2
+      }
     },
     "cowhide_rug": {
       "name": "Cowhide Rug",
@@ -600,7 +696,11 @@
       "sprite": "assets/img/objects/decor/persian_rug.png",
       "desc": "Hand-knotted history underfoot.",
       "shape": "rug",
-      "color": "#8a3a5c"
+      "color": "#8a3a5c",
+      "ambient": {
+        "tag": "rest",
+        "amount": 1
+      }
     },
     "tatami_mat": {
       "name": "Tatami Mat",
@@ -611,7 +711,11 @@
       "sprite": "assets/img/objects/decor/tatami_mat.png",
       "desc": "Calm, woven, intentional.",
       "shape": "rug",
-      "color": "#b8a060"
+      "color": "#b8a060",
+      "ambient": {
+        "tag": "rest",
+        "amount": 2
+      }
     },
     "coffee_table": {
       "name": "Coffee Table",
@@ -663,7 +767,11 @@
         1
       ],
       "shape": "table",
-      "color": "#7a5a36"
+      "color": "#7a5a36",
+      "ambient": {
+        "tag": "creativity",
+        "amount": 2
+      }
     },
     "console_table": {
       "name": "Console Table",
@@ -689,7 +797,11 @@
       "sprite": "assets/img/objects/decor/drafting_table.png",
       "desc": "Tilt it, light it, pretend you're an architect.",
       "shape": "table",
-      "color": "#5a5560"
+      "color": "#5a5560",
+      "ambient": {
+        "tag": "creativity",
+        "amount": 2
+      }
     },
     "shop_shelf": {
       "name": "Shop Shelving",
@@ -760,7 +872,11 @@
         1
       ],
       "shape": "booth",
-      "color": "#7a3a3a"
+      "color": "#7a3a3a",
+      "ambient": {
+        "tag": "social",
+        "amount": 2
+      }
     },
     "cafe_table": {
       "name": "Caf\u00e9 Table",
@@ -771,7 +887,11 @@
       "sprite": "assets/img/objects/decor/caf\u00e9_table.png",
       "desc": "Wobbles unless you fold a napkin under it.",
       "shape": "table",
-      "color": "#3a3540"
+      "color": "#3a3540",
+      "ambient": {
+        "tag": "social",
+        "amount": 1
+      }
     },
     "merch_rack": {
       "name": "Merch Rack",
@@ -809,7 +929,12 @@
       "desc": "Where the touring dreams (and naps) happen.",
       "room": "bedroom",
       "shape": "bed",
-      "color": "#d8d2e0"
+      "color": "#d8d2e0",
+      "use": "sleep",
+      "ambient": {
+        "tag": "rest",
+        "amount": 3
+      }
     }
   }
 }

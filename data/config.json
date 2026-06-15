@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.27.2 (world radio: bars/shops auto-play a lo-fi, popularity-weighted pick from your released tracks; hearing your own song pops a toast + small mood/fans bump, rate-limited; phone playback always overrides the radio, which resumes when you stop/finish/close the phone; new Settings toggles for World music (radio) and World sounds (ambient) \u2014 neither touches phone/DAW/loop playback)",
+  "version": "0.27.3 (functional rooms: shower/tub \u2192 Fresh buff, mirror \u2192 Primped (both now lift your show crowd via a new buff hook), sink \u2192 drink water, seating \u2192 sit & rest for energy, toilet \u2192 comfort, and bedroom beds are sleep spots (living-room beds kept for now). Typed property-wide ambient d\u00e9cor: plants \u2192 slower health drain, beds/soft lighting/rugs \u2192 better sleep, lighting/art \u2192 passive mood, social d\u00e9cor \u2192 your bandmates rapport rises. All data-driven via d\u00e9cor use/ambient + conditions.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
