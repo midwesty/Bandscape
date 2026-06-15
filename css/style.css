@@ -1198,3 +1198,15 @@ body:has(.modal-scrim) #log { display: none; }
 .strm-np-info small { color: var(--muted); }
 .strm-np-stop { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
   background: var(--bg); color: var(--text); cursor: pointer; }
+
+/* ===== Streamr v2 (Step 27.4): search, band-switcher, queue ===== */
+.strm-search { width: 100%; box-sizing: border-box; margin: 0 0 10px; padding: 8px 12px; font-size: 13px;
+  background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 999px; }
+.strm-search::placeholder { color: var(--muted); }
+.strm-bandpills { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+.strm-bandpill { padding: 5px 12px; font-size: 12px; background: var(--bg); color: var(--muted);
+  border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+.strm-bandpill.on { color: #0b0b0f; background: var(--orange, #ff8a3d); border-color: var(--orange, #ff8a3d); font-weight: 700; }
+.strm-playall-btn { color: var(--orange, #ff8a3d) !important; border-color: var(--orange, #ff8a3d) !important; }
+.strm-np-skip { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--bg); color: var(--text); cursor: pointer; }

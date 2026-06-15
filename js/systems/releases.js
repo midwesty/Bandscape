@@ -22,6 +22,7 @@ import { playSong, stopSong, isPlaying } from "./songplayer.js";
 let appEl = null, view = "list", draft = null, lastRenderedView = null;
 let lastFanView = null;
 let side = "fan", fanView = "discover", fanArtist = null, fanRelease = null, fanFilter = "recent", lastSide = null, playingInfo = null;
+let bandFilter = null, searchQ = "", queue = [], queueIdx = -1, queueArtist = "You";
 let pickerOpen = false, pickerQ = "";
 
 const CFG = () => Object.assign({ base: 60, fameFactor: 0.015, playerFameFactor: 0.01, decayDays: 12, floor: 0.04, fanConversion: 0.02, payoutPerStream: 0.05, launchBurst: 0.5 }, DATA.config.streams || {});
@@ -150,25 +151,63 @@ function nowPlayingBar() {
   if (!isPlaying() || !playingInfo) return "";
   return `<div class="strm-np"><div class="strm-np-eq">♪</div>
     <div class="strm-np-info"><strong>${esc(playingInfo.title)}</strong><small>${esc(playingInfo.artist)}</small></div>
-    <button class="strm-np-stop" id="strm-stop">■</button></div>`;
+    ${playingInfo.hasNext ? `<button class="strm-np-skip" id="strm-next" title="Next">\u23ED</button>` : ""}
+    <button class="strm-np-stop" id="strm-stop" title="Stop">■</button></div>`;
 }
-function bindNowPlaying() { const s = appEl.querySelector("#strm-stop"); if (s) s.addEventListener("click", () => { stopSong(); playingInfo = null; refresh(); }); }
+function bindNowPlaying() {
+  const s = appEl.querySelector("#strm-stop"); if (s) s.addEventListener("click", () => { queue = []; queueIdx = -1; stopSong(); playingInfo = null; refresh(); });
+  const n = appEl.querySelector("#strm-next"); if (n) n.addEventListener("click", () => advanceQueue());
+}
+function searchHTML() { return `<input class="strm-search" id="strm-search" placeholder="Search bands, releases, genres\u2026" value="${esc(searchQ)}">`; }
+function bindSearch() {
+  const si = appEl.querySelector("#strm-search"); if (!si) return;
+  si.addEventListener("input", () => { searchQ = si.value; refresh(); });
+  if (searchQ) { si.focus(); const v = si.value.length; try { si.setSelectionRange(v, v); } catch (e) {} }
+}
 
 function openArtist(id) { fanArtist = id; fanView = "artist"; refresh(); }
 function openRelease(id) { fanRelease = id; fanView = "release"; refresh(); }
-function playRelease(relId) { const rel = (getState().releases || []).find((r) => r.id === relId); if (!rel) return; playTrack((rel.songIds || [])[0], rel); }
-function playTrack(songId, rel) {
-  const sg = songById(songId);
-  if (!sg) { toast("That track isn't on your device.", "warn"); return; }
+function startQueue(songIds, startIdx, artistName) {
+  queue = (songIds || []).slice(); queueIdx = Math.max(0, startIdx || 0); queueArtist = artistName || "You";
+  if (!queue.length) { toast("Nothing to play yet.", "info"); return; }
+  playQueueAt(queueIdx);
+}
+function playQueueAt(i) {
+  queueIdx = i;
+  const sg = songById(queue[i]);
+  if (!sg) { advanceQueue(); return; }
   playSong(sg, { volume: 0.95 }).then((ok) => {
-    if (!ok) { toast("No recorded audio in that track yet — arrange it in the DAW.", "info"); playingInfo = null; }
-    else playingInfo = { title: sg.name || (rel && rel.title) || "Track", artist: (bandById(rel && rel.bandId) || {}).name || "You" };
+    if (!ok) {
+      if (queueIdx < queue.length - 1) { advanceQueue(); return; }
+      toast("No recorded audio in these tracks yet \u2014 arrange them in the DAW.", "info");
+      queue = []; queueIdx = -1; playingInfo = null;
+    } else {
+      playingInfo = { title: sg.name || "Track", artist: queueArtist, hasNext: queueIdx < queue.length - 1 };
+    }
     refresh();
   });
 }
+function advanceQueue() {
+  if (queueIdx >= 0 && queueIdx < queue.length - 1) playQueueAt(queueIdx + 1);
+  else { queue = []; queueIdx = -1; playingInfo = null; if (appEl && appEl.isConnected) refresh(); }
+}
+function playRelease(relId, startSongId) {
+  const rel = (getState().releases || []).find((r) => r.id === relId); if (!rel) return;
+  const ids = rel.songIds || [];
+  const start = startSongId ? Math.max(0, ids.indexOf(startSongId)) : 0;
+  startQueue(ids, start, (bandById(rel.bandId) || {}).name || "You");
+}
+function playArtist(artistId) {
+  const rels = yourReleasesFor(artistId).slice().sort((x, y) => (y.releasedDay || 0) - (x.releasedDay || 0));
+  const ids = []; rels.forEach((r) => (r.songIds || []).forEach((id) => ids.push(id)));
+  const a = artistMeta(artistId);
+  startQueue(ids, 0, (a && a.name) || "You");
+}
 
 function renderDiscover() {
-  const entries = chartEntries();
+  const q = searchQ.trim().toLowerCase();
+  let entries = chartEntries();
+  if (q) entries = entries.filter((e) => (e.title || "").toLowerCase().includes(q) || (e.artist || "").toLowerCase().includes(q) || (e.genre || "").toLowerCase().includes(q));
   const rows = entries.map((e, i) => `
     <div class="rel-row strm-row" data-artist="${esc(e.artistId)}" ${e.rel ? `data-rel="${esc(e.rel.id)}"` : ""}>
       <div class="strm-rank">${i + 1}</div>
@@ -183,14 +222,17 @@ function renderDiscover() {
   appEl.innerHTML = `
     <h2 class="app-title">STREAMR</h2>
     ${tabsHTML()}
+    ${searchHTML()}
     <div class="strm-filters">
       <button class="strm-filt ${fanFilter === "recent" ? "on" : ""}" data-filt="recent">Recent</button>
       <button class="strm-filt ${fanFilter === "popular" ? "on" : ""}" data-filt="popular">Popular</button>
+      ${entries.some((e) => e.yours && e.rel) ? `<button class="strm-filt strm-playall-btn" id="strm-shuffle">\u25B6 Play all yours</button>` : ""}
     </div>
-    <div class="rel-list">${rows || `<p class="muted" style="padding:10px">No music in the world yet. Release a track on the BAND tab.</p>`}</div>
+    <div class="rel-list">${rows || `<p class="muted" style="padding:10px">${q ? "No matches." : "No music in the world yet. Release a track on the BAND tab."}</p>`}</div>
     ${nowPlayingBar()}`;
-  bindTabs(); bindNowPlaying();
-  appEl.querySelectorAll(".strm-filt").forEach((b) => b.addEventListener("click", () => { fanFilter = b.dataset.filt; refresh(); }));
+  bindTabs(); bindNowPlaying(); bindSearch();
+  const sh = appEl.querySelector("#strm-shuffle"); if (sh) sh.addEventListener("click", () => { const ids = []; entries.filter((e) => e.yours && e.rel).forEach((e) => (e.rel.songIds || []).forEach((id) => ids.push(id))); startQueue(ids, 0, "Your releases"); });
+  appEl.querySelectorAll(".strm-filt[data-filt]").forEach((b) => b.addEventListener("click", () => { fanFilter = b.dataset.filt; refresh(); }));
   appEl.querySelectorAll("[data-play]").forEach((b) => b.addEventListener("click", (ev) => { ev.stopPropagation(); playRelease(b.dataset.play); }));
   appEl.querySelectorAll(".strm-link").forEach((a) => a.addEventListener("click", (ev) => { ev.stopPropagation(); openArtist(a.dataset.artist); }));
   appEl.querySelectorAll(".strm-row").forEach((r) => r.addEventListener("click", () => { if (r.dataset.rel) openRelease(r.dataset.rel); else openArtist(r.dataset.artist); }));
@@ -221,15 +263,18 @@ function renderArtist() {
         <button class="strm-play dim" disabled title="No preview">▶</button>
       </div>`).join("");
   }
+  const canPlayAll = a.yours && yourReleasesFor(a.id).some((r) => (r.songIds || []).length);
   appEl.innerHTML = `
     <div class="pr-bar"><button class="btn pr-mini" id="fan-back">‹ Back</button><span class="pr-name">${esc(a.name)}</span></div>
     <div class="strm-artist-head">
       <div class="strm-avatar">${esc((a.name || "?").slice(0, 1).toUpperCase())}</div>
       <div><strong>${esc(a.name)}</strong><div class="muted">${a.genre ? esc(a.genre) + " · " : ""}${fmt(total)} streams${a.yours ? " · your band" : ""}</div></div>
     </div>
+    ${canPlayAll ? `<button class="btn" id="strm-artplay" style="margin:2px 0 8px">\u25B6 Play all</button>` : ""}
     <div class="rel-list">${rows}</div>
     ${nowPlayingBar()}`;
   appEl.querySelector("#fan-back").addEventListener("click", () => { fanView = "discover"; refresh(); });
+  const ap = appEl.querySelector("#strm-artplay"); if (ap) ap.addEventListener("click", () => playArtist(a.id));
   appEl.querySelectorAll("[data-play]").forEach((b) => b.addEventListener("click", (ev) => { ev.stopPropagation(); playRelease(b.dataset.play); }));
   appEl.querySelectorAll(".strm-row[data-rel]").forEach((r) => r.addEventListener("click", () => openRelease(r.dataset.rel)));
   bindNowPlaying();
@@ -256,14 +301,18 @@ function renderRelease() {
     ${nowPlayingBar()}`;
   appEl.querySelector("#fan-back").addEventListener("click", () => { fanView = "discover"; refresh(); });
   appEl.querySelector("#strm-playall").addEventListener("click", () => playRelease(r.id));
-  appEl.querySelectorAll("[data-trk]").forEach((b) => b.addEventListener("click", () => playTrack(b.dataset.trk, r)));
+  appEl.querySelectorAll("[data-trk]").forEach((b) => b.addEventListener("click", () => playRelease(r.id, b.dataset.trk)));
   const art = appEl.querySelector(".strm-link[data-artist]"); if (art) art.addEventListener("click", () => openArtist(r.bandId));
   bindNowPlaying();
 }
 
 
 function renderList() {
-  const rel = getState().releases || [];
+  const all = getState().releases || [];
+  const bands = bandsAll();
+  const q = searchQ.trim().toLowerCase();
+  let rel = bandFilter ? all.filter((r) => r.bandId === bandFilter) : all;
+  if (q) rel = rel.filter((r) => (r.title || "").toLowerCase().includes(q) || ((bandById(r.bandId) || {}).name || "").toLowerCase().includes(q));
   const total = rel.reduce((a, r) => a + (r.streams || 0), 0);
   const rows = rel.map((r) => {
     const band = bandById(r.bandId);
@@ -279,14 +328,21 @@ function renderList() {
       </div>
     </div>`;
   }).join("");
+  const pills = bands.length > 1 ? `<div class="strm-bandpills">
+      <button class="strm-bandpill ${!bandFilter ? "on" : ""}" data-band="">All</button>
+      ${bands.map((b) => `<button class="strm-bandpill ${bandFilter === b.id ? "on" : ""}" data-band="${esc(b.id)}">${esc(b.name || "Unnamed")}</button>`).join("")}
+    </div>` : "";
   appEl.innerHTML = `
     <h2 class="app-title">STREAMR</h2>
     ${tabsHTML()}
-    <div class="rel-top"><div class="rel-total"><span>Total streams</span><strong>${fmt(total)}</strong></div>
+    ${pills}
+    ${searchHTML()}
+    <div class="rel-top"><div class="rel-total"><span>${bandFilter ? esc((bandById(bandFilter) || {}).name || "Band") : "Total"} streams</span><strong>${fmt(total)}</strong></div>
       <button class="btn" id="rel-new">+ New Release</button></div>
-    ${rel.length ? `<div class="rel-list">${rows}</div>` : `<div class="stub"><div class="stub-glyph">▷</div><p>No releases yet.</p><p class="muted">Finish a song in the DAW, then drop it here under one of your bands and watch the streams roll in.</p></div>`}`;
-  appEl.querySelector("#rel-new").addEventListener("click", () => { draft = { bandId: bandsAll()[0]?.id || null, songIds: [], title: "", cover: null }; view = "new"; renderStreamsApp(appEl); });
-  bindTabs();
+    ${rel.length ? `<div class="rel-list">${rows}</div>` : `<div class="stub"><div class="stub-glyph">▷</div><p>${q || bandFilter ? "No releases here." : "No releases yet."}</p>${q || bandFilter ? "" : `<p class="muted">Finish a song in the DAW, then drop it here under one of your bands and watch the streams roll in.</p>`}</div>`}`;
+  appEl.querySelector("#rel-new").addEventListener("click", () => { draft = { bandId: bandFilter || bandsAll()[0]?.id || null, songIds: [], title: "", cover: null }; view = "new"; renderStreamsApp(appEl); });
+  bindTabs(); bindSearch();
+  appEl.querySelectorAll(".strm-bandpill").forEach((b) => b.addEventListener("click", () => { bandFilter = b.dataset.band || null; refresh(); }));
   appEl.querySelectorAll("[data-burnrel]").forEach((b) => b.addEventListener("click", async () => {
     if (countItem("blank_tape") < 1) { toast("You need a blank tape — grab one at the pawn shop.", "warn"); return; }
     const res = await burnTape("release", b.dataset.burnrel);
@@ -454,5 +510,5 @@ function createRelease() {
 }
 
 // keep the now-playing bar in sync with the standalone player (Step 27.1)
-on("song:ended", ({ source }) => { if (source !== "phone") return; playingInfo = null; if (appEl && appEl.isConnected) refresh(); });
-on("song:stopped", ({ source }) => { if (source !== "phone") return; playingInfo = null; if (appEl && appEl.isConnected) refresh(); });
+on("song:ended", ({ source }) => { if (source !== "phone") return; if (queue.length && queueIdx >= 0 && queueIdx < queue.length - 1) { advanceQueue(); return; } queue = []; queueIdx = -1; playingInfo = null; if (appEl && appEl.isConnected) refresh(); });
+on("song:stopped", ({ source }) => { if (source !== "phone") return; queue = []; queueIdx = -1; playingInfo = null; if (appEl && appEl.isConnected) refresh(); });

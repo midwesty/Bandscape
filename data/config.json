@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.27.3 (functional rooms: shower/tub \u2192 Fresh buff, mirror \u2192 Primped (both now lift your show crowd via a new buff hook), sink \u2192 drink water, seating \u2192 sit & rest for energy, toilet \u2192 comfort, and bedroom beds are sleep spots (living-room beds kept for now). Typed property-wide ambient d\u00e9cor: plants \u2192 slower health drain, beds/soft lighting/rugs \u2192 better sleep, lighting/art \u2192 passive mood, social d\u00e9cor \u2192 your bandmates rapport rises. All data-driven via d\u00e9cor use/ambient + conditions.)",
+  "version": "0.27.4 (Streamr v2: BAND tab band-switcher \u2014 filter releases per band (fixes the stuck-on-one-band view) + default new releases to the band youre viewing; search on both FAN and BAND; playback is now a real queue \u2014 Play release / Play all / an artists whole catalog auto-advance track to track with a skip button, and tapping a track plays from there through the rest)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
