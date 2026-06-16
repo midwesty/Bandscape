@@ -1241,3 +1241,8 @@ body:has(.modal-scrim) #log { display: none; }
 .mp-lockreg strong { color: var(--text); }
 .mp-lockreg span { color: var(--muted); }
 .mp-lockreg.sub strong { color: var(--muted); font-weight: 600; }
+
+/* ===== Genre system (Step 30): band genre dropdowns ===== */
+.band-genre-sel { display: flex; gap: 8px; margin: 0 0 8px; }
+.band-gsel { flex: 1; padding: 7px 10px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px; }
+.band-gsel:disabled { opacity: .5; }

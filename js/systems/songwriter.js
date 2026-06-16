@@ -16,7 +16,7 @@ const SCALES = {
   major: [0, 2, 4, 5, 7, 9, 11], minor: [0, 2, 3, 5, 7, 8, 10],
   dorian: [0, 2, 3, 5, 7, 9, 10], mixolydian: [0, 2, 4, 5, 7, 9, 10]
 };
-const GENRE_FEEL = { punk: "minor", pop: "major", rock: "mixolydian", jazz: "dorian", folk: "major", metal: "minor", funk: "dorian", electronic: "minor", country: "major", blues: "minor" };
+const GENRE_FEEL = { punk: "minor", pop: "major", rock: "mixolydian", jazz: "dorian", folk: "major", metal: "minor", funk: "dorian", electronic: "minor", country: "major", blues: "minor", hiphop: "minor", soul: "dorian" };
 const PROGS = [[0, 3, 4, 3], [0, 4, 5, 3], [0, 5, 3, 4], [0, 0, 3, 4], [5, 3, 0, 4], [0, 4, 0, 4]]; // diatonic degrees
 const ROLE_INST = { guitar: "guitar", bass: "bass", drums: "drums", piano: "piano", vocals: null };
 

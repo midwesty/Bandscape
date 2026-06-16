@@ -19,7 +19,7 @@ import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 import { deviceFidelity, instrumentQuality } from "./gear.js";
 import { simulateSet, tierMult, memberStamina, playerStamina, playerEndurance, TIER_FLAVOR } from "./performance.js";
 import { addCondition } from "./conditions.js";
-import { bandTier, addBandRegionalFame, regionOfCity, checkMilestones } from "../engine/state.js";
+import { bandTier, addBandRegionalFame, regionOfCity, checkMilestones, mainGenre, sameGenre } from "../engine/state.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 let bookSource = "own", bookQuery = "", setlistModalOpen = false;
@@ -82,7 +82,7 @@ export function townRep(town) { const vs = (DATA.venues && DATA.venues.venues) |
 export function venueStanding(id) { const t = venueTier(id); return { name: t.name, rep: venueRepOf(id), payBonus: Math.round((t.pay || 0) * 100) }; }
 export function venueEligible(id) {
   const v = venueById(id); if (!v) return false; if (v.open) return true;
-  if (v.genreLock && v.genre) { const b = activeBand(); if (!b || String(b.genre || "").toLowerCase() !== String(v.genre).toLowerCase()) return false; } // hard genre gate (e.g. Pokeville saloon)
+  if (v.genreLock && v.genre) { const b = activeBand(); if (!b || !sameGenre(b.genre, v.genre)) return false; } // hard genre gate (e.g. Pokeville saloon)
   const s = getState(); const r = v.req || {};
   const rc = DATA.config.venueRep || {};
   if (townRep(v.town) >= (rc.unlockTownRep || 50)) return true;   // earned your way in
@@ -96,7 +96,7 @@ export function venueEligible(id) {
 export function venueReqText(id) {
   const v = venueById(id); if (!v) return ""; if (v.open) return "Open mic — any band with a demo can play.";
   const s = getState(); const r = v.req || {}; const p = [];
-  if (v.genreLock && v.genre) { const b = activeBand(); const ok = b && String(b.genre || "").toLowerCase() === String(v.genre).toLowerCase(); if (!ok) p.push(`${v.genre}-only stage (your act isn't ${v.genre})`); }
+  if (v.genreLock && v.genre) { const b = activeBand(); const ok = b && sameGenre(b.genre, v.genre); if (!ok) p.push(`${v.genre}-only stage (your act isn't ${v.genre})`); }
   if (r.minReleases) p.push(`${(s.releases || []).length}/${r.minReleases} releases`);
   if (r.minFans) p.push(`${s.stats.fans || 0}/${r.minFans} fans`);
   if (r.minFame) p.push(`${s.stats.fame || 0}/${r.minFame} fame`);
@@ -165,7 +165,7 @@ function estimateWithSim(setIds, band, venueId, roll) {
   const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm * relMult * showBuffMult());
   const songs = ids.map((id) => { const sg = songById(id); return { q: Math.max(0, songQuality(sg, band)), bars: (sg && sg.lengthBars) || null }; });
   const baseQ = songs.length ? Math.round(songs.reduce((a, b) => a + b.q, 0) / songs.length) : 0;
-  const sim = simulateSet({ songs, performers: buildPerformers(band), setGenre: band.genre, venuePref: vRec.preferredGenre, roll: !!roll });
+  const sim = simulateSet({ songs, performers: buildPerformers(band), setGenre: mainGenre(band.genre), venuePref: mainGenre(vRec.genre || vRec.preferredGenre), roll: !!roll });
   const tm = tierMult(sim.tier);
   const realizedQ = sim.realizedQ;
   const playedN = sim.collapsed ? sim.playedCount : ids.length;

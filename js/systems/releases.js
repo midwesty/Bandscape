@@ -10,7 +10,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, bandById, playerFame, splitRoyalty, ensureContracts, creditName, creditAffiliation, autoCredits, playerArtistName, PLAYER_ARTIST } from "../engine/state.js";
+import { getState, addStat, bandById, playerFame, splitRoyalty, ensureContracts, creditName, creditAffiliation, autoCredits, playerArtistName, PLAYER_ARTIST, mainGenreName } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -18,6 +18,7 @@ import { songQuality } from "./shows.js";
 import { countItem, takeItem } from "./inventory.js";
 import { burnTape } from "./tape.js";
 import { playSong, stopSong, isPlaying } from "./songplayer.js";
+import { ensureWorldBands, worldBands, worldBandById, materializeWorldSong } from "./worldmusic.js";
 
 let appEl = null, view = "list", draft = null, lastRenderedView = null;
 let lastFanView = null;
@@ -28,6 +29,13 @@ let pickerOpen = false, pickerQ = "";
 const CFG = () => Object.assign({ base: 60, fameFactor: 0.015, playerFameFactor: 0.01, decayDays: 12, floor: 0.04, fanConversion: 0.02, payoutPerStream: 0.05, launchBurst: 0.5 }, DATA.config.streams || {});
 const songsAll = () => getState().songs || [];
 const songById = (id) => songsAll().find((s) => s.id === id) || null;
+function resolveSong(id) { return songById(id) || materializeWorldSong(id); }
+function findReleaseAny(relId) {
+  const mine = (getState().releases || []).find((r) => r.id === relId);
+  if (mine) return { id: mine.id, songIds: mine.songIds || [], artist: (bandById(mine.bandId) || {}).name || "You" };
+  for (const b of worldBands()) { const rel = (b.releases || []).find((r) => r.id === relId); if (rel) return { id: rel.id, songIds: (rel.songs || []).map((x) => x.id), artist: b.name }; }
+  return null;
+}
 const bandsAll = () => getState().bands || [];
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -118,19 +126,21 @@ function rivalById(id) { return rivalsAll().find((r) => r.id === id) || null; }
 function yourReleasesFor(bandId) { return (getState().releases || []).filter((r) => r.bandId === bandId); }
 function artistMeta(id) {
   const b = bandById(id); if (b) return { id, name: b.name || "Unnamed", genre: b.genre || null, yours: true };
+  const wb = worldBandById(id); if (wb) return { id, name: wb.name, genre: mainGenreName(wb.genreMain), yours: false, world: true };
   const rv = rivalById(id); if (rv) return { id, name: rv.name, genre: rv.genre, yours: false };
   return null;
 }
 function coverHTML(rel, cls) { return rel && rel.cover ? `<img class="rel-cover ${cls || ""}" src="${rel.cover}" alt="">` : `<div class="rel-cover ${cls || ""} ph">▷</div>`; }
 
 function chartEntries() {
+  ensureWorldBands();
   const out = [];
   (getState().releases || []).forEach((r) => {
     const b = bandById(r.bandId);
     out.push({ artistId: r.bandId, artist: b ? (b.name || "Unnamed") : "You", genre: b && b.genre, yours: true, title: r.title, type: r.type, streams: r.streams || 0, recency: r.releasedDay || 0, rel: r });
   });
-  rivalsAll().forEach((a) => (a.releases || []).forEach((rel, i) => {
-    out.push({ artistId: a.id, artist: a.name, genre: a.genre, yours: false, title: rel.title, type: rel.type, streams: rel.streams || 0, recency: -1 - i, rel: null });
+  worldBands().forEach((b) => (b.releases || []).forEach((rel) => {
+    out.push({ artistId: b.id, artist: b.name, genre: mainGenreName(b.genreMain), yours: false, world: true, title: rel.title, type: rel.type, streams: rel.streams || 0, recency: (rel.releasedDay || 0) - 0.5, rel: { id: rel.id, songIds: (rel.songs || []).map((x) => x.id), world: true } });
   }));
   if (fanFilter === "popular") out.sort((a, b) => b.streams - a.streams);
   else out.sort((a, b) => (b.recency - a.recency) || (b.streams - a.streams));
@@ -174,7 +184,7 @@ function startQueue(songIds, startIdx, artistName) {
 }
 function playQueueAt(i) {
   queueIdx = i;
-  const sg = songById(queue[i]);
+  const sg = resolveSong(queue[i]);
   if (!sg) { advanceQueue(); return; }
   playSong(sg, { volume: 0.95 }).then((ok) => {
     if (!ok) {
@@ -192,14 +202,15 @@ function advanceQueue() {
   else { queue = []; queueIdx = -1; playingInfo = null; if (appEl && appEl.isConnected) refresh(); }
 }
 function playRelease(relId, startSongId) {
-  const rel = (getState().releases || []).find((r) => r.id === relId); if (!rel) return;
-  const ids = rel.songIds || [];
+  const info = findReleaseAny(relId); if (!info) return;
+  const ids = info.songIds || [];
   const start = startSongId ? Math.max(0, ids.indexOf(startSongId)) : 0;
-  startQueue(ids, start, (bandById(rel.bandId) || {}).name || "You");
+  startQueue(ids, start, info.artist || "You");
 }
 function playArtist(artistId) {
-  const rels = yourReleasesFor(artistId).slice().sort((x, y) => (y.releasedDay || 0) - (x.releasedDay || 0));
-  const ids = []; rels.forEach((r) => (r.songIds || []).forEach((id) => ids.push(id)));
+  const ids = []; const wb = worldBandById(artistId);
+  if (wb) { (wb.releases || []).forEach((r) => (r.songs || []).forEach((sg) => ids.push(sg.id))); }
+  else { yourReleasesFor(artistId).slice().sort((x, y) => (y.releasedDay || 0) - (x.releasedDay || 0)).forEach((r) => (r.songIds || []).forEach((id) => ids.push(id))); }
   const a = artistMeta(artistId);
   startQueue(ids, 0, (a && a.name) || "You");
 }
@@ -217,7 +228,7 @@ function renderDiscover() {
         <small class="strm-link" data-artist="${esc(e.artistId)}">${esc(e.artist)}${e.genre ? ` · ${esc(e.genre)}` : ""} · ${esc(e.type)}</small>
         <div class="rel-stats"><span>▷ ${fmt(e.streams)}</span>${e.yours ? `<span class="rel-trend">yours</span>` : ""}</div>
       </div>
-      ${e.yours ? `<button class="strm-play" data-play="${esc(e.rel.id)}">▶</button>` : `<button class="strm-play dim" disabled title="No preview">▶</button>`}
+      ${e.rel ? `<button class="strm-play" data-play="${esc(e.rel.id)}">▶</button>` : `<button class="strm-play dim" disabled title="No preview">▶</button>`}
     </div>`).join("");
   appEl.innerHTML = `
     <h2 class="app-title">STREAMR</h2>
@@ -253,17 +264,17 @@ function renderArtist() {
         <button class="strm-play" data-play="${esc(r.id)}">▶</button>
       </div>`).join("") : `<p class="muted" style="padding:10px">No releases yet — drop one from the BAND tab.</p>`;
   } else {
-    const rv = rivalById(a.id) || { releases: [] };
-    total = (rv.releases || []).reduce((s, r) => s + (r.streams || 0), 0);
-    rows = (rv.releases || []).map((r) => `
-      <div class="rel-row">
+    const wb = worldBandById(a.id) || { releases: [] };
+    total = (wb.releases || []).reduce((s, r) => s + (r.streams || 0), 0);
+    rows = (wb.releases || []).map((r) => `
+      <div class="rel-row strm-row" data-rel="${esc(r.id)}">
         <div class="rel-cover ph">▷</div>
-        <div class="rel-info"><strong>${esc(r.title)}</strong><small>${esc(r.type)}</small>
+        <div class="rel-info"><strong>${esc(r.title)}</strong><small>${esc(r.type)} · Q${r.quality || ""}</small>
           <div class="rel-stats"><span>▷ ${fmt(r.streams)}</span></div></div>
-        <button class="strm-play dim" disabled title="No preview">▶</button>
-      </div>`).join("");
+        <button class="strm-play" data-play="${esc(r.id)}">▶</button>
+      </div>`).join("") || `<p class="muted" style="padding:10px">No releases.</p>`;
   }
-  const canPlayAll = a.yours && yourReleasesFor(a.id).some((r) => (r.songIds || []).length);
+  const canPlayAll = (a.yours && yourReleasesFor(a.id).some((r) => (r.songIds || []).length)) || (!!a.world && ((worldBandById(a.id) || { releases: [] }).releases.length > 0));
   appEl.innerHTML = `
     <div class="pr-bar"><button class="btn pr-mini" id="fan-back">‹ Back</button><span class="pr-name">${esc(a.name)}</span></div>
     <div class="strm-artist-head">
@@ -281,10 +292,11 @@ function renderArtist() {
 }
 
 function renderRelease() {
-  const r = (getState().releases || []).find((x) => x.id === fanRelease);
+  let r = (getState().releases || []).find((x) => x.id === fanRelease); let world = false;
+  if (!r) { for (const b of worldBands()) { const rel = (b.releases || []).find((x) => x.id === fanRelease); if (rel) { r = { id: rel.id, title: rel.title, type: rel.type, streams: rel.streams, fans: rel.fans || 0, quality: rel.quality, bandId: b.id, songIds: (rel.songs || []).map((s) => s.id), world: true }; world = true; break; } } }
   if (!r) { fanView = "discover"; return renderDiscover(); }
-  const band = bandById(r.bandId);
-  const tracks = (r.songIds || []).map((id) => songById(id)).filter(Boolean);
+  const band = world ? worldBandById(r.bandId) : bandById(r.bandId);
+  const tracks = (r.songIds || []).map((id) => resolveSong(id)).filter(Boolean);
   const trows = tracks.map((sg, i) => `
     <div class="rel-row strm-trk"><div class="strm-rank">${i + 1}</div>
       <div class="rel-info"><strong>${esc(sg.name || "Untitled")}</strong></div>

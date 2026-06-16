@@ -22,7 +22,9 @@ const bufCache = new Map();
 let playing = false, schedTimer = null, startTime = 0, events = [], songDur = 0, schedIdx = 0, chains = [];
 let curId = null, curOpts = null, curSong = null, curSecPerStep = 0.13, curSource = null;
 
-function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || null; }
+let _extPatternSrc = null;
+export function registerPatternSource(fn) { _extPatternSrc = fn; } // Step 31: lets world-band songs supply regenerated patterns without persisting them
+function patternById(id) { return (getState().patterns || []).find((p) => p.id === id) || (_extPatternSrc ? _extPatternSrc(id) : null) || null; }
 function clipBars(pat) { if (pat && pat.type === "audio") return Math.max(1, pat.bars || 2); return Math.max(1, Math.ceil((pat.length || 32) / 16)); }
 function blankFX() { return { eq: Array(10).fill(0), reverb: 0, lowpass: 20000, volume: 1, pan: 0, mute: false, solo: false }; }
 

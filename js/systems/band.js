@@ -17,7 +17,7 @@ import {
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
   ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
-  careerStanding
+  careerStanding, mainGenre, mainGenreName, genreList, subgenresOf
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -232,9 +232,10 @@ function renderBand(view) {
     ${picker(b)}
     <div class="band-head">
       <div><div class="band-name">${esc(b.name || "Untitled Band")}</div>
-        <div class="muted">${headcount} member${headcount === 1 ? "" : "s"}${b.playerIn ? " · you're in" : " · NPC band"} · ${esc(b.genre || "no genre")}</div></div>
+        <div class="muted">${headcount} member${headcount === 1 ? "" : "s"}${b.playerIn ? " · you're in" : " · NPC band"} · ${b.genre ? esc(mainGenreName(b.genre)) + (b.subgenre ? " · " + esc(b.subgenre) : "") : "no genre"}</div></div>
       <button class="btn band-mini" id="band-rename">Edit</button>
     </div>
+    ${genreSelectorHTML(b)}
     <div class="band-idstats">
       <div><span>Fans</span><strong>${b.fans || 0}</strong></div>
       <div><span>Renown</span><strong>${b.fame || 0}</strong></div>
@@ -262,6 +263,10 @@ function renderBand(view) {
 
   bindPicker(view, b);
   view.querySelector("#band-rename").addEventListener("click", () => editBand(b));
+  const gm = view.querySelector("#band-genre-main");
+  if (gm) gm.addEventListener("change", () => { b.genre = gm.value || null; const subs = subgenresOf(b.genre); if (b.subgenre && subs.indexOf(b.subgenre) < 0) b.subgenre = null; persist(); refresh(); });
+  const gs = view.querySelector("#band-genre-sub");
+  if (gs) gs.addEventListener("change", () => { b.subgenre = gs.value || null; persist(); refresh(); });
   const reh = view.querySelector("#band-rehearse"); if (reh) reh.addEventListener("click", rehearse);
   const sch = view.querySelector("#band-sched"); if (sch) sch.addEventListener("click", () => openScheduler("rehearse"));
   const bk = view.querySelector("#band-book"); if (bk) bk.addEventListener("click", bookShowFlow);
@@ -276,8 +281,20 @@ function renderBand(view) {
 }
 function editBand(b) {
   const nm = (prompt("Band name:", b.name || "") || "").trim(); if (nm) b.name = nm;
-  const g = (prompt("Genre (optional):", b.genre || "") || "").trim(); b.genre = g || b.genre || null;
   persist(); refresh();
+}
+function genreSelectorHTML(b) {
+  const cur = mainGenre(b.genre); const mains = genreList(); const subs = cur ? subgenresOf(cur) : [];
+  return `<div class="band-genre-sel">
+    <select class="band-gsel" id="band-genre-main">
+      <option value="" ${!cur ? "selected" : ""}>\u2014 genre \u2014</option>
+      ${mains.map((g) => `<option value="${g.id}" ${cur === g.id ? "selected" : ""}>${esc(g.name)}</option>`).join("")}
+    </select>
+    <select class="band-gsel" id="band-genre-sub" ${cur ? "" : "disabled"}>
+      <option value="">\u2014 style \u2014</option>
+      ${subs.map((sg) => `<option value="${esc(sg)}" ${b.subgenre === sg ? "selected" : ""}>${esc(sg)}</option>`).join("")}
+    </select>
+  </div>`;
 }
 function playerJoin(b, join) {
   b.playerIn = join;

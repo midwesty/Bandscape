@@ -812,3 +812,23 @@ export function checkMilestones(band) {
   for (const m of ms) { if (got[m.id]) continue; if (milestoneMet(m, band)) { got[m.id] = (s.time && s.time.day) || 1; applyMilestoneReward(m.reward, band); newly.push(m); } }
   return newly;
 }
+
+// ===================== Step 30: Genre taxonomy =====================
+// One canonical set of MAIN genres (logic reads only these) with sub-genres for
+// flavor. mainGenre() normalizes any loose tag (sub, main name, district tag,
+// legacy free-text) down to a main id so booking/fit/matching are reliable.
+let _genreRev = null;
+function genreRev() {
+  if (_genreRev) return _genreRev;
+  const g = (DATA.genres && DATA.genres.genres) || {};
+  if (!Object.keys(g).length) return {};
+  const m = {};
+  const add = (k, id) => { if (!k) return; const lk = String(k).toLowerCase().trim(); if (!(lk in m)) m[lk] = id; const st = lk.replace(/[^a-z0-9]/g, ""); if (st && !(st in m)) m[st] = id; };
+  for (const id in g) { add(id, id); add(g[id].name, id); (g[id].sub || []).forEach((s) => add(s, id)); }
+  _genreRev = m; return m;
+}
+export function mainGenre(tag) { if (!tag) return null; const m = genreRev(); const lk = String(tag).toLowerCase().trim(); return m[lk] || m[lk.replace(/[^a-z0-9]/g, "")] || null; }
+export function mainGenreName(id) { const g = (DATA.genres && DATA.genres.genres) || {}; const k = mainGenre(id) || id; return (g[k] && g[k].name) || (id || ""); }
+export function genreList() { const g = (DATA.genres && DATA.genres.genres) || {}; const order = (DATA.genres && DATA.genres.order) || Object.keys(g); return order.filter((id) => g[id]).map((id) => ({ id, name: g[id].name, sub: g[id].sub || [] })); }
+export function subgenresOf(id) { const k = mainGenre(id) || id; const g = (DATA.genres && DATA.genres.genres) || {}; return (g[k] && g[k].sub) || []; }
+export function sameGenre(a, b) { const ma = mainGenre(a), mb = mainGenre(b); return !!ma && ma === mb; }

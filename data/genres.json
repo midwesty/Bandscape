@@ -1,0 +1,14 @@
+{
+  "_comment": "Canonical genres. GAME LOGIC (venue gating, genre-fit, fan/scene matching, world-band generation) only ever looks at the MAIN genre id. Sub-genres are player-facing flavor so an act never feels shoehorned. Use mainGenre(tag) to normalize any loose tag (a sub name, a main name, a district tag, or legacy free-text) down to a main id. Add genres/subs freely; the dropdown + normalizer read this file.",
+  "order": ["rock", "metal", "pop", "hiphop", "electronic", "jazz", "soul", "country"],
+  "genres": {
+    "rock": { "name": "Rock", "sub": ["Punk", "Indie", "Grunge", "Garage Rock", "Classic Rock", "Post-Rock", "Jam", "Alt-Rock", "Emo"] },
+    "metal": { "name": "Metal", "sub": ["Heavy Metal", "Thrash", "Doom", "Black Metal", "Metalcore", "Sludge", "Nu-Metal"] },
+    "pop": { "name": "Pop", "sub": ["Synth-Pop", "Indie Pop", "Power Pop", "Dream Pop", "J-Pop", "Electropop", "Bubblegum"] },
+    "hiphop": { "name": "Hip-Hop", "sub": ["Rap", "Trap", "Boom-Bap", "Drill", "Lo-Fi Hip-Hop", "Conscious"] },
+    "electronic": { "name": "Electronic", "sub": ["House", "Techno", "Electro", "Ambient", "Drum & Bass", "Synthwave", "Noise"] },
+    "jazz": { "name": "Jazz", "sub": ["Bebop", "Swing", "Fusion", "Smooth Jazz", "Free Jazz", "Blues", "Ragtime"] },
+    "soul": { "name": "Funk & Soul", "sub": ["Funk", "Soul", "R&B", "Motown", "Neo-Soul", "Disco", "Latin"] },
+    "country": { "name": "Country", "sub": ["Outlaw Country", "Bluegrass", "Honky-Tonk", "Country Rock", "Americana", "Folk", "Traditional"] }
+  }
+}

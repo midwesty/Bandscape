@@ -34,6 +34,7 @@ const FILES = {
   devices:    "data/devices.json",
   venues:     "data/venues.json",
   regions:     "data/regions.json",
+  genres:      "data/genres.json",
   properties:  "data/properties.json",
   worldaudio:  "data/audio/world.json",
   decor:       "data/decor.json"
