@@ -17,6 +17,8 @@ import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
 import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 import { deviceFidelity, instrumentQuality } from "./gear.js";
+import { simulateSet, tierMult, memberStamina, playerStamina, playerEndurance, TIER_FLAVOR } from "./performance.js";
+import { addCondition } from "./conditions.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 let bookSource = "own", bookQuery = "", setlistModalOpen = false;
@@ -136,24 +138,42 @@ function showBuffMult() {          // Step 27.3: Fresh/Primped (any condition w/
   }
   return m;
 }
-function estimate(setIds, band, venueId) {
+// Build the list of performers (NPC members + the player) with their stamina pools.
+function buildPerformers(band) {
+  const performers = [];
+  const mem = band && band.id ? performingMembers(band.id) : [];
+  for (const m of mem) performers.push({ name: m.name, max: memberStamina(m), isPlayer: false });
+  if (band && band.playerIn) performers.push({ name: "You", max: playerStamina(), isPlayer: true });
+  if (!performers.length) performers.push({ name: "You", max: playerStamina(), isPlayer: true });
+  return performers;
+}
+
+// estimate, now Performance-Arc aware. roll=false -> deterministic projection for the
+// booking planner; roll=true -> actually gambles collapse rolls for the live show.
+function estimateWithSim(setIds, band, venueId, roll) {
   band = band || perfBand || activeBand() || {};
   const cfg = DATA.config.shows;
   const vId = venueId || perfVenueId;
+  const ids = [...setIds];
   const mem = band.id ? performingMembers(band.id) : [];
   const starPower = mem.reduce((a, m) => a + (m.fame || 0), 0) + (band.playerIn ? playerFame() : 0);
   const vRec = (DATA.venues && DATA.venues.venues && DATA.venues.venues[vId]) || {};
   const vm = vRec.drawMult || 1; const pm = vRec.payMult || 1; const relMult = relationshipDraw(vRec.town);
   const draw = Math.round(((cfg.baseAudience || 8) + (band.fame || 0) * (cfg.fameDrawFactor || 0.5) + starPower * (cfg.starDrawFactor || 0.4) + (band.chemistry || 0) / (cfg.chemDrawDiv || 20)) * vm * relMult * showBuffMult());
-  const qs = [...setIds].map((id) => songQuality(songById(id), band)).filter((n) => n >= 0);
-  const avgQ = qs.length ? qs.reduce((a, b) => a + b, 0) / qs.length : 0;
-  const qf = 0.4 + 0.6 * (avgQ / 100);
-  const lengthFactor = 1 + 0.15 * Math.max(0, setIds.size - 1);
-  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId) * pm * ownerPayMult(vId));
-  const fans = Math.max(0, Math.round(draw * (avgQ / 100) * 0.6));
-  const fameGain = Math.max(1, Math.round(2 + avgQ / 20 + draw * 0.1));
-  return { draw, avgQ: Math.round(avgQ), pay, fans, fameGain };
+  const songs = ids.map((id) => { const sg = songById(id); return { q: Math.max(0, songQuality(sg, band)), bars: (sg && sg.lengthBars) || null }; });
+  const baseQ = songs.length ? Math.round(songs.reduce((a, b) => a + b.q, 0) / songs.length) : 0;
+  const sim = simulateSet({ songs, performers: buildPerformers(band), setGenre: band.genre, venuePref: vRec.preferredGenre, roll: !!roll });
+  const tm = tierMult(sim.tier);
+  const realizedQ = sim.realizedQ;
+  const playedN = sim.collapsed ? sim.playedCount : ids.length;
+  const qf = 0.4 + 0.6 * (realizedQ / 100);
+  const lengthFactor = 1 + 0.15 * Math.max(0, playedN - 1);
+  const pay = Math.round(draw * (cfg.payPerHead || 2) * qf * lengthFactor * venueRepPayMult(vId) * pm * ownerPayMult(vId) * (tm.pay == null ? 1 : tm.pay));
+  const fans = Math.max(0, Math.round(draw * (realizedQ / 100) * 0.6 * (tm.fans == null ? 1 : tm.fans)));
+  const fameGain = Math.max(1, Math.round((2 + realizedQ / 20 + draw * 0.1) * (tm.fame == null ? 1 : tm.fame)));
+  return { draw, avgQ: realizedQ, baseQ, pay, fans, fameGain, sim, tier: sim.tier, repDelta: tm.rep };
 }
+function estimate(setIds, band, venueId) { return estimateWithSim(setIds, band, venueId, false); }
 function showBuzz(est) { return Math.max(1, Math.round(2 + (est.draw || 0) * 0.2 + Math.max(0, (est.avgQ || 0) - 50) * 0.04)); }
 
 function releaseOf(songId) { return (getState().releases || []).find((r) => (r.songIds || []).includes(songId)) || null; }
@@ -185,6 +205,27 @@ function setlistModalHTML() {
         ${rows}
       </div>
     </div></div>`;
+}
+
+function plannerHTML(est) {
+  const sim = est && est.sim; if (!sim) return "";
+  const n = sim.perSong.length;
+  const pips = sim.perSong.map((e) => {
+    const cls = e.state === "collapse" ? "pp-collapse" : e.state === "risk" ? "pp-risk" : e.state === "sloppy" ? "pp-sloppy" : "pp-strong";
+    const lbl = e.state === "collapse" ? "\u2715" : e.state === "risk" ? `${e.collapseChance}%` : (e.i + 1);
+    return `<span class="set-pip ${cls}" title="Song ${e.i + 1}: ${e.state}${e.state === "risk" ? ` \u00b7 ${e.collapseChance}% collapse` : ""}">${lbl}</span>`;
+  }).join("");
+  const firstRisk = sim.perSong.find((e) => e.state === "risk" || e.state === "collapse");
+  let warn;
+  if (sim.collapsed) warn = `<div class="set-warn bad">\u26a0 At your current energy you'll likely collapse around song ${sim.collapsedAt + 1}. Trim the set or rest up first.</div>`;
+  else if (firstRisk) warn = `<div class="set-warn warn">\u26a0 Danger zone from song ${firstRisk.i + 1} (${firstRisk.collapseChance}% collapse). Pull it off for a bigger payoff.</div>`;
+  else if (n > sim.safeLimit) warn = `<div class="set-warn warn">Songs past ${sim.safeLimit} get sloppy as you tire.</div>`;
+  else warn = `<div class="set-warn ok">Safe set \u2014 you've got gas for all ${n}.</div>`;
+  return `<div class="set-planner">
+    <div class="set-planner-top"><span>Set plan · endurance ${Math.round(playerEndurance())}</span><span class="tier-badge tier-${(est.tier || "").toLowerCase()}">${est.tier || ""}</span></div>
+    <div class="set-pips">${pips || `<span class="muted">Pick songs to see the plan.</span>`}</div>
+    ${warn}
+  </div>`;
 }
 
 function renderBooking(selected) {
@@ -221,6 +262,7 @@ function renderBooking(selected) {
           <div><span>Est. take</span><strong class="good">$${est.pay}</strong></div>
           <div><span>Band fame / fans</span><strong>+${est.fameGain} / +${est.fans}</strong></div>
         </div>
+        ${plannerHTML(est)}
         <button class="btn show-go" id="show-go" ${selected.size ? "" : "disabled"}>▶ PLAY THE SHOW (${selected.size})</button>
       </div>
     </div>
@@ -273,6 +315,7 @@ function updateBookEst(selected) {
     <div><span>Set quality</span><strong>${est.avgQ}</strong></div>
     <div><span>Est. take</span><strong class="good">$${est.pay}</strong></div>
     <div><span>Band fame / fans</span><strong>+${est.fameGain} / +${est.fans}</strong></div>`;
+  const pl = overlay.querySelector(".set-planner"); if (pl) pl.outerHTML = plannerHTML(est); else { const e2 = overlay.querySelector(".show-est"); if (e2) e2.insertAdjacentHTML("afterend", plannerHTML(est)); }
   const go = overlay.querySelector("#show-go"); if (go) { go.disabled = !selected.size; go.textContent = `▶ PLAY THE SHOW (${selected.size})`; }
   const sv = overlay.querySelector("#set-save"); if (sv) sv.disabled = !selected.size;
 }
@@ -301,10 +344,11 @@ function playShow(setIds) {
   const s = getState(); const cfg = DATA.config.shows;
   const band = perfBand || activeBand() || {};
   if (band && band.id) band.lastSetlist = [...setIds];
-  const est = estimate(new Set(setIds), band);
+  const est = estimateWithSim(new Set(setIds), band, undefined, true);
+  const playedN = est.sim.collapsed ? est.sim.playedCount : setIds.length;
   if (!band.playerIn) { const bst = cfg.attendBoost || 1.15; est.pay = Math.round(est.pay * bst); est.fans = Math.round(est.fans * bst); est.fameGain = Math.round(est.fameGain * bst); est._boosted = bst; }
-  const energy = (cfg.energyCost || 25) + (setIds.length - 1) * 5;
-  const minutes = (cfg.minutes || 180) + (setIds.length - 1) * 20;
+  const energy = (cfg.energyCost || 25) + Math.max(0, playedN - 1) * 5;
+  const minutes = (cfg.minutes || 180) + Math.max(0, playedN - 1) * 20;
 
   bandEarn(band.id, est.pay, "show", "Show pay");
   const perSongPay = setIds.length ? est.pay / setIds.length : 0;
@@ -316,7 +360,8 @@ function playShow(setIds) {
   { const st = getState(); st.stats.showsPlayed = (st.stats.showsPlayed || 0) + 1; }
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }
-  addStat("mood", cfg.moodGain || 8);
+  if (est.sim.collapsed) { const col = (DATA.config.performance && DATA.config.performance.collapse) || {}; addStat("health", -(col.healthHit || 12)); addStat("mood", -(col.moodHit || 10)); addCondition("exhausted"); }
+  else addStat("mood", cfg.moodGain || 8);
   addStat("energy", -energy);
   const maxChem = DATA.config.band?.maxChemistry || 100;
   // per-band identity grows
@@ -326,8 +371,7 @@ function playShow(setIds) {
   band.showsPlayed = (band.showsPlayed || 0) + 1;
   const _town = (DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].town);
   if (_town) { s.showsByTown = s.showsByTown || {}; s.showsByTown[_town] = (s.showsByTown[_town] || 0) + 1; }
-  const repGain = Math.max(-2, (DATA.config.venueRep && DATA.config.venueRep.gainBase != null ? DATA.config.venueRep.gainBase : 2) + Math.round((est.avgQ - 60) / 12));
-  addVenueRep(perfVenueId, repGain);
+  addVenueRep(perfVenueId, est.repDelta != null ? est.repDelta : 1);
   // player's personal clout (career-wide, smaller)
   addStat("fame", Math.max(1, Math.round(est.fameGain * (cfg.playerFameShare ?? 0.4))));
   addStat("fans", Math.round(est.fans * (cfg.playerFansShare ?? 0.25)));
@@ -339,13 +383,20 @@ function playShow(setIds) {
     const cut = liveCut(m, est.pay) + merchCut(m, merch.revenue);
     if (cut > 0) { accrueOwed(m, cut); cutLines.push({ name: m.name, cut }); cutTotal += cut; }
   }
+  // Performance Arc: gigging builds Endurance; pushing past your safe limit trains it harder.
+  let endGain = 0;
+  { const pc = DATA.config.performance || {}; const pushF = 1 + 0.3 * Math.max(0, playedN - (est.sim.safeLimit || 0));
+    endGain = (pc.enduranceGrowthPerShow || 0.6) * pushF;
+    if (s && s.stats) s.stats.endurance = Math.min(100, Math.round(((s.stats.endurance || 50) + endGain) * 10) / 10);
+    for (const m of performingMembers(band.id)) { if (m.stats) m.stats.endurance = Math.min(100, Math.round(((m.stats.endurance || 50) + endGain * 0.5) * 10) / 10); } }
   advanceMinutes(minutes);
   persist();
   if (pendingShowCmt) { complete(pendingShowCmt); pendingShowCmt = null; }
-  emit("show:played", { bandId: band.id, pay: est.pay, merch: merch.revenue, fame: est.fameGain, fans: est.fans, quality: est.avgQ });
+  emit("show:played", { bandId: band.id, pay: est.pay, merch: merch.revenue, fame: est.fameGain, fans: est.fans, quality: est.avgQ, tier: est.tier, collapsed: est.sim.collapsed });
   emit("renderAll");
 
-  const [head, sub] = tierFlavor(est.avgQ);
+  const head = est.sim.collapsed ? "Cut Short" : est.tier;
+  const sub = TIER_FLAVOR[est.tier] || "";
   overlay.innerHTML = `
     <div class="show-modal">
       <div class="shop-head"><span class="shop-title">SHOW REPORT</span><button class="phone-nav" id="show-close2">✕</button></div>
@@ -353,6 +404,7 @@ function playShow(setIds) {
         <div class="report-head">${esc(head)}</div>
         <p class="shop-note">${esc(sub)}</p>
         ${est._boosted ? `<p class="shop-note" style="color:var(--green)">You showed up to manage — the band raised their game (+${Math.round((est._boosted - 1) * 100)}%).</p>` : ""}
+        <p class="shop-note">Played ${playedN} of ${setIds.length} song${setIds.length !== 1 ? "s" : ""}.${endGain > 0 ? ` Endurance +${endGain.toFixed(1)}.` : ""}</p>
         <div class="show-est">
           <div><span>Crowd</span><strong>${est.draw}</strong></div>
           <div><span>Earned</span><strong class="good">$${est.pay}</strong></div>
@@ -376,7 +428,7 @@ function playShow(setIds) {
     </div>`;
   overlay.querySelector("#show-close2").addEventListener("click", closeShow);
   overlay.querySelector("#show-done").addEventListener("click", closeShow);
-  toast(`Show done — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans${cutTotal > 0 ? ` · $${cutTotal} owed to band` : ""}${coverTotal > 0 ? ` · $${coverTotal} cover royalties` : ""}.`, "good");
+  toast(est.sim.collapsed ? `${TIER_FLAVOR.Collapse} You still earned $${est.pay}.` : `${est.tier} show — $${est.pay}${merch.revenue > 0 ? ` +$${merch.revenue} merch` : ""}, +${est.fans} fans${cutTotal > 0 ? ` · $${cutTotal} owed` : ""}.`, est.sim.collapsed ? "warn" : "good");
 }
 
 // ============================================================

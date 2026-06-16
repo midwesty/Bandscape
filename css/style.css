@@ -1210,3 +1210,24 @@ body:has(.modal-scrim) #log { display: none; }
 .strm-playall-btn { color: var(--orange, #ff8a3d) !important; border-color: var(--orange, #ff8a3d) !important; }
 .strm-np-skip { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
   background: var(--bg); color: var(--text); cursor: pointer; }
+
+/* ===== Performance Arc (Step 28): set planner + outcome tiers ===== */
+.set-planner { margin: 8px 0; padding: 10px; background: var(--panel, #16161c); border: 1px solid var(--line); border-radius: 10px; }
+.set-planner-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .04em; }
+.set-pips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.set-pip { min-width: 22px; height: 22px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 11px; font-weight: 700; color: #0b0b0f; }
+.pp-strong { background: #57c97a; }
+.pp-sloppy { background: #e6b54a; }
+.pp-risk { background: #f08a3c; color: #1a0f04; }
+.pp-collapse { background: #e25555; color: #fff; }
+.set-warn { font-size: 12px; padding: 6px 8px; border-radius: 7px; line-height: 1.35; }
+.set-warn.ok { background: rgba(87,201,122,.14); color: #9fe3b4; }
+.set-warn.warn { background: rgba(240,138,60,.14); color: #f3b483; }
+.set-warn.bad { background: rgba(226,85,85,.16); color: #f0a6a6; }
+.tier-badge { padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .03em; }
+.tier-legendary { background: linear-gradient(90deg,#ffd86b,#ff8a3d); color: #2a1500; }
+.tier-great { background: #57c97a; color: #06210f; }
+.tier-solid { background: #4a90d9; color: #04162a; }
+.tier-sloppy { background: #e6b54a; color: #2a1f04; }
+.tier-disaster { background: #e25555; color: #fff; }
+.tier-collapse { background: #7a2b2b; color: #ffd5d5; }

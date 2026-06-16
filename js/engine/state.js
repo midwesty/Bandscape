@@ -19,6 +19,7 @@ export function newGameState(slot, char) {
   for (const def of DATA.stats.stats) stats[def.id] = def.start;
   // character creation can override starting cash/etc. later if desired
   stats.money = cfg.economy.startingMoney;
+  if (stats.endurance == null) stats.endurance = (cfg.performance && cfg.performance.playerStartEndurance) || 50; // Step 28: stamina-on-stage stat
 
   return {
     meta: {
@@ -97,9 +98,9 @@ export function activeBand() {
 const clamp100 = (v) => Math.max(1, Math.min(100, Math.round(v)));
 function npcDefById(id) { return (DATA.npcs?.npcs || []).find((n) => n.id === id) || {}; }
 function seedStats(npc, sk, rel) {
-  if (npc.stats) return { musicianship: 50, stagePresence: 50, songwriting: 50, reliability: 60, ...npc.stats };
+  if (npc.stats) return { musicianship: 50, stagePresence: 50, songwriting: 50, reliability: 60, endurance: 50, ...npc.stats };
   const base = Math.round((sk == null ? 0.5 : sk) * 100);
-  return { musicianship: clamp100(base), stagePresence: clamp100(base - 8), songwriting: clamp100(base - 4), reliability: clamp100((rel == null ? 0.6 : rel) * 100) };
+  return { musicianship: clamp100(base), stagePresence: clamp100(base - 8), songwriting: clamp100(base - 4), reliability: clamp100((rel == null ? 0.6 : rel) * 100), endurance: clamp100(npc.endurance != null ? npc.endurance * 100 : base - 2) };
 }
 export function musicianFromNpc(npc, bandId = null, status = "active") {
   const sk = npc.skill, rel = npc.reliability;

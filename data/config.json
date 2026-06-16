@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.27.4 (Streamr v2: BAND tab band-switcher \u2014 filter releases per band (fixes the stuck-on-one-band view) + default new releases to the band youre viewing; search on both FAN and BAND; playback is now a real queue \u2014 Play release / Play all / an artists whole catalog auto-advance track to track with a skip button, and tapping a track plays from there through the rest)",
+  "version": "0.28.0 (Performance Arc: shows arent auto-wins anymore. Each song in a set costs stamina \u2014 drawn from your Energy plus a new per-member Endurance stat and lifted by prep (sleep, food, coffee, a shower, good mood). The booking screen projects the set: which songs land strong, which get sloppy as you tire, and where you risk collapsing mid-set. Push past your safe limit to gamble for a bigger payoff. Outcomes scale Legendary > Great > Solid > Sloppy > Disaster, with a forgiving Collapse (partial pay, a fans/rep dip, Exhausted + a health hit). Endurance grows from gigging. Basic genre-fit weight in. All tunable in config.performance.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -284,5 +284,83 @@
     "toastMinGapHours": 3,
     "mood": 3,
     "fans": 2
+  },
+  "performance": {
+    "playerStartEndurance": 50,
+    "staminaBase": 100,
+    "enduranceRef": 50,
+    "npcReadiness": 0.85,
+    "songCost": 17,
+    "lengthCostScale": 0.5,
+    "defaultBars": 16,
+    "sloppyThreshold": 0.35,
+    "riskThreshold": 0.15,
+    "fatigueFloor": 0.45,
+    "maxCollapseChance": 0.7,
+    "energyShareForPool": 0.7,
+    "moodPoolFactor": 0.15,
+    "buffPoolBonus": {
+      "caffeinated": 0.12,
+      "hot_meal": 0.1,
+      "well_rested": 0.1,
+      "fresh": 0.05,
+      "primped": 0.05
+    },
+    "enduranceGrowthPerShow": 0.6,
+    "tiers": [
+      {
+        "name": "Legendary",
+        "min": 88,
+        "pay": 1.45,
+        "fans": 1.6,
+        "fame": 1.5,
+        "rep": 3
+      },
+      {
+        "name": "Great",
+        "min": 72,
+        "pay": 1.2,
+        "fans": 1.25,
+        "fame": 1.2,
+        "rep": 2
+      },
+      {
+        "name": "Solid",
+        "min": 52,
+        "pay": 1.0,
+        "fans": 1.0,
+        "fame": 1.0,
+        "rep": 1
+      },
+      {
+        "name": "Sloppy",
+        "min": 36,
+        "pay": 0.75,
+        "fans": 0.6,
+        "fame": 0.7,
+        "rep": 0
+      },
+      {
+        "name": "Disaster",
+        "min": 0,
+        "pay": 0.45,
+        "fans": 0.25,
+        "fame": 0.5,
+        "rep": -2
+      }
+    ],
+    "collapse": {
+      "fansMult": 0.35,
+      "fameMult": 0.4,
+      "rep": -3,
+      "healthHit": 12,
+      "moodHit": 10,
+      "payMult": 0.85
+    },
+    "pushBonus": 1.15,
+    "genreFit": {
+      "match": 0.1,
+      "mismatch": -0.08
+    }
   }
 }
