@@ -39,6 +39,15 @@ const C = {
   ink: "#0b0b0f", line: "#0b0b0f"
 };
 
+// ---- Step 36: data-driven city skins ----
+// A scene may declare a `palette` (ground + building-body tints) and each building
+// an `build` kind (its awning/accent color). Renderer falls back to defaults when
+// absent, so existing scenes are visually unchanged.
+let activePalette = null;
+function pal(key, fb) { return (activePalette && activePalette[key]) || C[key] || fb; }
+const BUILDING_KINDS = { venue: C.pink, saloon: "#c98a3d", hotel: "#7CFC9B", store: C.green, general: "#c9a23d", music: C.purple, pawn: C.yellow, bar: "#ff8a3d", diner: C.orange, records: C.pink, casino: "#ff3b6b", food: C.orange };
+function kindColor(kind) { return BUILDING_KINDS[kind] || C.blue; }
+
 const TILE_W = 64, TILE_H = 32, WALL_H = 46, SPEED = 3.6;
 
 let initialized = false, running = false;
@@ -94,6 +103,7 @@ function syncToState() {
   const s = getState();
   running = true;
   room = DATA.locations[s.location] || DATA.locations.apartment;
+  activePalette = (room && room.palette) || null;   // Step 36: per-city skin
 
   // seed / migrate movable furniture into the save (per location)
   s.placedObjects = s.placedObjects || {};
@@ -675,7 +685,7 @@ function draw() {
 function drawFloor(w, h) {
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const c = toScreen(x, y);
-    diamond(c.x, c.y, (x + y) % 2 ? C.floorA : C.floorB, C.floorEdge);
+    diamond(c.x, c.y, (x + y) % 2 ? pal("floorA") : pal("floorB"), pal("floorEdge"));
   }
 }
 function diamond(cx, cy, fill, stroke) {
@@ -744,6 +754,8 @@ function drawObject(o) {
 function drawProc(o, cx, cy) {
   if (o.interact === "talk" || o.interact === "storeclerk" || o.interact === "decorclerk") return npcFigure(cx, cy, o);
   if (o.interact === "stage") return stageShape(cx, cy);
+  if (o.build) return building(cx, cy, kindColor(o.build));   // Step 36: data-driven building art
+  if (o.flavorNpc) return npcFigure(cx, cy, o);
   if (o.decorId) return drawDecor(o, cx, cy);
   if (o.door) return doorway(cx, cy, o.label || o.name);
   if (o.instrumentId) {
@@ -1079,7 +1091,7 @@ function micShape(cx, cy) {
 }
 function building(cx, cy, color) {
   const w = 22, h = 11, ht = 56;
-  cuboid(cx, cy, w, h, ht, "#241d30", "#181122", "#120d18");
+  cuboid(cx, cy, w, h, ht, pal("bldgL", "#241d30"), pal("bldgR", "#181122"), pal("bldgTop", "#120d18"));
   ctx.fillStyle = color; ctx.fillRect(cx - w, cy - ht + 4, w * 2, 9);
   ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.strokeRect(cx - w, cy - ht + 4, w * 2, 9);
   ctx.fillStyle = "#1b2333"; ctx.strokeRect(cx - w + 6, cy - 32, 15, 12); ctx.fillRect(cx - w + 6, cy - 32, 15, 12);

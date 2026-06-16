@@ -245,7 +245,8 @@
       "desc": "Toast, reheats, minor fire hazard.",
       "room": "kitchen",
       "shape": "appliance",
-      "color": "#9aa3ad"
+      "color": "#9aa3ad",
+      "use": "microwave"
     },
     "microwave": {
       "name": "Microwave",
@@ -257,7 +258,8 @@
       "desc": "3am ramen's best friend.",
       "room": "kitchen",
       "shape": "appliance",
-      "color": "#3a3540"
+      "color": "#3a3540",
+      "use": "microwave"
     },
     "mini_fridge": {
       "name": "Mini Fridge",
@@ -269,7 +271,8 @@
       "desc": "Cold drinks, cold leftovers, cold truth.",
       "room": "kitchen",
       "shape": "fridge",
-      "color": "#dfe3e8"
+      "color": "#dfe3e8",
+      "use": "beerfridge"
     },
     "espresso_machine": {
       "name": "Espresso Machine",
@@ -281,7 +284,8 @@
       "desc": "Caffeine on tap. Songwriting fuel.",
       "room": "kitchen",
       "shape": "appliance",
-      "color": "#2b2533"
+      "color": "#2b2533",
+      "use": "coffee"
     },
     "full_range": {
       "name": "Full Range Stove",
@@ -293,7 +297,8 @@
       "desc": "An actual stove. You've made it.",
       "room": "kitchen",
       "shape": "stove",
-      "color": "#cfd6dd"
+      "color": "#cfd6dd",
+      "use": "cook"
     },
     "kitchen_island": {
       "name": "Kitchen Island",
