@@ -100,11 +100,11 @@ function availableSlots(type) {
 
 // ---- scheduler picker ----
 let schedBand = null, schedType = "show";
-function playerBands() { return (getState().bands || []).filter((b) => b.playerIn); }
-function ensureSchedBand() { const pb = playerBands(); if (!schedBand || !pb.find((b) => b.id === schedBand.id)) schedBand = activeBand() || pb[0] || null; }
+function playerBands() { return (getState().bands || []); }   // every band the player manages is bookable
+function ensureSchedBand() { const pb = playerBands(); const ab = activeBand(); schedBand = (ab && pb.find((b) => b.id === ab.id)) ? ab : ((schedBand && pb.find((b) => b.id === schedBand.id)) ? schedBand : (pb[0] || null)); }
 function bandPillsHTML() {
   const pb = playerBands(); if (pb.length <= 1) return "";
-  return `<div class="sched-bands">${pb.map((b) => `<button class="sched-band-pill ${schedBand && b.id === schedBand.id ? "on" : ""}" data-band="${esc(b.id)}">${esc(b.name || "Your band")}</button>`).join("")}</div>`;
+  return `<div class="sched-bands"><span class="sched-bands-lbl">Booking as:</span>${pb.map((b) => `<button class="sched-band-pill ${schedBand && b.id === schedBand.id ? "on" : ""}" data-band="${esc(b.id)}">${esc(b.name || "Your band")}</button>`).join("")}</div>`;
 }
 function showNightCard(o) {
   const day = o.day; const lu = billLineup(schedVenue, day); const open = billOpenSlots(schedVenue, day);

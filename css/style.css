@@ -1264,3 +1264,4 @@ body:has(.modal-scrim) #log { display: none; }
 .sched-proj { font-style: italic; }
 .sched-proj.head { color: var(--green, #57c97a); }
 .sched-proj.open { color: var(--muted); }
+.sched-bands-lbl { font-size: 11px; color: var(--muted); margin-right: 4px; }
