@@ -12,7 +12,8 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, setFlag, activeBand } from "../engine/state.js";
+import { getState, addStat, setFlag, activeBand, regionUnlocked } from "../engine/state.js";
+import { addCondition } from "./conditions.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -357,14 +358,86 @@ function update(dt) {
   }
 }
 
+// ---- travel: bus destination picker (Step 35: Maps & Cities) ----
+function regionName(id) { const r = (DATA.regions && DATA.regions.regions && DATA.regions.regions[id]); return (r && r.name) || id; }
+function regionPassHeld(regionId) {
+  const s = getState();
+  if (regionId === "midwest") return !!(s.flags && s.flags.rocktroit_unlocked); // the original one-time Midwest bus pass
+  return !!(s.travelPasses && s.travelPasses[regionId]);
+}
+function regionPassCost(regionId) {
+  const t = (DATA.config.travel) || {};
+  if (regionId === "midwest") return t.busFare || 1000;
+  return (t.regionPass && t.regionPass[regionId] != null) ? t.regionPass[regionId] : 2500;
+}
+function buyRegionPass(regionId) {
+  const s = getState(); const cost = regionPassCost(regionId);
+  if (cost <= 0) return true;
+  if ((s.stats.money || 0) < cost) { toast(`A ${regionName(regionId)} bus pass is $${cost}. You can't afford it yet.`, "warn"); return false; }
+  if (!confirm(`Buy a one-time ${regionName(regionId)} bus pass for $${cost}? After this, the bus runs free.`)) return false;
+  addStat("money", -cost);
+  if (regionId === "midwest") setFlag("rocktroit_unlocked", true);
+  else { s.travelPasses = s.travelPasses || {}; s.travelPasses[regionId] = true; }
+  toast("Bus pass bought. All aboard.", "good");
+  return true;
+}
+function reachableCities() {
+  const cities = (DATA.regions && DATA.regions.cities) || {}; const here = getState().location; const out = [];
+  for (const id in cities) {
+    const c = cities[id]; const es = c.entryScene;
+    if (!es || !es.scene || es.scene === here) continue;   // no walkable scene, or you're already there
+    if (c.built === false) continue;
+    if (!regionUnlocked(c.region)) continue;   // gate by region progression; the pass is the ride cost
+    out.push({ id, name: c.name, region: c.region, scene: es.scene, spawn: es.spawn });
+  }
+  return out;
+}
+let _travelScrim = null;
+function closeTravelPicker() { if (_travelScrim) { _travelScrim.remove(); _travelScrim = null; } }
+function doTravel(dest) {
+  if (!regionPassHeld(dest.region)) { if (!buyRegionPass(dest.region)) return; }
+  closeTravelPicker();
+  travel(dest.scene, dest.spawn);
+}
 function handleBus(obj) {
-  const s = getState(); const fee = (DATA.config.travel && DATA.config.travel.busFare) || 1000;
-  if (s.flags && s.flags.rocktroit_unlocked) { travel(obj.to, obj.spawn); return; }
-  if ((s.stats.money || 0) < fee) { toast(`A bus pass to Rocktroit is $${fee}. You can't afford it yet.`, "warn"); return; }
-  if (!confirm(`Buy a one-time bus pass to Rocktroit for $${fee}? After this, the bus runs free both ways forever.`)) return;
-  addStat("money", -fee); setFlag("rocktroit_unlocked", true);
-  toast("Bus pass bought. Next stop: Rocktroit.", "good");
-  travel(obj.to, obj.spawn);
+  const dests = reachableCities();
+  if (!dests.length) { toast("Nowhere to ride to yet — the road's quiet.", "info"); return; }
+  const byRegion = {}; dests.forEach((d) => { (byRegion[d.region] = byRegion[d.region] || []).push(d); });
+  const groups = Object.keys(byRegion).map((rid) => {
+    const held = regionPassHeld(rid); const cost = regionPassCost(rid);
+    const tag = held || cost <= 0 ? "" : ` <span class="trv-cost">pass $${cost}</span>`;
+    const btns = byRegion[rid].map((d) => `<button class="btn trv-dest" data-scene="${d.scene}" data-region="${d.region}">${d.name}</button>`).join("");
+    return `<div class="trv-region"><div class="trv-region-h">${regionName(rid)}${tag}</div><div class="trv-dests">${btns}</div></div>`;
+  }).join("");
+  closeTravelPicker();
+  const scrim = document.createElement("div"); scrim.className = "modal-scrim"; scrim.id = "trv-scrim"; _travelScrim = scrim;
+  scrim.innerHTML = `<div class="neg-card trv-card">
+    <div class="neg-head"><span>CATCH THE BUS</span><button id="trv-x">✕</button></div>
+    <p class="neg-ask">Where to? A region's first ride buys a one-time pass; after that the bus runs free.</p>
+    ${groups}
+  </div>`;
+  document.body.appendChild(scrim);
+  const close = () => closeTravelPicker();
+  scrim.addEventListener("click", (e) => { if (e.target === scrim) close(); });
+  scrim.querySelector("#trv-x").addEventListener("click", close);
+  scrim.querySelectorAll(".trv-dest").forEach((b) => b.addEventListener("click", () => {
+    const d = dests.find((x) => x.scene === b.dataset.scene); if (d) doTravel(d);
+  }));
+}
+function hotelStay(obj) {
+  const s = getState(); const price = (DATA.config.lodging && DATA.config.lodging.hotelPrice) || 60;
+  if ((s.stats.money || 0) < price) { toast(`A room here runs $${price} a night. You're short.`, "warn"); return; }
+  if (!confirm(`Take a room at ${obj.name || "the hotel"} for $${price}? (a decent night's rest — advances to tomorrow and saves)`)) return;
+  addStat("money", -price);
+  toast("Checked in. Lights out.", "good");
+  sleep();   // a real night's rest (well_rested); the bare tour van will be the lousy version later
+}
+function dinerEat(obj) {
+  const s = getState(); const price = (DATA.config.diner && DATA.config.diner.mealPrice) || 18;
+  if ((s.stats.money || 0) < price) { toast(`A hot plate's $${price}. Not in the cards right now.`, "warn"); return; }
+  if (!confirm(`Order a hot plate and a drink for $${price}?`)) return;
+  addStat("money", -price); addStat("hunger", 45); addStat("thirst", 25); addCondition("hot_meal");
+  toast("Hot meal, cold drink. Back among the living.", "good");
 }
 
 // ---- interactions ----
@@ -450,6 +523,12 @@ function interact(obj) {
       break;
     case "bus":
       handleBus(obj);
+      break;
+    case "hotel":
+      hotelStay(obj);
+      break;
+    case "diner":
+      dinerEat(obj);
       break;
     case "venue":
       openVenue(obj.venueId);

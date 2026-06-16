@@ -1,0 +1,73 @@
+{
+  "_comment": "Pokeville \u2014 a dusty country town on Saloon Row, reached by the bus from anywhere in the Midwest once you hold a pass. The Last Lasso (venue) books country acts; The Dusty Rest (hotel) lets you crash the night when you're away from home; Chuck Wagon Diner (eat) fills you up. Scarcity beat: the General Store sells feed and picks but NO strings \u2014 stock up before you ride out.",
+  "id": "pokeville",
+  "name": "Pokeville",
+  "size": { "w": 13, "h": 9 },
+  "ambient": "dusty_town",
+  "objects": [],
+  "exits": [
+    {
+      "id": "saloon",
+      "name": "The Last Lasso",
+      "tile": { "x": 3, "y": 1 },
+      "interact": "venue",
+      "venueId": "saloon",
+      "solid": true
+    },
+    {
+      "id": "hotel",
+      "name": "The Dusty Rest",
+      "tile": { "x": 6, "y": 1 },
+      "interact": "hotel",
+      "lodgingId": "dusty_rest",
+      "solid": true
+    },
+    {
+      "id": "diner",
+      "name": "Chuck Wagon Diner",
+      "tile": { "x": 9, "y": 1 },
+      "interact": "diner",
+      "solid": true
+    },
+    {
+      "id": "general",
+      "name": "Pokeville General Store",
+      "tile": { "x": 2, "y": 4 },
+      "interact": "flavor",
+      "flavor": "Pokeville General \u2014 feed, ammo, jerky, and a jar of guitar picks by the register. Strings? \"Try the city, partner.\" (No music store out here \u2014 stock up before you ride in.)",
+      "solid": true
+    },
+    {
+      "id": "feed",
+      "name": "Wagon Wheel Records",
+      "tile": { "x": 10, "y": 4 },
+      "interact": "flavor",
+      "flavor": "Wagon Wheel Records \u2014 a crate of warped country 45s and a sleeping cat. (Consignment in a later build.)",
+      "solid": true
+    },
+    {
+      "id": "local",
+      "name": "Old Cassidy",
+      "tile": { "x": 7, "y": 4 },
+      "interact": "flavor",
+      "flavor": "Old Cassidy tips his hat. \"You that band from the city? Last Lasso could use some new blood. Don't scare the regulars.\"",
+      "solid": true
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "tile": { "x": 6, "y": 8 },
+      "interact": "bus",
+      "to": "town",
+      "spawn": { "x": 3, "y": 5 },
+      "solid": true
+    }
+  ],
+  "world": {
+    "roads": [
+      { "id": "drag", "from": { "x": 0, "y": 3 }, "to": { "x": 12, "y": 3 } },
+      { "id": "cross", "from": { "x": 6, "y": 3 }, "to": { "x": 6, "y": 8 } }
+    ],
+    "ambient": { "cars": 0, "dog": true, "pedestrians": 3 }
+  }
+}

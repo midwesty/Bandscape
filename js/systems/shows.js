@@ -382,7 +382,7 @@ function playShow(setIds) {
   if (billOutcome) {
     const rmap = _bcfg.rapportByTier || {};
     let rd = rmap[est.tier]; if (rd == null) rd = est.sim.collapsed ? -6 : 1;
-    for (const co of (billOutcome.coActs || [])) addRapport(co.bandId, rd);
+    for (const co of (billOutcome.coActs || [])) { if (bandById(co.bandId)) continue; addRapport(co.bandId, rd); }
     if (billOutcome.headliner) toast("You headlined the bill — top billing, bigger cut.", "good");
     else if (billOutcome.exposure > 0) toast(`Opened under ${billOutcome.under} — +${billOutcome.exposure} new fans from their crowd.`, "good");
   }
@@ -493,6 +493,15 @@ export function autoResolveShow(commitment) {
   const venueId = commitment.venue || "thedive";
   const setIds = autoSetlist(band); if (!setIds.length) return null;
   const est = estimate(new Set(setIds), band, venueId);
+  // Step 32 step 3: managed acts that auto-resolve still share the bill's lift (co-acts, headliner/opener).
+  const _bcfg2 = (DATA.config.bills) || {};
+  const bc2 = billContext(venueId, commitment.day, band.id);
+  if (bc2 && bc2.billSize > 1) {
+    const pull = Math.round((bc2.coActsDraw || 0) * (_bcfg2.billPullFactor || 0.15));
+    if (pull > 0) { est.draw += pull; est.fans += Math.round(pull * (_bcfg2.roomFanFactor || 0.3)); }
+    if (bc2.isHeadliner) est.pay = Math.round(est.pay * (_bcfg2.headlinerPayBonus || 1.15));
+    else { est.pay = Math.round(est.pay * (_bcfg2.openerPayFactor || 0.7)); est.fans += Math.max(0, Math.round((bc2.headlinerDraw || 0) * (_bcfg2.exposureFactor || 0.25))); }
+  }
   bandEarn(band.id, est.pay, "show", "Show pay");
   const perSongPay = setIds.length ? est.pay / setIds.length : 0;
   for (const sid of setIds) payCoverRoyalty(band.id, sid, perSongPay);

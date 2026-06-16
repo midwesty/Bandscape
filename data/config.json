@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.33.1 (Booking fix: the BOOK A SHOW band selector now includes every band you manage \u2014 not just your original one \u2014 so you can book, and co-book on the same night, with any of your bands. The picker follows whichever band you have selected in the Band app, and a Booking as: row of band pills lets you switch right in the picker without app-hopping. Fixes the bug where booking was stuck on your first band because formed bands were being filtered out.)",
+  "version": "0.35.0 (Maps & Cities, step 1 \u2014 travel + Pokeville. The Bus Stop now opens a destination picker: ride anywhere your region pass covers \u2014 a regions first ride buys a one-time pass, then its free \u2014 gated by which regions youve unlocked. Pokeville is now a fully walkable country town: The Last Lasso (book/play country shows), The Dusty Rest hotel (pay to crash the night when youre away from home \u2014 a real rest the bare tour van wont match later), the Chuck Wagon Diner (a hot meal on the road), wandering locals, and a scarcity beat \u2014 no music store out here, so stock up on strings before you ride in. Next: the reusable town template + the remaining maps.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -163,7 +163,14 @@
     "launchBurst": 0.5
   },
   "travel": {
-    "busFare": 1000
+    "busFare": 1000,
+    "regionPass": {
+      "midwest": 0,
+      "east_coast": 2500,
+      "west_coast": 2500,
+      "europe": 6000,
+      "japan": 6000
+    }
   },
   "merch": {
     "types": [
@@ -484,5 +491,12 @@
       "Disaster": -5,
       "Collapse": -6
     }
+  },
+  "lodging": {
+    "hotelPrice": 60,
+    "vanSleep": false
+  },
+  "diner": {
+    "mealPrice": 18
   }
 }

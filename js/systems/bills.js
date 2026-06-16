@@ -18,6 +18,7 @@ import { DATA } from "../engine/data.js";
 import { getState, regionOfCity, bandById } from "../engine/state.js";
 import { on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
+import { toast } from "../ui/toast.js";
 import { worldBands, worldBandById } from "./worldmusic.js";
 import { venueOpenOn, currentDay } from "./calendar.js";
 
@@ -28,6 +29,7 @@ export function billCapacity(id) { const v = venueRec(id); return (v && v.billSl
 function venueRegion(id) { const v = venueRec(id); return v ? regionOfCity(v.town) : null; }
 function relevantVenues() { return Object.keys((DATA.venues && DATA.venues.venues) || {}); }
 
+let _touringAdded = [];
 function billsMap() { const s = getState(); if (s && !s.bills) s.bills = {}; return (s && s.bills) || {}; }
 const keyOf = (venueId, day) => venueId + "@" + day;
 export function billFor(venueId, day) { return billsMap()[keyOf(venueId, day)] || null; }
@@ -68,7 +70,7 @@ function stepNight(venueId, day, today) {
   const usedThisNight = bandsPlayingOn(day);
   if (bill.acts.length < cap && !bill.acts.some((a) => a.touring) && Math.random() < (bcfg().touringChance || 0.015)) {
     const t = pickTouring(usedThisNight, inThisBill);
-    if (t) { bill.acts.push({ bandId: t.id, draw: drawScore(t), touring: true }); inThisBill.add(t.id); usedThisNight.add(t.id); }
+    if (t) { bill.acts.push({ bandId: t.id, draw: drawScore(t), touring: true }); inThisBill.add(t.id); usedThisNight.add(t.id); _touringAdded.push({ venueId, day, name: t.name }); }
   }
   let guard = cap + 2;
   while (bill.acts.length < target && guard-- > 0) {
@@ -83,10 +85,14 @@ function stepNight(venueId, day, today) {
 export function tickBills(today) {
   const s = getState(); if (!s || !worldBands().length) return;
   const m = billsMap();
-  for (const k in m) { if (m[k].day < today) delete m[k]; }      // prune past
+  for (const k in m) { if (m[k].day < today - 1) delete m[k]; }   // keep yesterday so overnight auto-resolve can read the bill
+  _touringAdded = [];
   const venues = relevantVenues();
   for (let d = today; d <= today + horizon(); d++) for (const vId of venues) stepNight(vId, d, today);
   try { saveToSlot(s.meta.slot, s); } catch (e) {}
+  // heads-up: a big touring act rolling through soon (rare — an event worth catching)
+  const soon = _touringAdded.filter((t) => t.day > today && t.day <= today + 7);
+  if (soon.length) { const t = soon[0]; const vn = (venueRec(t.venueId) || {}).name || "a venue"; toast(`\uD83C\uDFB8 ${t.name} (\u2605) is touring through \u2014 ${vn}, Day ${t.day}. Grab an opener slot!`, "good"); }
 }
 
 export function ensureBills() {

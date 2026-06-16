@@ -19,7 +19,7 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { autoResolveShow, showAutoReport } from "./shows.js";
-import { billOpenSlots, billLineup, addPlayerAct, billContext, wouldHeadline, currentHeadlinerName } from "./bills.js";
+import { billOpenSlots, billLineup, addPlayerAct, removePlayerAct, billContext, wouldHeadline, currentHeadlinerName } from "./bills.js";
 
 let overlay = null, schedVenue = null;
 
@@ -66,7 +66,11 @@ function bandAvailableCount(slot) {
 }
 
 const venueMatch = (c, venueId) => !venueId || c.venue === venueId || (venueId === "thedive" && (c.venue === "venue" || c.venue == null));
-export function findReady(type, bandId, venueId) { return list().find((c) => c.status === "booked" && c.type === type && (!bandId || c.bandId === bandId) && venueMatch(c, venueId) && c.day === today() && c.slot === currentSlot()) || null; }
+export function findReady(type, bandId, venueId) {
+  const matches = list().filter((c) => c.status === "booked" && c.type === type && (!bandId || c.bandId === bandId) && venueMatch(c, venueId) && c.day === today() && c.slot === currentSlot());
+  if (!matches.length) return null;
+  return matches.find((c) => { const b = bandById(c.bandId); return b && b.playerIn; }) || matches[0]; // always perform the band you're IN; managed acts auto-resolve overnight
+}
 export function nextCommitment(type, bandId) {
   const ni = nowIndex();
   return list().filter((c) => c.status === "booked" && (!type || c.type === type) && (!bandId || c.bandId === bandId) && cmtIndex(c) >= ni).sort((a, b) => cmtIndex(a) - cmtIndex(b))[0] || null;
@@ -258,6 +262,7 @@ function sweepMissed() {
         continue;
       }
       c.status = "missed"; missedShow++;
+      removePlayerAct(c.venue, c.day, c.bandId);     // you didn't play — pull your act off that night's bill
       emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
     } else {
       c.status = "missed"; missedReh++;
