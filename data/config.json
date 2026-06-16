@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.31.0 (The world comes alive: ~50 procedurally generated bands across all 5 regions, each with full NPC members and deep, tier-scaled catalogs. A new seeded song-arranger turns each tracks seed into a full playable arrangement (verse/chorus, layered drums/bass/lead, genre-appropriate) on demand \u2014 so catalogs are featherweight (seeds, not audio) and a bands songs get better if its tier rises later. STREAMR is now a real chart: world bands are discoverable, browsable by artist/release, searchable, and their music actually PLAYS (Recent/Popular, Play all, queue). The 7 named acts are preserved as real playable bands. World members live in their own bands, not your recruit pool. Built as new isolated code \u2014 your songs, bands, DAW, and booking are untouched.)",
+  "version": "0.33.0 (Multi-band bills, step 2 of 3 \u2014 booking into the bill. The BOOK A SHOW picker is now bill-aware: each night shows its lineup (whos on it, the headliner, star touring acts) and how many slots are open. You book your band into an open slot, and a band selector lets you co-book another of your bands the same night without leaving. You headline only if you out-draw the room \u2014 the picker says youd headline or youd open under [act] before you commit. At showtime the bill shapes the result: co-acts swell the crowd, headlining pays more, opening under a bigger act pays less but converts their crowd into new fans (exposure). Play well and rapport with the nights other acts rises; bomb and it drops. Booking still mirrors the venues real open nights, and time-of-day stays out of the bill view. Next: rapport payoffs + touring-act tuning.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -283,7 +283,9 @@
     "volume": 0.32,
     "toastMinGapHours": 3,
     "mood": 3,
-    "fans": 2
+    "fans": 2,
+    "yourBoost": 4,
+    "localMult": 2.5
   },
   "performance": {
     "playerStartEndurance": 50,
@@ -462,5 +464,25 @@
         }
       }
     ]
+  },
+  "bills": {
+    "capacity": 3,
+    "horizonDays": 30,
+    "localMult": 3,
+    "addChance": 0.7,
+    "touringChance": 0.015,
+    "billPullFactor": 0.15,
+    "roomFanFactor": 0.3,
+    "exposureFactor": 0.25,
+    "headlinerPayBonus": 1.15,
+    "openerPayFactor": 0.7,
+    "rapportByTier": {
+      "Legendary": 6,
+      "Great": 4,
+      "Solid": 2,
+      "Sloppy": -2,
+      "Disaster": -5,
+      "Collapse": -6
+    }
   }
 }

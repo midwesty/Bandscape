@@ -11,6 +11,7 @@ import { putAudio } from "./engine/audiostore.js";
 import { ensureGear } from "./systems/gear.js";
 import { initWorldAudio } from "./systems/worldaudio.js";
 import { initWorldRadio } from "./systems/worldradio.js";
+import { initBills } from "./systems/bills.js";
 import { on, emit } from "./engine/bus.js";
 
 import { startClock, stopClock, initTimeControls } from "./systems/time.js";
@@ -133,6 +134,7 @@ function enterGame(isNew) {
   ensureDecorDefaults(); // Step 26.1: pre-dressed decor reaches existing saves
   initWorldAudio();      // Step 24.2: ambient world sound (idempotent)
   initWorldRadio();      // Step 27.2: lo-fi radio in public spaces (idempotent)
+  initBills();           // Step 32: simulated multi-band bills (idempotent)
   migrateInlineAudio();  // Step 18.0: move any inline audio into IndexedDB (off the localStorage quota)
   initObjectives();
   initPhone();

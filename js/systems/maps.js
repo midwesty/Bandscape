@@ -8,6 +8,7 @@
 
 import { DATA } from "../engine/data.js";
 import { getState, bandById, isDiscovered, discoverVenue, addContact, townBuzz, cityUnlocked, cityDef, regionUnlocked } from "../engine/state.js";
+import { ensureBills, billLineup, billOpenSlots } from "./bills.js";
 import { bookedCommitments, currentDay, currentSlot, slotLabel, openScheduler, venueOpenInfo } from "./calendar.js";
 import { venueEligible, venueReqText, openPerform } from "./shows.js";
 import { advanceMinutes } from "./time.js";
@@ -59,6 +60,7 @@ function headOver(venueId) {
 
 export function renderMapsApp(container) {
   mapsContainer = container;
+  ensureBills();
   const booked = bookedCommitments();
   const shows = booked.filter((c) => c.type === "show");
   const rehs = booked.filter((c) => c.type === "rehearse");
@@ -86,13 +88,16 @@ export function renderMapsApp(container) {
       const vs = showsAtVenue(v.id);
       const evts = vs.length ? vs.map(evtRow).join("") : "";
       const status = info.openToday ? `<span class="mp-open">open today</span>` : (info.nextLabel ? `<span class="mp-next-open">next: ${esc(info.nextLabel)}</span>` : "");
+      const _bd = info.openToday ? currentDay() : info.nextDay;
+      const _lineup = _bd ? billLineup(v.id, _bd) : []; const _open = _bd ? billOpenSlots(v.id, _bd) : 0;
+      const billHTML = _lineup.length ? `<div class="mp-bill"><span class="mp-bill-h">On the bill:</span> ${_lineup.map((a) => esc(a.name) + (a.headliner ? " (headliner)" : "") + (a.touring ? " \u2605" : "")).join(", ")}${_open > 0 ? ` <span class="mp-bill-open">· ${_open} slot${_open > 1 ? "s" : ""} open</span>` : " <span class=\"mp-bill-full\">· full</span>"}</div>` : (_bd ? `<div class="mp-bill"><span class="mp-bill-open">Bill wide open \u2014 ${billOpenSlots(v.id, _bd)} slots</span></div>` : "");
       const readyNow = vs.some((c) => c.day === currentDay() && c.slot === currentSlot());
       const action = readyNow
         ? `<button class="mp-go mp-play" data-play="${v.id}">\u25B6 Play tonight\u2019s show</button>`
         : elig
           ? `<button class="mp-go" data-book="${v.id}">Book a show \u25B8</button>`
           : `<div class="mp-lock-req">${esc(venueReqText(v.id))}</div>`;
-      return `<div class="mp-venue"><div class="mp-venue-h"><strong>${esc(v.name)}</strong>${status}</div>${v.blurb ? `<p class="mp-blurb">${esc(v.blurb)}</p>` : ""}<p class="mp-sched">${esc(sched)}</p>${evts}${action}</div>`;
+      return `<div class="mp-venue"><div class="mp-venue-h"><strong>${esc(v.name)}</strong>${status}</div>${v.blurb ? `<p class="mp-blurb">${esc(v.blurb)}</p>` : ""}<p class="mp-sched">${esc(sched)}</p>${billHTML}${evts}${action}</div>`;
     }).join("");
     return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc((cityDef(t) && cityDef(t).name) || TOWN_NAME[t] || t)}${t === here ? ` <span class="mp-here">you are here</span>` : ""}</div>${meter}${vrows}</div>`;
   }).join("");

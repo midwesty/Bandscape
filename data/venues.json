@@ -116,7 +116,8 @@
         "minFame": 120,
         "minFans": 600,
         "showsInTown": 5
-      }
+      },
+      "billSlots": 4
     },
     "saloon": {
       "name": "The Last Lasso",

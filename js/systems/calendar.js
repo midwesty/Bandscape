@@ -19,6 +19,7 @@ import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { autoResolveShow, showAutoReport } from "./shows.js";
+import { billOpenSlots, billLineup, addPlayerAct, billContext, wouldHeadline, currentHeadlinerName } from "./bills.js";
 
 let overlay = null, schedVenue = null;
 
@@ -50,8 +51,8 @@ const WK_LABEL = { MO: "Mon", TU: "Tue", WE: "Wed", TH: "Thu", FR: "Fri", SA: "S
 function weekday(day) { return WK[((day - 1) % 7 + 7) % 7]; }
 function weekdayLabel(day) { return WK_LABEL[weekday(day)] || ""; }
 function venueRec(id) { return (DATA.venues && DATA.venues.venues && DATA.venues.venues[id]) || null; }
-function venueSlotOf(id) { const v = venueRec(id); return (v && v.slot) || cfg().showSlot || "evening"; }
-function venueOpenOn(id, day) { const v = venueRec(id); if (v && Array.isArray(v.days) && v.days.length) return v.days.includes(weekday(day)); return venueOpen(day); }
+export function venueSlotOf(id) { const v = venueRec(id); return (v && v.slot) || cfg().showSlot || "evening"; }
+export function venueOpenOn(id, day) { const v = venueRec(id); if (v && Array.isArray(v.days) && v.days.length) return v.days.includes(weekday(day)); return venueOpen(day); }
 export function venueOpenInfo(venueId) {
   const v = venueRec(venueId); const d0 = today();
   let nextDay = null;
@@ -75,8 +76,8 @@ export function currentDay() { return today(); }
 export function complete(id) { const c = list().find((x) => x.id === id); if (c) { c.status = "done"; persist(); emit("calendar:updated"); } }
 
 function availableSlots(type) {
-  const out = []; const horizon = cfg().horizonDays || 7; const ni = nowIndex();
-  const ab = activeBand() || {}; const mem = (ab.id ? bandMembers(ab.id) : []).length;
+  const out = []; const horizon = type === "show" ? (cfg().showHorizonDays || 14) : (cfg().horizonDays || 7); const ni = nowIndex();
+  const ab = (type === "show" && schedBand) ? schedBand : (activeBand() || {}); const mem = (ab.id ? bandMembers(ab.id) : []).length;
   for (let d = today(); d <= today() + horizon; d++) {
     for (const sl of slots()) {
       const idx = d * nUnits() + slotIndex(sl.id);
@@ -85,7 +86,7 @@ function availableSlots(type) {
       if (type === "show") {
         if (sl.id !== venueSlotOf(schedVenue)) continue;
         if (!venueOpenOn(schedVenue, d)) continue;
-        if (schedVenue && venueBusyAt(schedVenue, d, sl.id)) continue;          // this venue is taken that night
+        if (schedVenue && billOpenSlots(schedVenue, d) <= 0) continue;          // the bill is full that night
       } else if (type === "rehearse") {
         if (!mem) continue;
         if (bandAvailableCount(sl.id) < Math.ceil(mem / 2)) continue;
@@ -98,30 +99,62 @@ function availableSlots(type) {
 }
 
 // ---- scheduler picker ----
+let schedBand = null, schedType = "show";
+function playerBands() { return (getState().bands || []).filter((b) => b.playerIn); }
+function ensureSchedBand() { const pb = playerBands(); if (!schedBand || !pb.find((b) => b.id === schedBand.id)) schedBand = activeBand() || pb[0] || null; }
+function bandPillsHTML() {
+  const pb = playerBands(); if (pb.length <= 1) return "";
+  return `<div class="sched-bands">${pb.map((b) => `<button class="sched-band-pill ${schedBand && b.id === schedBand.id ? "on" : ""}" data-band="${esc(b.id)}">${esc(b.name || "Your band")}</button>`).join("")}</div>`;
+}
+function showNightCard(o) {
+  const day = o.day; const lu = billLineup(schedVenue, day); const open = billOpenSlots(schedVenue, day);
+  const lineupStr = lu.length ? lu.map((a) => esc(a.name) + (a.headliner ? " (headliner)" : "") + (a.touring ? " ★" : "")).join(", ") : "wide open — no acts booked yet";
+  const proj = schedBand ? (wouldHeadline(schedVenue, day, schedBand)
+      ? `<span class="sched-proj head">you'd headline</span>`
+      : `<span class="sched-proj open">you'd open under ${esc(currentHeadlinerName(schedVenue, day) || "the headliner")}</span>`) : "";
+  return `<div class="sched-night">
+    <div class="sched-night-h">Day ${day} · ${weekdayLabel(day)}${day === today() ? " · today" : ""}</div>
+    <div class="sched-bill"><span class="mp-bill-h">On the bill:</span> ${lineupStr}</div>
+    <div class="sched-meta"><span class="mp-bill-open">${open} slot${open !== 1 ? "s" : ""} open</span>${proj ? " · " + proj : ""}</div>
+    <button class="cal-slot-btn" data-day="${day}" data-slot="${esc(o.slot)}">Book ${esc((schedBand && schedBand.name) || "band")} here</button>
+  </div>`;
+}
 export function openScheduler(type, venueId) {
+  schedType = type;
   schedVenue = venueId || (type === "show" ? "thedive" : null);
-  const opts = availableSlots(type);
+  if (type === "show") ensureSchedBand();
   overlay = overlay || document.getElementById("cal");
+  renderScheduler();
+}
+function renderScheduler() {
+  const type = schedType;
+  const opts = availableSlots(type);
   const title = type === "show" ? "BOOK A SHOW" : "SCHEDULE REHEARSAL";
   const schedVName = (DATA.venues && DATA.venues.venues && DATA.venues.venues[schedVenue] && DATA.venues.venues[schedVenue].name) || "The Dive";
-  const sub = type === "show" ? `${schedVName}'s open nights. Be there that evening to play.` : "Open slots where enough of your band is free. Show up to rehearse.";
-  const byDay = {};
-  opts.forEach((o) => { (byDay[o.day] = byDay[o.day] || []).push(o); });
-  const daysHTML = Object.keys(byDay).length
-    ? Object.entries(byDay).map(([d, arr]) => `
-        <div class="cal-day"><div class="cal-day-h">Day ${d} · ${weekdayLabel(+d)}${+d === today() ? " · today" : ""}</div>
-          <div class="cal-slots">${arr.map((o) => `<button class="cal-slot-btn" data-day="${o.day}" data-slot="${o.slot}">${esc(o.label)}</button>`).join("")}</div></div>`).join("")
-    : `<p class="shop-note">No open slots ${type === "show" ? "at the venue" : "for the band"} in the next while. ${type === "show" ? "Check back another day." : "Your bandmates aren't free — try a different week."}</p>`;
+  let body;
+  if (type === "show") {
+    const sub = `${schedVName} — 2–4 acts share each night's bill. Book into an open slot; out-draw the room to headline. Be there that evening.`;
+    const nights = opts.length ? opts.map(showNightCard).join("") : `<p class="shop-note">No nights with an open slot in the next while. Check back another day.</p>`;
+    body = `<p class="shop-note">${sub}</p>${bandPillsHTML()}${nights}`;
+  } else {
+    const sub = "Open slots where enough of your band is free. Show up to rehearse.";
+    const byDay = {}; opts.forEach((o) => { (byDay[o.day] = byDay[o.day] || []).push(o); });
+    const daysHTML = Object.keys(byDay).length
+      ? Object.entries(byDay).map(([d, arr]) => `<div class="cal-day"><div class="cal-day-h">Day ${d} · ${weekdayLabel(+d)}${+d === today() ? " · today" : ""}</div><div class="cal-slots">${arr.map((o) => `<button class="cal-slot-btn" data-day="${o.day}" data-slot="${o.slot}">${esc(o.label)}</button>`).join("")}</div></div>`).join("")
+      : `<p class="shop-note">Your bandmates aren't free — try a different week.</p>`;
+    body = `<p class="shop-note">${sub}</p>${daysHTML}`;
+  }
   overlay.innerHTML = `
     <div class="cal-modal">
       <div class="shop-head"><span class="shop-title">${title}</span><button class="phone-nav" id="cal-close">✕</button></div>
-      <div class="cal-body"><p class="shop-note">${sub}</p>${daysHTML}</div>
+      <div class="cal-body">${body}</div>
     </div>`;
   overlay.classList.remove("hidden");
   requestAnimationFrame(() => overlay.classList.add("open"));
   document.body.classList.add("modal-open");
   overlay.querySelector("#cal-close").addEventListener("click", closeScheduler);
-  overlay.querySelectorAll(".cal-slot-btn").forEach((b) => b.addEventListener("click", () => book(type, parseInt(b.dataset.day, 10), b.dataset.slot)));
+  overlay.querySelectorAll(".sched-band-pill").forEach((b) => b.addEventListener("click", () => { const pb = playerBands().find((x) => x.id === b.dataset.band); if (pb) schedBand = pb; renderScheduler(); }));
+  overlay.querySelectorAll(".cal-slot-btn").forEach((b) => b.addEventListener("click", () => book(schedType, parseInt(b.dataset.day, 10), b.dataset.slot)));
 }
 function closeScheduler() {
   overlay.classList.remove("open");
@@ -129,18 +162,28 @@ function closeScheduler() {
   setTimeout(() => overlay.classList.add("hidden"), 200);
 }
 function book(type, day, slot) {
-  const band = activeBand() || {};
+  const band = type === "show" ? (schedBand || activeBand() || {}) : (activeBand() || {});
   const venueId = type === "show" ? (schedVenue || "thedive") : null;
   const vName = (DATA.venues && DATA.venues.venues && DATA.venues.venues[venueId] && DATA.venues.venues[venueId].name) || "the venue";
   const title = type === "show" ? `Show · ${band.name || "your band"} @ ${vName}` : `Rehearsal · ${band.name || "your band"}`;
   if (band.id && bandBusyAt(band.id, day, slot)) { toast(`${band.name || "That band"} is already booked then.`, "warn"); return; }
-  if (type === "show" && venueId && venueBusyAt(venueId, day, slot)) { toast("That venue's already taken that night.", "warn"); return; }
+  if (type === "show") {
+    if (billOpenSlots(venueId, day) <= 0) { toast("That bill is full that night.", "warn"); return; }
+    if (!addPlayerAct(venueId, day, band)) { toast("No open slot on that bill.", "warn"); return; }
+  }
   list().push({ id: "cmt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), type, day, slot, status: "booked", title, bandId: band.id, venue: venueId });
   persist();
   emit("calendar:booked", { type, day, slot });
   emit("renderAll");
-  toast(`Booked: ${slotLabel(slot)}, Day ${day}.`, "good");
-  closeScheduler();
+  if (type === "show") {
+    const bc = billContext(venueId, day, band.id);
+    const where = bc && bc.isHeadliner ? "headlining" : (bc ? `opening under ${bc.headlinerName}` : "booked");
+    toast(`Booked: ${band.name || "your band"} — Day ${day}, ${where}.`, "good");
+    renderScheduler();
+  } else {
+    toast(`Booked: ${slotLabel(slot)}, Day ${day}.`, "good");
+    closeScheduler();
+  }
 }
 
 // ---- calendar app (read view) ----

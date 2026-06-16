@@ -15,11 +15,12 @@ import { emit } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
 import { advanceMinutes } from "./time.js";
-import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
+import { findReady, nextCommitment, complete, slotLabel, currentDay } from "./calendar.js";
+import { billContext } from "./bills.js";
 import { deviceFidelity, instrumentQuality } from "./gear.js";
 import { simulateSet, tierMult, memberStamina, playerStamina, playerEndurance, TIER_FLAVOR } from "./performance.js";
 import { addCondition } from "./conditions.js";
-import { bandTier, addBandRegionalFame, regionOfCity, checkMilestones, mainGenre, sameGenre } from "../engine/state.js";
+import { bandTier, addBandRegionalFame, regionOfCity, checkMilestones, mainGenre, sameGenre, addRapport } from "../engine/state.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 let bookSource = "own", bookQuery = "", setlistModalOpen = false;
@@ -351,6 +352,23 @@ function playShow(setIds) {
   const est = estimateWithSim(new Set(setIds), band, undefined, true);
   const playedN = est.sim.collapsed ? est.sim.playedCount : setIds.length;
   if (!band.playerIn) { const bst = cfg.attendBoost || 1.15; est.pay = Math.round(est.pay * bst); est.fans = Math.round(est.fans * bst); est.fameGain = Math.round(est.fameGain * bst); est._boosted = bst; }
+  // Step 32: bill-aware outcome — co-acts inflate the room; slot position sets pay vs exposure.
+  const _bcfg = (DATA.config.bills) || {};
+  const billC = billContext(perfVenueId, currentDay(), band.id);
+  let billOutcome = null;
+  if (billC && billC.billSize > 1) {
+    const pull = Math.round((billC.coActsDraw || 0) * (_bcfg.billPullFactor || 0.15));
+    if (pull > 0) { est.draw += pull; est.fans += Math.round(pull * (_bcfg.roomFanFactor || 0.3)); }
+    if (billC.isHeadliner) {
+      est.pay = Math.round(est.pay * (_bcfg.headlinerPayBonus || 1.15));
+      billOutcome = { headliner: true, exposure: 0, coActs: billC.coActs };
+    } else {
+      const expo = Math.max(0, Math.round((billC.headlinerDraw || 0) * (_bcfg.exposureFactor || 0.25)));
+      est.pay = Math.round(est.pay * (_bcfg.openerPayFactor || 0.7));
+      est.fans += expo;
+      billOutcome = { headliner: false, exposure: expo, under: billC.headlinerName, coActs: billC.coActs };
+    }
+  }
   const energy = (cfg.energyCost || 25) + Math.max(0, playedN - 1) * 5;
   const minutes = (cfg.minutes || 180) + Math.max(0, playedN - 1) * 20;
 
@@ -361,6 +379,13 @@ function playShow(setIds) {
   const coverTotal = coverPaid.reduce((a, c) => a + c.royalty, 0);
   addBuzz((venueById(perfVenueId) || {}).town, showBuzz(est));
   gainShowRapport((venueById(perfVenueId) || {}).town, 2);
+  if (billOutcome) {
+    const rmap = _bcfg.rapportByTier || {};
+    let rd = rmap[est.tier]; if (rd == null) rd = est.sim.collapsed ? -6 : 1;
+    for (const co of (billOutcome.coActs || [])) addRapport(co.bandId, rd);
+    if (billOutcome.headliner) toast("You headlined the bill — top billing, bigger cut.", "good");
+    else if (billOutcome.exposure > 0) toast(`Opened under ${billOutcome.under} — +${billOutcome.exposure} new fans from their crowd.`, "good");
+  }
   { const st = getState(); st.stats.showsPlayed = (st.stats.showsPlayed || 0) + 1; }
   const merch = sellMerchAtShow(band, est.draw);
   if (merch.revenue > 0) { bandEarn(band.id, merch.revenue, "merch", "Merch sales at show"); band.merchSold = (band.merchSold || 0) + merch.revenue; }

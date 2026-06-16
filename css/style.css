@@ -1246,3 +1246,21 @@ body:has(.modal-scrim) #log { display: none; }
 .band-genre-sel { display: flex; gap: 8px; margin: 0 0 8px; }
 .band-gsel { flex: 1; padding: 7px 10px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px; }
 .band-gsel:disabled { opacity: .5; }
+
+/* ===== Multi-band bills (Step 32): venue lineup line ===== */
+.mp-bill { font-size: 11px; color: var(--muted); margin: 3px 0 5px; line-height: 1.35; }
+.mp-bill-h { color: var(--text); font-weight: 600; }
+.mp-bill-open { color: var(--green, #57c97a); }
+.mp-bill-full { color: var(--muted); }
+
+/* ===== Bill-aware booking scheduler (Step 32 step 2) ===== */
+.sched-bands { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.sched-band-pill { font-size: 12px; padding: 5px 11px; border-radius: 14px; border: 1px solid var(--line, #333); background: transparent; color: var(--text); }
+.sched-band-pill.on { background: var(--accent, #c0392b); color: #fff; border-color: var(--accent, #c0392b); }
+.sched-night { border: 1px solid var(--line, #333); border-radius: 10px; padding: 9px 11px; margin: 8px 0; }
+.sched-night-h { font-weight: 700; margin-bottom: 3px; }
+.sched-bill { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.sched-meta { font-size: 11px; margin: 4px 0 7px; }
+.sched-proj { font-style: italic; }
+.sched-proj.head { color: var(--green, #57c97a); }
+.sched-proj.open { color: var(--muted); }
