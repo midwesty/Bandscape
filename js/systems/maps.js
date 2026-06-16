@@ -7,7 +7,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, bandById, isDiscovered, discoverVenue, addContact, townBuzz } from "../engine/state.js";
+import { getState, bandById, isDiscovered, discoverVenue, addContact, townBuzz, cityUnlocked, cityDef, regionUnlocked } from "../engine/state.js";
 import { bookedCommitments, currentDay, currentSlot, slotLabel, openScheduler, venueOpenInfo } from "./calendar.js";
 import { venueEligible, venueReqText, openPerform } from "./shows.js";
 import { advanceMinutes } from "./time.js";
@@ -21,7 +21,7 @@ const TOWN_NAME = { yourtown: "Your Town", rocktroit: "Rocktroit" };
 const LOC_TOWN = { apartment: "yourtown", town: "yourtown", venue: "yourtown", thedive: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit" };
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
-function accessibleTown(t) { const s = getState(); return t === "yourtown" || (t === "rocktroit" && s.flags && s.flags.rocktroit_unlocked); }
+function accessibleTown(t) { return cityUnlocked(t); }
 
 function urgency(day) {
   const dd = day - currentDay();
@@ -69,7 +69,11 @@ export function renderMapsApp(container) {
   for (const id in venues) { const t = venues[id].town; (byTown[t] = byTown[t] || []).push(Object.assign({ id }, venues[id])); }
   const showsAtVenue = (vid) => shows.filter((c) => c.venue === vid || (vid === "thedive" && (c.venue === "venue" || c.venue == null)));
 
-  const townHTML = ["yourtown", "rocktroit"].filter((t) => byTown[t] && accessibleTown(t)).map((t) => {
+  const orderedTowns = [];
+  const _regs = (DATA.regions && DATA.regions.regions) || {};
+  Object.keys(_regs).sort((a, b) => (_regs[a].order || 99) - (_regs[b].order || 99)).forEach((rid) => (_regs[rid].cities || []).forEach((c) => { if (byTown[c] && accessibleTown(c) && orderedTowns.indexOf(c) < 0) orderedTowns.push(c); }));
+  Object.keys(byTown).forEach((t) => { if (accessibleTown(t) && orderedTowns.indexOf(t) < 0) orderedTowns.push(t); });
+  const townHTML = orderedTowns.map((t) => {
     const tgt = buzzTarget(t); const buzz = townBuzz(t);
     const meter = tgt ? `<div class="mp-buzz"><div class="mp-buzz-h">Local buzz <span>${buzz} / ${tgt}</span></div><div class="mp-buzz-bar"><i style="width:${Math.min(100, Math.round(buzz / tgt * 100))}%"></i></div></div>` : "";
     const vrows = byTown[t].map((v) => {
@@ -90,7 +94,7 @@ export function renderMapsApp(container) {
           : `<div class="mp-lock-req">${esc(venueReqText(v.id))}</div>`;
       return `<div class="mp-venue"><div class="mp-venue-h"><strong>${esc(v.name)}</strong>${status}</div>${v.blurb ? `<p class="mp-blurb">${esc(v.blurb)}</p>` : ""}<p class="mp-sched">${esc(sched)}</p>${evts}${action}</div>`;
     }).join("");
-    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc(TOWN_NAME[t] || t)}${t === here ? ` <span class="mp-here">you are here</span>` : ""}</div>${meter}${vrows}</div>`;
+    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc((cityDef(t) && cityDef(t).name) || TOWN_NAME[t] || t)}${t === here ? ` <span class="mp-here">you are here</span>` : ""}</div>${meter}${vrows}</div>`;
   }).join("");
 
   const rehHTML = rehs.length
@@ -106,12 +110,29 @@ export function renderMapsApp(container) {
     nextHTML = `<p class="muted">Nothing booked. Find a spot below, then book from here or the BAND app.</p>`;
   }
 
+  // "Coming up" — regions/cities not yet open, with how to unlock them
+  let lockedHTML = "";
+  { const rows = [];
+    Object.keys(_regs).sort((a, b) => (_regs[a].order || 99) - (_regs[b].order || 99)).forEach((rid) => {
+      const r = _regs[rid];
+      if (!regionUnlocked(rid)) {
+        const u = r.unlock || {}; let how = "";
+        if (u.type === "masterRegion") how = `Master ${(_regs[u.region] && _regs[u.region].name) || u.region}`;
+        else if (u.type === "masterAllUS") how = "Master the US regions";
+        rows.push(`<div class="mp-lockreg"><strong>${esc(r.name)}</strong><span>${esc(how)}</span></div>`);
+      } else {
+        (r.cities || []).forEach((c) => { const cd = cityDef(c); if (cd && !cityUnlocked(c) && !byTown[c]) rows.push(`<div class="mp-lockreg sub"><strong>${esc(cd.name)}</strong><span>${esc(r.name)} \u2014 not yet open</span></div>`); });
+      }
+    });
+    if (rows.length) lockedHTML = `<div class="mp-town mp-coming"><div class="mp-town-h">Coming up</div>${rows.join("")}</div>`;
+  }
   container.innerHTML = `
     <h2 class="app-title">MAPS</h2>
     ${nextHTML}
     <p class="mp-legend"><span class="mp-dot u-now"></span> tonight <span class="mp-dot u-soon"></span> soon <span class="mp-dot u-later"></span> later</p>
     ${townHTML}
-    ${rehHTML}`;
+    ${rehHTML}
+    ${lockedHTML}`;
   container.querySelectorAll("[data-discover]").forEach((b) => b.addEventListener("click", () => headOver(b.dataset.discover)));
   container.querySelectorAll("[data-book]").forEach((b) => b.addEventListener("click", () => openScheduler("show", b.dataset.book)));
   container.querySelectorAll("[data-play]").forEach((b) => b.addEventListener("click", () => { document.getElementById("phone-close")?.click(); openPerform(b.dataset.play); }));

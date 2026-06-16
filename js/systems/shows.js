@@ -19,6 +19,7 @@ import { findReady, nextCommitment, complete, slotLabel } from "./calendar.js";
 import { deviceFidelity, instrumentQuality } from "./gear.js";
 import { simulateSet, tierMult, memberStamina, playerStamina, playerEndurance, TIER_FLAVOR } from "./performance.js";
 import { addCondition } from "./conditions.js";
+import { bandTier, addBandRegionalFame, regionOfCity, checkMilestones } from "../engine/state.js";
 
 let overlay = null, pendingShowCmt = null, perfBand = null, perfVenueId = "thedive";
 let bookSource = "own", bookQuery = "", setlistModalOpen = false;
@@ -81,6 +82,7 @@ export function townRep(town) { const vs = (DATA.venues && DATA.venues.venues) |
 export function venueStanding(id) { const t = venueTier(id); return { name: t.name, rep: venueRepOf(id), payBonus: Math.round((t.pay || 0) * 100) }; }
 export function venueEligible(id) {
   const v = venueById(id); if (!v) return false; if (v.open) return true;
+  if (v.genreLock && v.genre) { const b = activeBand(); if (!b || String(b.genre || "").toLowerCase() !== String(v.genre).toLowerCase()) return false; } // hard genre gate (e.g. Pokeville saloon)
   const s = getState(); const r = v.req || {};
   const rc = DATA.config.venueRep || {};
   if (townRep(v.town) >= (rc.unlockTownRep || 50)) return true;   // earned your way in
@@ -94,6 +96,7 @@ export function venueEligible(id) {
 export function venueReqText(id) {
   const v = venueById(id); if (!v) return ""; if (v.open) return "Open mic — any band with a demo can play.";
   const s = getState(); const r = v.req || {}; const p = [];
+  if (v.genreLock && v.genre) { const b = activeBand(); const ok = b && String(b.genre || "").toLowerCase() === String(v.genre).toLowerCase(); if (!ok) p.push(`${v.genre}-only stage (your act isn't ${v.genre})`); }
   if (r.minReleases) p.push(`${(s.releases || []).length}/${r.minReleases} releases`);
   if (r.minFans) p.push(`${s.stats.fans || 0}/${r.minFans} fans`);
   if (r.minFame) p.push(`${s.stats.fame || 0}/${r.minFame} fame`);
@@ -343,6 +346,7 @@ function playShow(setIds) {
   if (!setIds.length) return;
   const s = getState(); const cfg = DATA.config.shows;
   const band = perfBand || activeBand() || {};
+  const _tierBefore = band && band.id ? bandTier(band).name : null;
   if (band && band.id) band.lastSetlist = [...setIds];
   const est = estimateWithSim(new Set(setIds), band, undefined, true);
   const playedN = est.sim.collapsed ? est.sim.playedCount : setIds.length;
@@ -382,6 +386,15 @@ function playShow(setIds) {
     m.fame = (m.fame || 0) + Math.max(1, Math.round(est.fameGain * (cfg.memberFameShare ?? 0.3)));
     const cut = liveCut(m, est.pay) + merchCut(m, merch.revenue);
     if (cut > 0) { accrueOwed(m, cut); cutLines.push({ name: m.name, cut }); cutTotal += cut; }
+  }
+  // Step 29: regional fame accrual + career progression detection
+  if (band.id) {
+    const _city = DATA.venues && DATA.venues.venues && DATA.venues.venues[perfVenueId] && DATA.venues.venues[perfVenueId].town;
+    const _region = _city ? regionOfCity(_city) : null;
+    if (_region) addBandRegionalFame(band.id, _region, est.fameGain);
+    const _tierAfter = bandTier(band).name;
+    if (_tierBefore && _tierAfter !== _tierBefore) toast(`\u25B2 ${band.name || "Your band"} leveled up \u2014 now a ${_tierAfter}!`, "good");
+    for (const ms of checkMilestones(band)) toast(`\u2605 Milestone: ${ms.name}${ms.reward && ms.reward.money ? ` (+$${ms.reward.money})` : ""}`, "good");
   }
   // Performance Arc: gigging builds Endurance; pushing past your safe limit trains it harder.
   let endGain = 0;

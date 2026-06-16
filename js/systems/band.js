@@ -16,7 +16,8 @@ import {
   ensureMusicianModel, allMusicians, musicianById, bandMembers, performingMembers,
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
-  ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered
+  ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
+  careerStanding
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -239,6 +240,7 @@ function renderBand(view) {
       <div><span>Renown</span><strong>${b.fame || 0}</strong></div>
       <div><span>Shows</span><strong>${b.showsPlayed || 0}</strong></div>
     </div>
+    ${(() => { const st = careerStanding(b); const nx = st.next && st.toNext ? ` \u00b7 next: ${st.next} (${[st.toNext.fans ? st.toNext.fans + " fans" : "", st.toNext.fame ? st.toNext.fame + " renown" : "", st.toNext.shows ? st.toNext.shows + " shows" : "", st.toNext.regions ? st.toNext.regions + " region" + (st.toNext.regions > 1 ? "s" : "") : ""].filter(Boolean).join(", ") || "ready"})` : " \u00b7 top tier"; return `<div class="band-standing"><span class="band-tier">${esc(st.tier)}</span><small>${esc(nx)}</small></div>`; })()}
     <div class="band-fin">
       <div><span>Your cash</span><strong>$${money}</strong></div>
       <div><span>Band acct</span><strong class="good">$${b.account || 0}</strong></div>

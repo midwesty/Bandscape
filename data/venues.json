@@ -91,7 +91,8 @@
       "town": "rocktroit",
       "open": true,
       "drawMult": 1.4,
-      "req": {}
+      "req": {},
+      "genre": "rock"
     },
     "steelroom": {
       "name": "The Steel Room",
@@ -102,7 +103,8 @@
         "minReleases": 1,
         "minFans": 150,
         "showsInTown": 2
-      }
+      },
+      "genre": "metal"
     },
     "apex": {
       "name": "Apex Hall",
@@ -115,6 +117,31 @@
         "minFans": 600,
         "showsInTown": 5
       }
+    },
+    "saloon": {
+      "name": "The Last Lasso",
+      "town": "pokeville",
+      "open": false,
+      "discover": true,
+      "drawMult": 1,
+      "payMult": 1.1,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "genre": "country",
+      "genreLock": true,
+      "req": {
+        "minReleases": 1,
+        "minFans": 100
+      },
+      "booker": {
+        "id": "npc_dusty",
+        "name": "Dusty",
+        "role": "Saloon Row's gatekeeper"
+      },
+      "blurb": "Pokeville's country-only stage. Dusty books acts with a record out and a real following \u2014 and no, your noise-punk set won't fly here."
     }
   }
 }

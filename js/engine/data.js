@@ -33,6 +33,7 @@ const FILES = {
   shops:      "data/shops.json",
   devices:    "data/devices.json",
   venues:     "data/venues.json",
+  regions:     "data/regions.json",
   properties:  "data/properties.json",
   worldaudio:  "data/audio/world.json",
   decor:       "data/decor.json"

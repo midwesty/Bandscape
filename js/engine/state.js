@@ -712,3 +712,103 @@ export function payPayroll(cover) {
   for (const bs of payrollSummary()) { const r = payBand(bs.bandId, cover); paid += r.paid; contributed += r.contributed; leftOwed += r.leftOwed; }
   return { paid, contributed, leftOwed };
 }
+
+// ===================== Step 29: Career spine + regions =====================
+// Per-band career ladder (fans + fame + shows played, with top tiers gated on
+// regions mastered so the ladder can't be maxed without touring). Region access
+// nests above venue rep: career tier -> region unlock -> regional fame -> mastery.
+export function regionDef(id) { return ((DATA.regions && DATA.regions.regions) || {})[id] || null; }
+export function cityDef(id) { return ((DATA.regions && DATA.regions.cities) || {})[id] || null; }
+export function regionOfCity(cityId) { const c = cityDef(cityId); return c ? c.region : null; }
+
+export function bandRegionalFame(bandId, regionId) { const s = getState(); return ((((s && s.regionalFame) || {})[bandId]) || {})[regionId] || 0; }
+export function addBandRegionalFame(bandId, regionId, n) {
+  if (!bandId || !regionId || !n) return;
+  const s = getState(); if (!s) return;
+  s.regionalFame = s.regionalFame || {};
+  s.regionalFame[bandId] = s.regionalFame[bandId] || {};
+  s.regionalFame[bandId][regionId] = Math.max(0, (s.regionalFame[bandId][regionId] || 0) + n);
+}
+function regionMasterNeed(regionId) {
+  const r = regionDef(regionId);
+  return (r && r.masterFame) || (DATA.config.career && DATA.config.career.regionMasterFameDefault) || 3000;
+}
+function regionsMasteredByBand(bandId) {
+  const s = getState(); const rf = (((s && s.regionalFame) || {})[bandId]) || {};
+  let n = 0; for (const rid in rf) if (rf[rid] >= regionMasterNeed(rid)) n++;
+  return n;
+}
+// A region is "mastered" (for unlocking the next) if ANY of your bands hits its fame bar.
+export function regionMastered(regionId) {
+  const s = getState(); const rf = (s && s.regionalFame) || {};
+  let best = 0; for (const bid in rf) best = Math.max(best, (rf[bid] || {})[regionId] || 0);
+  return best >= regionMasterNeed(regionId);
+}
+export function regionUnlocked(regionId) {
+  const r = regionDef(regionId); if (!r) return false;
+  if (r.startUnlocked) return true;
+  const u = r.unlock || {};
+  if (u.type === "start") return true;
+  if (u.type === "masterRegion") return regionMastered(u.region);
+  if (u.type === "masterAllUS") return ["midwest", "east_coast", "west_coast"].every(regionMastered);
+  return false;
+}
+export function cityUnlocked(cityId) {
+  const c = cityDef(cityId); if (!c) return false;
+  if (c.startUnlocked) return true;
+  const s = getState(); if (s && s.flags && s.flags[cityId + "_unlocked"]) return true; // compat w/ existing flags (rocktroit)
+  if (!regionUnlocked(c.region)) return false;
+  return false; // built-but-locked Midwest cities + future cities stay "coming" until their map/gate lands
+}
+export function cityTourEligible(cityId) {
+  const c = cityDef(cityId); if (!c) return false;
+  return !!c.tourEligible && cityUnlocked(cityId) && (c.built || c.bookableStub);
+}
+
+export function bandTier(band) {
+  const tiers = (DATA.config.career && DATA.config.career.tiers) || [];
+  const fans = (band && band.fans) || 0, fame = (band && band.fame) || 0, shows = (band && band.showsPlayed) || 0;
+  const rm = band ? regionsMasteredByBand(band.id) : 0;
+  let cur = tiers.length ? { ...tiers[0], index: 0 } : { name: "Local Act", index: 0 };
+  for (let i = 0; i < tiers.length; i++) {
+    const t = tiers[i];
+    if (fans >= (t.minFans || 0) && fame >= (t.minFame || 0) && shows >= (t.minShows || 0) && rm >= (t.minRegionsMastered || 0)) cur = { ...t, index: i };
+  }
+  return cur;
+}
+function tierIndexByName(n) { const t = (DATA.config.career && DATA.config.career.tiers) || []; const i = t.findIndex((x) => x.name === n); return i < 0 ? 99 : i; }
+export function careerStanding(band) {
+  const tiers = (DATA.config.career && DATA.config.career.tiers) || [];
+  const cur = bandTier(band); const nxt = tiers[cur.index + 1] || null;
+  const fans = (band && band.fans) || 0, fame = (band && band.fame) || 0, shows = (band && band.showsPlayed) || 0;
+  let toNext = null;
+  if (nxt) toNext = {
+    fans: Math.max(0, (nxt.minFans || 0) - fans), fame: Math.max(0, (nxt.minFame || 0) - fame),
+    shows: Math.max(0, (nxt.minShows || 0) - shows), regions: Math.max(0, (nxt.minRegionsMastered || 0) - (band ? regionsMasteredByBand(band.id) : 0))
+  };
+  return { tier: cur.name, index: cur.index, fans, fame, shows, next: nxt ? nxt.name : null, toNext };
+}
+
+function milestoneMet(m, band) {
+  if (m.type === "bandFans") return ((band && band.fans) || 0) >= m.value;
+  if (m.type === "bandShows") return ((band && band.showsPlayed) || 0) >= m.value;
+  if (m.type === "releases") { const s = getState(); return (s.releases || []).filter((r) => !band || r.bandId === band.id).length >= m.value; }
+  if (m.type === "bandTier") return bandTier(band).index >= tierIndexByName(m.value);
+  return false;
+}
+function applyMilestoneReward(r, band) {
+  if (!r) return;
+  if (r.money) addStat("money", r.money);
+  if (r.fame) { if (band) band.fame = (band.fame || 0) + r.fame; else addStat("fame", r.fame); }
+  if (r.fans) { if (band) band.fans = (band.fans || 0) + r.fans; else addStat("fans", r.fans); }
+}
+export function checkMilestones(band) {
+  const ms = (DATA.config.career && DATA.config.career.milestones) || [];
+  const s = getState(); if (!s) return [];
+  s.milestones = s.milestones || {};
+  const key = band ? band.id : "player";
+  const got = (s.milestones[key] = s.milestones[key] || {});
+  const newly = [];
+  for (const m of ms) { if (got[m.id]) continue; if (milestoneMet(m, band)) { got[m.id] = (s.time && s.time.day) || 1; applyMilestoneReward(m.reward, band); newly.push(m); } }
+  return newly;
+}

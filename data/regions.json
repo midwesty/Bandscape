@@ -1,0 +1,55 @@
+{
+  "_comment": "World structure for the progression + touring arcs. Career tier (per band) gates which REGIONS you can enter; regional fame (earned per region) gates MASTERY of a region; venue rep is the micro-grind. Cities with built:false are data stubs awaiting their explorable map in a later build (some are bookableStub so their venues can be played before the map exists). districts carry genre identity — the genre-specific zones within a city. tourEligible:false cities must be activated on the ground (meet the booker / play once) before they can be routed into a bus tour.",
+  "regions": {
+    "midwest": {
+      "name": "Midwest", "order": 1, "startUnlocked": true, "busPassCost": 250,
+      "unlock": { "type": "start" },
+      "cities": ["yourtown", "rocktroit", "pokeville", "flamcago", "kansas_snarey", "jazz_orleans"],
+      "masterFame": 3000
+    },
+    "east_coast": {
+      "name": "East Coast", "order": 2, "startUnlocked": false, "busPassCost": 600,
+      "unlock": { "type": "masterRegion", "region": "midwest" },
+      "cities": ["new_funk_city", "bostone", "jamlanta"],
+      "masterFame": 6000
+    },
+    "west_coast": {
+      "name": "West Coast", "order": 3, "startUnlocked": false, "busPassCost": 600,
+      "unlock": { "type": "masterRegion", "region": "east_coast" },
+      "cities": ["cost_angeles", "porthole", "san_flamenco"],
+      "masterFame": 6000
+    },
+    "europe": {
+      "name": "Europe", "order": 4, "startUnlocked": false, "busPassCost": 1500,
+      "unlock": { "type": "masterAllUS" },
+      "cities": ["londrum", "berlinn", "amsterjam"],
+      "masterFame": 10000
+    },
+    "japan": {
+      "name": "Japan", "order": 5, "startUnlocked": false, "busPassCost": 1800,
+      "unlock": { "type": "masterRegion", "region": "europe" },
+      "cities": ["tokyolo", "osanka", "kyodo"],
+      "masterFame": 10000
+    }
+  },
+  "cities": {
+    "yourtown": { "name": "Your Town", "region": "midwest", "built": true, "explorable": true, "startUnlocked": true, "tourEligible": true, "districts": [] },
+    "rocktroit": { "name": "Rocktroit", "region": "midwest", "built": true, "explorable": true, "startUnlocked": false, "tourEligible": true, "districts": [ { "id": "rocktroit_electro", "name": "Voltage District", "genre": "electronic" }, { "id": "rocktroit_rap", "name": "The Bricks", "genre": "rap" } ] },
+    "pokeville": { "name": "Pokeville", "region": "midwest", "built": false, "bookableStub": true, "explorable": true, "startUnlocked": true, "tourEligible": true, "districts": [ { "id": "saloon_row", "name": "Saloon Row", "genre": "country" } ] },
+    "flamcago": { "name": "Flamcago", "region": "midwest", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": true, "districts": [ { "id": "flamcago_house", "name": "Warehouse Mile", "genre": "electronic" }, { "id": "flamcago_blues", "name": "Blues Alley", "genre": "blues" } ] },
+    "kansas_snarey": { "name": "Kansas Snarey", "region": "midwest", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": true, "districts": [ { "id": "ks_jazz", "name": "18th & Vinyl", "genre": "jazz" } ] },
+    "jazz_orleans": { "name": "Jazz Orleans", "region": "midwest", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": true, "districts": [ { "id": "jo_jazz", "name": "The Quarter", "genre": "jazz" }, { "id": "jo_funk", "name": "Bourbon Funk", "genre": "funk" } ] },
+    "new_funk_city": { "name": "New Funk City", "region": "east_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "nfc_punk", "name": "Lower Distortion", "genre": "punk" }, { "id": "nfc_rap", "name": "Boombox Heights", "genre": "rap" } ] },
+    "bostone": { "name": "Bostone", "region": "east_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "bos_indie", "name": "Brick Row", "genre": "indie" } ] },
+    "jamlanta": { "name": "Jamlanta", "region": "east_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "jam_rap", "name": "Trap House Hill", "genre": "rap" }, { "id": "jam_soul", "name": "Peachtree Soul", "genre": "soul" } ] },
+    "cost_angeles": { "name": "Cost Angeles", "region": "west_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "ca_pop", "name": "Sunset Strip Mall", "genre": "pop" }, { "id": "ca_metal", "name": "The Pit", "genre": "metal" } ] },
+    "porthole": { "name": "Porthole", "region": "west_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "po_indie", "name": "Fog District", "genre": "indie" } ] },
+    "san_flamenco": { "name": "San Flamenco", "region": "west_coast", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "sf_punk", "name": "Border Pit", "genre": "punk" }, { "id": "sf_latin", "name": "Costa Loud", "genre": "latin" } ] },
+    "londrum": { "name": "Londrum", "region": "europe", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "lon_rock", "name": "Camden Crawl", "genre": "rock" }, { "id": "lon_electro", "name": "The Grid", "genre": "electronic" } ] },
+    "berlinn": { "name": "Berlinn", "region": "europe", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "ber_techno", "name": "Bunker Block", "genre": "techno" } ] },
+    "amsterjam": { "name": "Amsterjam", "region": "europe", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "ams_jam", "name": "Canal Sessions", "genre": "jam" } ] },
+    "tokyolo": { "name": "Tokyolo", "region": "japan", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "tok_jpop", "name": "Neon Mile", "genre": "jpop" }, { "id": "tok_noise", "name": "Static Alley", "genre": "noise" } ] },
+    "osanka": { "name": "Osanka", "region": "japan", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "osa_punk", "name": "Dotonbori Din", "genre": "punk" } ] },
+    "kyodo": { "name": "Kyodo", "region": "japan", "built": false, "explorable": true, "startUnlocked": false, "tourEligible": false, "districts": [ { "id": "kyo_trad", "name": "Old Town Strings", "genre": "traditional" } ] }
+  }
+}

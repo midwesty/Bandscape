@@ -1231,3 +1231,13 @@ body:has(.modal-scrim) #log { display: none; }
 .tier-sloppy { background: #e6b54a; color: #2a1f04; }
 .tier-disaster { background: #e25555; color: #fff; }
 .tier-collapse { background: #7a2b2b; color: #ffd5d5; }
+
+/* ===== Progression spine (Step 29): band standing + locked regions ===== */
+.band-standing { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 2px 0 8px; padding: 6px 10px; background: var(--panel, #16161c); border: 1px solid var(--line); border-radius: 8px; }
+.band-tier { font-weight: 800; color: var(--orange, #ff8a3d); font-size: 13px; letter-spacing: .02em; }
+.band-standing small { color: var(--muted); font-size: 11px; text-align: right; }
+.mp-coming { opacity: .9; }
+.mp-lockreg { display: flex; justify-content: space-between; gap: 8px; padding: 5px 2px; font-size: 12px; border-top: 1px solid var(--line); }
+.mp-lockreg strong { color: var(--text); }
+.mp-lockreg span { color: var(--muted); }
+.mp-lockreg.sub strong { color: var(--muted); font-weight: 600; }

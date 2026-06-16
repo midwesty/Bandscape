@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.28.0 (Performance Arc: shows arent auto-wins anymore. Each song in a set costs stamina \u2014 drawn from your Energy plus a new per-member Endurance stat and lifted by prep (sleep, food, coffee, a shower, good mood). The booking screen projects the set: which songs land strong, which get sloppy as you tire, and where you risk collapsing mid-set. Push past your safe limit to gamble for a bigger payoff. Outcomes scale Legendary > Great > Solid > Sloppy > Disaster, with a forgiving Collapse (partial pay, a fans/rep dip, Exhausted + a health hit). Endurance grows from gigging. Basic genre-fit weight in. All tunable in config.performance.)",
+  "version": "0.29.0 (Progression spine + region framework: every band climbs a career ladder \u2014 Local Act > Hometown Draw > Regional > Touring Act > National > Legend \u2014 earned from fans + renown + shows played, with the top tiers gated on mastering multiple regions so you cant max out without touring the world. The map is now structured into 5 regions (Midwest start; East/West Coast, Europe, Japan) and ~18 cities with genre-themed districts, all data-driven. Regional fame tracked per band per region. The BAND app shows your standing + next-tier gap; MAPS is region-aware with a Coming up list of locked regions; tier-ups + milestones pop as background toasts. Pokeville is reachable from the start with a country-locked saloon \u2014 the genre+progression gate proof. Existing venues still play; gating now respects a hard genre lock.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -362,5 +362,105 @@
       "match": 0.1,
       "mismatch": -0.08
     }
+  },
+  "career": {
+    "tiers": [
+      {
+        "name": "Local Act",
+        "minFans": 0,
+        "minFame": 0,
+        "minShows": 0
+      },
+      {
+        "name": "Hometown Draw",
+        "minFans": 150,
+        "minFame": 40,
+        "minShows": 5
+      },
+      {
+        "name": "Regional",
+        "minFans": 600,
+        "minFame": 120,
+        "minShows": 15
+      },
+      {
+        "name": "Touring Act",
+        "minFans": 2000,
+        "minFame": 300,
+        "minShows": 30,
+        "minRegionsMastered": 1
+      },
+      {
+        "name": "National",
+        "minFans": 6000,
+        "minFame": 700,
+        "minShows": 60,
+        "minRegionsMastered": 2
+      },
+      {
+        "name": "Legend",
+        "minFans": 15000,
+        "minFame": 1500,
+        "minShows": 100,
+        "minRegionsMastered": 4
+      }
+    ],
+    "milestones": [
+      {
+        "id": "first_fans_100",
+        "name": "First 100 fans",
+        "type": "bandFans",
+        "value": 100,
+        "reward": {
+          "money": 50
+        }
+      },
+      {
+        "id": "first_release",
+        "name": "First release",
+        "type": "releases",
+        "value": 1,
+        "reward": {
+          "fame": 5
+        }
+      },
+      {
+        "id": "shows_10",
+        "name": "Road-tested",
+        "type": "bandShows",
+        "value": 10,
+        "reward": {
+          "money": 100
+        }
+      },
+      {
+        "id": "fans_1000",
+        "name": "Four-figure following",
+        "type": "bandFans",
+        "value": 1000,
+        "reward": {
+          "money": 500
+        }
+      },
+      {
+        "id": "reach_regional",
+        "name": "Regional act",
+        "type": "bandTier",
+        "value": "Regional",
+        "reward": {
+          "money": 300,
+          "fame": 20
+        }
+      },
+      {
+        "id": "reach_touring",
+        "name": "Hit the road",
+        "type": "bandTier",
+        "value": "Touring Act",
+        "reward": {
+          "money": 1000
+        }
+      }
+    ]
   }
 }
