@@ -1,0 +1,110 @@
+{
+  "_comment": "Tour Bus interior (vehicle). Good sleep + decor home-vibe (furnished). Appliances usable (Step 36 fix). Step out via 'vehicleexit'.",
+  "id": "bus_interior",
+  "name": "Tour Bus",
+  "size": {
+    "w": 9,
+    "h": 5
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bus_bed",
+      "name": "Bunk",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "interact": "sleep",
+      "sprite": "assets/img/objects/bed.png"
+    },
+    {
+      "id": "bus_fridge",
+      "name": "Fridge",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "interact": "fridge",
+      "containerId": "bus_fridge",
+      "sprite": "assets/img/objects/fridge.png"
+    },
+    {
+      "id": "bus_crate",
+      "name": "Gear Storage",
+      "tile": {
+        "x": 7,
+        "y": 3
+      },
+      "interact": "container",
+      "containerId": "bus_storage",
+      "sprite": "assets/img/objects/crate.png"
+    },
+    {
+      "id": "bus_laptop",
+      "name": "Laptop",
+      "tile": {
+        "x": 4,
+        "y": 3
+      },
+      "interact": "daw",
+      "sprite": "assets/img/objects/laptop.png"
+    },
+    {
+      "id": "pd_bus_micro",
+      "name": "Microwave",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "decorId": "microwave",
+      "sprite": "assets/img/objects/decor/microwave.png"
+    },
+    {
+      "id": "pd_bus_futon",
+      "name": "Futon",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "futon",
+      "sprite": "assets/img/objects/decor/futon.png"
+    },
+    {
+      "id": "pd_bus_poster",
+      "name": "Band Poster",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "band_poster",
+      "sprite": "assets/img/objects/decor/band_poster.png"
+    },
+    {
+      "id": "pd_bus_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "lava_lamp",
+      "sprite": "assets/img/objects/decor/lava_lamp.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "out",
+      "name": "Step Out",
+      "tile": {
+        "x": 4,
+        "y": 4
+      },
+      "interact": "vehicleexit"
+    }
+  ],
+  "palette": {
+    "floorA": "#2b2433",
+    "floorB": "#231c2b",
+    "floorEdge": "#403653"
+  }
+}

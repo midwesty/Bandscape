@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.40.0 (Districts + water + the NPC aesthetic \u2014 capstone of the Maps & Cities arc. Each anchor city now has a walkable WATER DISTRICT reached by an exit tile: Flamcago\u2019s Warehouse Mile (Lake Michigan, electronic), Kansas Snarey\u2019s The Levee (Missouri River, jazz), Jazz Orleans\u2019 Bourbon Funk (bayou boardwalk, funk), Rocktroit\u2019s The Cut (Detroit River, hip-hop). NEW engine: data-driven water tiles (non-walkable) + boats that sail lanes \u2014 a scene opts in via world.water/waterLanes/ambient.boats, so all existing scenes are untouched. Each district has a GENRE-EXCLUSIVE playable venue (genreLock, like Pokeville), recruitable musicians, and rival-band members who wander in their band merch. NEW NPC aesthetic: musicians/locals are now colored by genre so towns + districts read differently, and recruitable musicians show a gold music-note marker in every city (fixes the missing marker). NOTE: water/boats is brand-new rendering \u2014 flag anything that looks off and it is a quick tune. Backlog: vary the twin-city exterior layouts.)",
+  "version": "0.43.0 (Come-alive pipeline \u2014 the foundation before regions. The world band roster now SCALES and covers every genre: instead of a frozen ~50 bands, it guarantees enough acts per region for each of its district genres, ~100 total across all five regions, and it tops up your EXISTING save non-destructively so the new districts finally fill instead of sitting wide open. Bills now (re)bootstrap on a save when this update lands, so previously-empty venues populate, and they prefer bands matching a venue\u2019s genre (a jazz room books jazz acts) while still leaving the open slots and open further-out nights you want. World radio gained a tier sense: National and Legend acts now broadcast across regions like real national hits, while regional/local acts stay loudest at home. No maps yet \u2014 this is the shared layer every future city will inherit, so they\u2019re alive on arrival.)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -170,7 +170,8 @@
       "west_coast": 2500,
       "europe": 6000,
       "japan": 6000
-    }
+    },
+    "vehicleDriveMinutes": 45
   },
   "merch": {
     "types": [
@@ -292,7 +293,10 @@
     "mood": 3,
     "fans": 2,
     "yourBoost": 4,
-    "localMult": 2.5
+    "localMult": 2.5,
+    "nationalReach": 1.6,
+    "farMult": 0.5,
+    "nationalBoost": 1.5
   },
   "performance": {
     "playerStartEndurance": 50,
@@ -490,7 +494,9 @@
       "Sloppy": -2,
       "Disaster": -5,
       "Collapse": -6
-    }
+    },
+    "coverageVersion": 2,
+    "genreMatchMult": 2.5
   },
   "lodging": {
     "hotelPrice": 60,
@@ -498,5 +504,10 @@
   },
   "diner": {
     "mealPrice": 18
+  },
+  "world": {
+    "bandsPerGenre": 4,
+    "bandsFloorPerRegion": 20,
+    "coverageVersion": 2
   }
 }

@@ -1,0 +1,61 @@
+{
+  "_comment": "Tour Van interior (vehicle). Rough sleep (bed has poor:true -> sleep forced). Step out returns to your current city via interact 'vehicleexit'.",
+  "id": "van_interior",
+  "name": "Tour Van",
+  "size": {
+    "w": 6,
+    "h": 4
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "van_bed",
+      "name": "Bench Bed",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "interact": "sleep",
+      "poor": true,
+      "sprite": "assets/img/objects/bed.png"
+    },
+    {
+      "id": "van_crate",
+      "name": "Storage",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "interact": "container",
+      "containerId": "van_storage",
+      "sprite": "assets/img/objects/crate.png"
+    },
+    {
+      "id": "van_cooler",
+      "name": "Cooler",
+      "tile": {
+        "x": 4,
+        "y": 2
+      },
+      "interact": "beerfridge",
+      "containerId": "van_cooler",
+      "sprite": "assets/img/objects/fridge.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "out",
+      "name": "Step Out",
+      "tile": {
+        "x": 2,
+        "y": 3
+      },
+      "interact": "vehicleexit"
+    }
+  ],
+  "palette": {
+    "floorA": "#2a2530",
+    "floorB": "#221d2a",
+    "floorEdge": "#3a3346"
+  }
+}

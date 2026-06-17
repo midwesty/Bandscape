@@ -142,6 +142,44 @@
         "Laptop / DAW"
       ],
       "blurb": "A wrought-iron balcony studio in the Quarter. The brass never quite stops below your window."
+    },
+    {
+      "id": "veh_van",
+      "name": "Tour Van",
+      "tagline": "The Beater",
+      "vehicle": true,
+      "location": "van_interior",
+      "buyPrice": 30000,
+      "sellValue": 18000,
+      "gearSlots": 4,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bench bed (rough sleep)",
+        "Cooler",
+        "A little storage"
+      ],
+      "blurb": "A rusty van that gets you to the gig. Sleep rough, stash some gear, and never miss a show for want of a ride."
+    },
+    {
+      "id": "veh_bus",
+      "name": "Tour Bus",
+      "tagline": "Home on Wheels",
+      "vehicle": true,
+      "location": "bus_interior",
+      "buyPrice": 300000,
+      "rentPrice": 5000,
+      "sellValue": 220000,
+      "gearSlots": 10,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Real bunk (good sleep)",
+        "Fridge + appliances",
+        "Gear storage",
+        "Decorate it like home"
+      ],
+      "blurb": "A proper tour bus - a furnished home on wheels. Buy it outright or lease by the month, like any place you'd live."
     }
   ]
 }
