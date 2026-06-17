@@ -182,6 +182,21 @@
         "x": 11,
         "y": 6
       }
+    },
+    {
+      "id": "district",
+      "name": "Warehouse Mile \u25b8",
+      "interact": "enter",
+      "to": "flamcago_warehouse",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
     }
   ],
   "world": {

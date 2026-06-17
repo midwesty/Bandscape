@@ -172,6 +172,21 @@
         "x": 11,
         "y": 6
       }
+    },
+    {
+      "id": "district",
+      "name": "The Levee \u25b8",
+      "interact": "enter",
+      "to": "kansas_levee",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
     }
   ],
   "world": {

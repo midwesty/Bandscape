@@ -117,6 +117,12 @@
           "id": "rocktroit_rap",
           "name": "The Bricks",
           "genre": "rap"
+        },
+        {
+          "id": "rocktroit_cut",
+          "name": "The Cut",
+          "genre": "hiphop",
+          "scene": "rocktroit_cut"
         }
       ],
       "entryScene": {
@@ -161,7 +167,8 @@
         {
           "id": "flamcago_house",
           "name": "Warehouse Mile",
-          "genre": "electronic"
+          "genre": "electronic",
+          "scene": "flamcago_warehouse"
         },
         {
           "id": "flamcago_blues",
@@ -188,7 +195,8 @@
         {
           "id": "ks_jazz",
           "name": "18th & Vinyl",
-          "genre": "jazz"
+          "genre": "jazz",
+          "scene": "kansas_levee"
         }
       ],
       "entryScene": {
@@ -215,7 +223,8 @@
         {
           "id": "jo_funk",
           "name": "Bourbon Funk",
-          "genre": "funk"
+          "genre": "funk",
+          "scene": "orleans_bourbon"
         }
       ],
       "entryScene": {

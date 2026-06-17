@@ -1059,6 +1059,454 @@
         }
       },
       "town": "flamcago"
+    },
+    {
+      "id": "npc_wh_volt",
+      "name": "Volt",
+      "archetype": "Keyboardist",
+      "reliability": 0.72,
+      "skill": 0.74,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_wh_volt"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "flamcago_warehouse",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "flamcago_warehouse",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "flamcago"
+    },
+    {
+      "id": "npc_wh_kit",
+      "name": "Kit Reyes",
+      "archetype": "Drummer",
+      "reliability": 0.72,
+      "skill": 0.7,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_wh_kit"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 6,
+      "potential": 79,
+      "schedule": {
+        "evening": {
+          "at": "flamcago_warehouse",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "flamcago_warehouse",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "flamcago"
+    },
+    {
+      "id": "npc_wh_rival",
+      "name": "DJ Mirage",
+      "townsfolk": true,
+      "rival": true,
+      "genre": "electronic",
+      "line": "DJ Mirage nods. \"Catch our set at the Voltage Room. You'll learn something.\"",
+      "town": "flamcago",
+      "schedule": {
+        "afternoon": {
+          "at": "flamcago_warehouse"
+        },
+        "evening": {
+          "at": "flamcago_warehouse"
+        },
+        "late": {
+          "at": "flamcago_warehouse"
+        }
+      }
+    },
+    {
+      "id": "npc_lv_cole",
+      "name": "Coleman",
+      "archetype": "Keys",
+      "reliability": 0.72,
+      "skill": 0.76,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lv_cole"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 8,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "kansas_levee",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "kansas_levee",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "kansas_snarey"
+    },
+    {
+      "id": "npc_lv_birdie",
+      "name": "Birdie",
+      "archetype": "Bassist",
+      "reliability": 0.72,
+      "skill": 0.71,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lv_birdie"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 6,
+      "potential": 80,
+      "schedule": {
+        "evening": {
+          "at": "kansas_levee",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "kansas_levee",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "kansas_snarey"
+    },
+    {
+      "id": "npc_lv_rival",
+      "name": "Hank Tatum",
+      "townsfolk": true,
+      "rival": true,
+      "genre": "jazz",
+      "line": "\"The Stomp's our room, kid. Earn it.\"",
+      "town": "kansas_snarey",
+      "schedule": {
+        "afternoon": {
+          "at": "kansas_levee"
+        },
+        "evening": {
+          "at": "kansas_levee"
+        },
+        "late": {
+          "at": "kansas_levee"
+        }
+      }
+    },
+    {
+      "id": "npc_bf_bone",
+      "name": "Bone",
+      "archetype": "Bassist",
+      "reliability": 0.72,
+      "skill": 0.75,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_bf_bone"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "orleans_bourbon",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "orleans_bourbon",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "jazz_orleans"
+    },
+    {
+      "id": "npc_bf_doc",
+      "name": "Dr. Funk",
+      "archetype": "Keyboardist",
+      "reliability": 0.72,
+      "skill": 0.73,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_bf_doc"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 8,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "orleans_bourbon",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "orleans_bourbon",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "jazz_orleans"
+    },
+    {
+      "id": "npc_bf_rival",
+      "name": "Zydeco Pete",
+      "townsfolk": true,
+      "rival": true,
+      "genre": "funk",
+      "line": "\"Y'all groove? The Second Line don't board passengers, only players.\"",
+      "town": "jazz_orleans",
+      "schedule": {
+        "afternoon": {
+          "at": "orleans_bourbon"
+        },
+        "evening": {
+          "at": "orleans_bourbon"
+        },
+        "late": {
+          "at": "orleans_bourbon"
+        }
+      }
+    },
+    {
+      "id": "npc_cut_verse",
+      "name": "Verse",
+      "archetype": "Vocalist",
+      "reliability": 0.72,
+      "skill": 0.75,
+      "genre": "hiphop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_cut_verse"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "rocktroit_cut",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "rocktroit_cut",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "rocktroit"
+    },
+    {
+      "id": "npc_cut_boom",
+      "name": "Boom Bap",
+      "archetype": "Drummer",
+      "reliability": 0.72,
+      "skill": 0.7,
+      "genre": "hiphop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_cut_boom"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 6,
+      "potential": 79,
+      "schedule": {
+        "evening": {
+          "at": "rocktroit_cut",
+          "post": [
+            8,
+            3
+          ]
+        },
+        "late": {
+          "at": "rocktroit_cut",
+          "post": [
+            3,
+            3
+          ]
+        }
+      },
+      "town": "rocktroit"
+    },
+    {
+      "id": "npc_cut_rival",
+      "name": "MC Eastside",
+      "townsfolk": true,
+      "rival": true,
+      "genre": "hiphop",
+      "line": "\"Drydock's where reputations get made. Don't waste my time.\"",
+      "town": "rocktroit",
+      "schedule": {
+        "afternoon": {
+          "at": "rocktroit_cut"
+        },
+        "evening": {
+          "at": "rocktroit_cut"
+        },
+        "late": {
+          "at": "rocktroit_cut"
+        }
+      }
     }
   ]
 }

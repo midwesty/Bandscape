@@ -172,6 +172,21 @@
         "x": 11,
         "y": 6
       }
+    },
+    {
+      "id": "district",
+      "name": "Bourbon Funk \u25b8",
+      "interact": "enter",
+      "to": "orleans_bourbon",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
     }
   ],
   "world": {

@@ -139,6 +139,21 @@
         "x": 4,
         "y": 1
       }
+    },
+    {
+      "id": "district",
+      "name": "The Cut \u25b8",
+      "interact": "enter",
+      "to": "rocktroit_cut",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
     }
   ],
   "world": {

@@ -1,0 +1,108 @@
+{
+  "_comment": "The Levee \u2014 Kansas Snarey's riverfront jazz district. River down the right edge; a paddle-riverboat; genre-locked jazz room.",
+  "id": "kansas_levee",
+  "name": "The Levee",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "lv_a",
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old record press"
+    },
+    {
+      "id": "lv_b",
+      "build": "bar",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Levee tavern"
+    },
+    {
+      "id": "lv_warehouse",
+      "build": "general",
+      "tile": {
+        "x": 1,
+        "y": 6
+      },
+      "solid": true,
+      "name": "Grain elevator"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Riverboat Stomp",
+      "interact": "stage",
+      "venueId": "ks_levee_stomp",
+      "tile": {
+        "x": 5,
+        "y": 3
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to 18th & Vinyl",
+      "interact": "enter",
+      "to": "kansas_snarey",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "river",
+        "from": {
+          "x": 10,
+          "y": 0
+        },
+        "to": {
+          "x": 10,
+          "y": 8
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 9,
+        "y0": 0,
+        "x1": 11,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 1,
+      "pedestrians": 3,
+      "cars": 1
+    }
+  },
+  "palette": {
+    "floorA": "#2a2018",
+    "floorB": "#231a13",
+    "floorEdge": "#4a3826",
+    "bldgL": "#332618",
+    "bldgR": "#261c12",
+    "bldgTop": "#1a130c",
+    "waterA": "#3a4a36",
+    "waterB": "#2f3d2c",
+    "waterEdge": "#566b4a"
+  }
+}

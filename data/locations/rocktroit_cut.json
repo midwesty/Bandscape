@@ -1,0 +1,108 @@
+{
+  "_comment": "The Cut \u2014 Rocktroit's working-river hip-hop district. River across the top; a freighter; genre-locked hip-hop venue The Drydock.",
+  "id": "rocktroit_cut",
+  "name": "The Cut",
+  "size": {
+    "w": 13,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "cut_a",
+      "build": "general",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "solid": true,
+      "name": "Steel hauler"
+    },
+    {
+      "id": "cut_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 3
+      },
+      "solid": true,
+      "name": "Pawn & gold"
+    },
+    {
+      "id": "cut_crane",
+      "build": "general",
+      "tile": {
+        "x": 7,
+        "y": 3
+      },
+      "solid": true,
+      "name": "Gantry crane"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Drydock",
+      "interact": "stage",
+      "venueId": "rk_drydock",
+      "tile": {
+        "x": 6,
+        "y": 4
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to Rocktroit",
+      "interact": "enter",
+      "to": "rocktroit",
+      "spawn": {
+        "x": 5,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 6
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "river",
+        "from": {
+          "x": 0,
+          "y": 0
+        },
+        "to": {
+          "x": 12,
+          "y": 0
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 0,
+        "x1": 12,
+        "y1": 1
+      }
+    ],
+    "ambient": {
+      "boats": 1,
+      "pedestrians": 3,
+      "cars": 2
+    }
+  },
+  "palette": {
+    "floorA": "#222831",
+    "floorB": "#1b2027",
+    "floorEdge": "#39424d",
+    "bldgL": "#2b323b",
+    "bldgR": "#20262d",
+    "bldgTop": "#161b20",
+    "waterA": "#1f3d52",
+    "waterB": "#193243",
+    "waterEdge": "#315a72"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "_comment": "Bourbon Funk \u2014 Jazz Orleans' bayou district. Boardwalk over the water (no roads). The venue is a riverboat: The S.S. Second Line. genre-locked funk.",
+  "id": "orleans_bourbon",
+  "name": "Bourbon Funk",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "bf_a",
+      "build": "bar",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Daiquiri shack"
+    },
+    {
+      "id": "bf_b",
+      "build": "food",
+      "tile": {
+        "x": 9,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Po'boy stand"
+    },
+    {
+      "id": "bf_palm",
+      "build": "general",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Cypress grove"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The S.S. Second Line",
+      "interact": "stage",
+      "venueId": "jo_riverboat",
+      "tile": {
+        "x": 5,
+        "y": 4
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Quarter",
+      "interact": "enter",
+      "to": "jazz_orleans",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 2
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "bayou",
+        "from": {
+          "x": 0,
+          "y": 7
+        },
+        "to": {
+          "x": 11,
+          "y": 7
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 6,
+        "x1": 11,
+        "y1": 8
+      },
+      {
+        "x0": 0,
+        "y0": 3,
+        "x1": 1,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 4,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#1f2a22",
+    "floorB": "#18221b",
+    "floorEdge": "#33473a",
+    "bldgL": "#27332a",
+    "bldgR": "#1d271f",
+    "bldgTop": "#141c15",
+    "waterA": "#22402e",
+    "waterB": "#1b3325",
+    "waterEdge": "#356b46"
+  }
+}

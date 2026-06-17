@@ -265,6 +265,81 @@
       ],
       "slot": "late",
       "blurb": "A funky open bar off Bourbon. Any band can play; the crowd dances regardless."
+    },
+    "wh_voltage": {
+      "name": "The Voltage Room",
+      "town": "flamcago",
+      "open": false,
+      "genre": "electronic",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "A lakefront warehouse rave. Electronic acts only - bring the BPM."
+    },
+    "ks_levee_stomp": {
+      "name": "The Riverboat Stomp",
+      "town": "kansas_snarey",
+      "open": false,
+      "genre": "jazz",
+      "genreLock": true,
+      "drawMult": 1.7,
+      "payMult": 1.15,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "A jazz room on the levee. Strictly jazz - Pearl's cousin runs a tight ship."
+    },
+    "jo_riverboat": {
+      "name": "The S.S. Second Line",
+      "town": "jazz_orleans",
+      "open": false,
+      "genre": "funk",
+      "genreLock": true,
+      "drawMult": 1.9,
+      "payMult": 1.25,
+      "days": [
+        "FR",
+        "SA",
+        "SU"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "A funk paddleboat on the bayou. Funk only - if it don't groove, it don't board."
+    },
+    "rk_drydock": {
+      "name": "The Drydock",
+      "town": "rocktroit",
+      "open": false,
+      "genre": "hiphop",
+      "genreLock": true,
+      "drawMult": 1.7,
+      "payMult": 1.15,
+      "days": [
+        "WE",
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "A hip-hop spot in a converted drydock. Bars only - bring yours."
     }
   }
 }
