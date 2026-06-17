@@ -255,18 +255,21 @@ function sweepMissed() {
   const ni = nowIndex(); let missedShow = 0, missedReh = 0; const autoResults = [];
   for (const c of list()) {
     if (c.status !== "booked" || cmtIndex(c) >= ni) continue;
+    const b = bandById(c.bandId);
+    const mine = !!(b && b.playerIn);
     if (c.type === "show") {
-      const b = bandById(c.bandId);
       if (b && !b.playerIn) {                       // delegated: the band plays it themselves
         const res = autoResolveShow(c);
         c.status = "done";
         if (res) autoResults.push(res);
         continue;
       }
+      if (!mine) { c.status = "done"; continue; }    // orphaned / unknown band — don't pin a miss on the player
       c.status = "missed"; missedShow++;
       removePlayerAct(c.venue, c.day, c.bandId);     // you didn't play — pull your act off that night's bill
       emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
-    } else {
+    } else {                                          // rehearsal: only YOUR band's counts as a miss
+      if (!mine) { c.status = "done"; continue; }
       c.status = "missed"; missedReh++;
       emit("commitment:missed", { bandId: c.bandId, type: c.type, venue: c.venue });
     }

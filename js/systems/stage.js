@@ -459,7 +459,7 @@ function interact(obj) {
   const kind = obj.interact || decorUse(obj) || (obj.to ? "exit" : null);
   switch (kind) {
     case "sleep":
-      if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep({ forced: !!obj.poor });
+      if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep({ poor: !!obj.poor });
       break;
     case "equip":
       openInstrumentMenu(obj);

@@ -1273,3 +1273,10 @@ body:has(.modal-scrim) #log { display: none; }
 .trv-cost { font-size: 11px; color: var(--green, #57c97a); font-weight: 600; }
 .trv-dests { display: flex; flex-wrap: wrap; gap: 8px; }
 .trv-dest { flex: 1 1 auto; }
+
+/* Properties app: Vehicles tab + ownership (Step 43.1) */
+.prop-tabs{display:flex;gap:6px;margin:10px 0 4px;}
+.prop-tab{flex:1;padding:9px 8px;border:1px solid #3a3346;background:transparent;color:inherit;border-radius:9px;font:inherit;font-weight:600;cursor:pointer;opacity:.55;}
+.prop-tab.on{opacity:1;background:rgba(201,162,39,.16);border-color:#c9a227;}
+.prop-assign{font-size:12px;opacity:.9;margin:1px 0 7px;}
+.prop-assign strong{color:#e8c34a;}

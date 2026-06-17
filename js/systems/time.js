@@ -118,7 +118,7 @@ function checkCurfew() {
 }
 
 // Sleep: the only way the day advances. Restores energy, sets morning, autosaves.
-export function sleep({ forced = false } = {}) {
+export function sleep({ forced = false, poor = false } = {}) {
   const s = getState();
   const cfg = DATA.config.time;
 
@@ -129,14 +129,25 @@ export function sleep({ forced = false } = {}) {
   const energyDef = statDef("energy");
   s.stats.energy = energyDef ? energyDef.max : 100;
 
-  if (forced) addCondition("exhausted");
-  else addCondition("well_rested");
+  if (forced) addCondition("exhausted");        // involuntary collapse (curfew / health)
+  else if (!poor) addCondition("well_rested");  // a rough (poor) night is CHOSEN, not a collapse — no exhausted, no well-rested
 
+  const bonus = !forced && !poor;               // home comforts only reward a proper bed
   const homeVibe = homeVibeHere();              // Step 26.1: décor pays off when you rest at home
-  if (homeVibe > 0 && !forced) { addStat("mood", Math.min(12, Math.round(homeVibe * 0.4))); addStat("health", Math.min(6, Math.round(homeVibe * 0.2))); }
-  const rest = homeAmbient("rest"); if (rest > 0 && !forced) { addStat("mood", Math.min(8, Math.round(rest * 0.4))); addStat("health", Math.min(4, Math.round(rest * 0.2))); }  // Step 27.3
-  const social = homeAmbient("social"); if (social > 0 && !forced) { const ab = activeBand(); if (ab) for (const m of bandMembers(ab.id)) addRapport(m.id, Math.min(3, Math.round(social * 0.25))); }  // your place is the hang
+  if (homeVibe > 0 && bonus) { addStat("mood", Math.min(12, Math.round(homeVibe * 0.4))); addStat("health", Math.min(6, Math.round(homeVibe * 0.2))); }
+  const rest = homeAmbient("rest"); if (rest > 0 && bonus) { addStat("mood", Math.min(8, Math.round(rest * 0.4))); addStat("health", Math.min(4, Math.round(rest * 0.2))); }  // Step 27.3
+  const social = homeAmbient("social"); if (social > 0 && bonus) { const ab = activeBand(); if (ab) for (const m of bandMembers(ab.id)) addRapport(m.id, Math.min(3, Math.round(social * 0.25))); }  // your place is the hang
+  if (poor) addStat("mood", -4);                // a cramped van bunk is no fun
 
+  // Overnight your needs still drain (~sleepDrainHours of hunger/thirst). A comfy home eases it; a rough van bunk drains a touch more.
+  const ease = homeVibe > 0 ? Math.max(0.5, 1 - homeVibe / 60) : 1;
+  const nightHours = cfg.sleepDrainHours || 8;
+  const drainMult = poor ? 1.25 : ease;
+  for (const def of DATA.stats.stats) {
+    if (def.kind === "need" && def.decayPerHour) addStat(def.id, -(def.decayPerHour * nightHours * drainMult));
+  }
+
+  if (poor) toast("A rough night in the van — you're up, but stiff.", "info");
   emit("day:advanced", { day: s.time.day, forced });
   emit("renderAll");
 }
