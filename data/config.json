@@ -1,6 +1,6 @@
 {
   "_comment": "Global game tunables. Edit pacing, debt, and which phone apps are on without touching code.",
-  "version": "0.43.0 (Come-alive pipeline \u2014 the foundation before regions. The world band roster now SCALES and covers every genre: instead of a frozen ~50 bands, it guarantees enough acts per region for each of its district genres, ~100 total across all five regions, and it tops up your EXISTING save non-destructively so the new districts finally fill instead of sitting wide open. Bills now (re)bootstrap on a save when this update lands, so previously-empty venues populate, and they prefer bands matching a venue\u2019s genre (a jazz room books jazz acts) while still leaving the open slots and open further-out nights you want. World radio gained a tier sense: National and Legend acts now broadcast across regions like real national hits, while regional/local acts stay loudest at home. No maps yet \u2014 this is the shared layer every future city will inherit, so they\u2019re alive on arrival.)",
+  "version": "0.43.1 (Bugfix pass from testing. FIXED: Drive to next show now actually finds the gig (was reading the wrong venue field, so it always said it couldn\u2019t find the road). FIXED: no more phantom \u201cyou missed a rehearsal/gig\u201d toasts for bands you\u2019re not in or stale bookings \u2014 only your own band\u2019s misses count now. FIXED: hunger & thirst now drain overnight when you sleep (they were being skipped entirely, in the van AND apartments); a comfy home eases it, a van bunk drains a touch more. FIXED: sleeping in the van now reads as a chosen \u201crough night,\u201d not an involuntary collapse \u2014 no more exhausted/passed-out message. NEW: Properties app now has a proper Vehicles TAB, each vehicle clearly shows the band it\u2019s Assigned to, and buying/leasing a vehicle is paid from that band\u2019s account (covering any shortfall from your wallet, like the rest of the band-money system).)",
   "title": "BANDSCAPE",
   "tagline": "broke, in debt, and weirdly optimistic",
   "time": {
@@ -10,7 +10,8 @@
     "curfewHour": 4,
     "startDay": 1,
     "startHour": 9,
-    "startMinute": 0
+    "startMinute": 0,
+    "sleepDrainHours": 8
   },
   "save": {
     "slots": 3,
