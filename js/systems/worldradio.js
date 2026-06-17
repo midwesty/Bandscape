@@ -16,7 +16,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, nowHourAbs, regionOfCity } from "../engine/state.js";
+import { getState, addStat, nowHourAbs, regionOfCity, currentCity } from "../engine/state.js";
 import { ensureWorldBands, worldBands, materializeWorldSong } from "./worldmusic.js";
 import { on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -27,8 +27,7 @@ function cfg() { return (DATA.config && DATA.config.radio) || {}; }
 function worldMusicOn() { const st = getState(); return !(st && st.settings && st.settings.worldMusic === false); } // default ON
 function isPublic(scene) { return (cfg().scenes || []).includes(scene); }
 function songById(id) { return (getState().songs || []).find((s) => s.id === id) || null; }
-const SCENE_TOWN = { venue: "yourtown", musicstore: "yourtown", thrift: "yourtown", town: "yourtown", apartment: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit" };
-function localRegionOf(scene) { return regionOfCity(SCENE_TOWN[scene] || "yourtown"); }
+function localRegionOf(scene) { return regionOfCity(currentCity()); }
 
 let active = false, foreground = false, lastToastHour = -9999;
 

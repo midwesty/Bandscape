@@ -297,6 +297,8 @@ function travel(to, spawn) {
   if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
   if (to === "musicstore" || to === "thrift" || to === "records") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
   s.location = to;
+  const _cityHit = Object.entries((DATA.regions && DATA.regions.cities) || {}).find(([id, c]) => c.entryScene && c.entryScene.scene === to);
+  if (_cityHit) s.currentCity = _cityHit[0];   // Step 39: track which city you are in (data-driven)
   if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
   s.player.tile = spawn ? { x: spawn.x, y: spawn.y } : null;
@@ -540,9 +542,6 @@ function interact(obj) {
     case "diner":
       dinerEat(obj);
       break;
-    case "pool":
-      playPool();
-      break;
     case "property": {
       const st = propertyStatus(obj.propertyId);
       if (st === "owned" || st === "rented") travel(obj.to, obj.spawn);
@@ -560,25 +559,6 @@ function interact(obj) {
       break;
     default:
       toast(obj.name, "info");
-  }
-}
-
-// ---- pool table (Flamcago bar activity, Step 37) ----
-function playPool() {
-  const s = getState();
-  const buyIn = 25;
-  const cash = (s.player && s.player.stats && s.player.stats.money) || 0;
-  if (cash < buyIn) { toast("You're short for the table - $" + buyIn + " to rack 'em.", "warn"); return; }
-  addStat("money", -buyIn);
-  const mood = (s.player && s.player.stats && s.player.stats.mood != null) ? s.player.stats.mood : 50;
-  const won = (Math.random() * 100 + (mood - 50) * 0.25) > 50;
-  if (won) {
-    const pot = buyIn * 2;
-    addStat("money", pot); addStat("mood", 6);
-    toast("You run the table and clear the pot - up $" + (pot - buyIn) + " on the night.", "good");
-  } else {
-    addStat("mood", -3);
-    toast("Scratched on the 8. The regulars grin. Down $" + buyIn + ".", "warn");
   }
 }
 

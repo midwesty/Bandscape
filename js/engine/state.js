@@ -719,6 +719,7 @@ export function payPayroll(cover) {
 // nests above venue rep: career tier -> region unlock -> regional fame -> mastery.
 export function regionDef(id) { return ((DATA.regions && DATA.regions.regions) || {})[id] || null; }
 export function cityDef(id) { return ((DATA.regions && DATA.regions.cities) || {})[id] || null; }
+export function currentCity() { const s = getState(); return (s && s.currentCity) || "yourtown"; }
 export function regionOfCity(cityId) { const c = cityDef(cityId); return c ? c.region : null; }
 
 export function bandRegionalFame(bandId, regionId) { const s = getState(); return ((((s && s.regionalFame) || {})[bandId]) || {})[regionId] || 0; }
@@ -758,7 +759,7 @@ export function cityUnlocked(cityId) {
   if (c.startUnlocked) return true;
   const s = getState(); if (s && s.flags && s.flags[cityId + "_unlocked"]) return true; // compat w/ existing flags (rocktroit)
   if (!regionUnlocked(c.region)) return false;
-  return false; // built-but-locked Midwest cities + future cities stay "coming" until their map/gate lands
+  return !!c.built; // Step 39: a built city in an unlocked region is reachable + bookable
 }
 export function cityTourEligible(cityId) {
   const c = cityDef(cityId); if (!c) return false;

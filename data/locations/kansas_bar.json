@@ -94,8 +94,9 @@
         "x": 9,
         "y": 2
       },
-      "interact": "pool",
-      "solid": true
+      "interact": "flavor",
+      "solid": true,
+      "flavor": "A worn pool table, racked and waiting. (Playable once we drop the real game in.)"
     },
     {
       "id": "out",

@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -20,12 +20,9 @@ import { currentDay } from "./calendar.js";
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const money = (n) => "$" + Math.round(n || 0).toLocaleString();
 
-const CITY_NAME = { yourtown: "Your Town", rocktroit: "Rocktroit" };
-const LOC_CITY = { apartment: "yourtown", loft: "yourtown", town: "yourtown", venue: "yourtown", thedive: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit", rock_loft: "rocktroit" };
 const TIER_TINT = { crappy: "#6e5a3a", nice: "#3a5a6e", lux: "#5a3a6e" };
 
 function rentPeriod() { return (DATA.config.dwellings && DATA.config.dwellings.rentPeriodDays) || 30; }
-function currentCity() { return LOC_CITY[getState().location] || "yourtown"; }
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function cityUnlocked(city) {
   if (city === "yourtown") return true;
@@ -91,7 +88,7 @@ function citySection(city) {
   const lock = unlocked ? "" : `<span class="prop-lock">&#128274; visit to unlock</span>`;
   const cards = listings.map((p) => cardHTML(p, unlocked)).join("");
   return `<div class="prop-city ${unlocked ? "" : "is-locked"}">
-    <div class="prop-city-head">${esc(CITY_NAME[city] || city)}${lock}</div>${cards}</div>`;
+    <div class="prop-city-head">${esc((cityDef(city) && cityDef(city).name) || city)}${lock}</div>${cards}</div>`;
 }
 
 export function renderPropertiesApp(container) {

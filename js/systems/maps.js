@@ -7,7 +7,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, bandById, isDiscovered, discoverVenue, addContact, townBuzz, cityUnlocked, cityDef, regionUnlocked } from "../engine/state.js";
+import { getState, bandById, isDiscovered, discoverVenue, addContact, townBuzz, cityUnlocked, cityDef, regionUnlocked, currentCity } from "../engine/state.js";
 import { ensureBills, billLineup, billOpenSlots } from "./bills.js";
 import { bookedCommitments, currentDay, currentSlot, slotLabel, openScheduler, venueOpenInfo } from "./calendar.js";
 import { venueEligible, venueReqText, openPerform } from "./shows.js";
@@ -18,8 +18,6 @@ import { toast } from "../ui/toast.js";
 
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const TOWN_NAME = { yourtown: "Your Town", rocktroit: "Rocktroit" };
-const LOC_TOWN = { apartment: "yourtown", town: "yourtown", venue: "yourtown", thedive: "yourtown", rocktroit: "rocktroit", rocktroit_bar: "rocktroit", arcade: "rocktroit" };
 
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function accessibleTown(t) { return cityUnlocked(t); }
@@ -64,7 +62,7 @@ export function renderMapsApp(container) {
   const booked = bookedCommitments();
   const shows = booked.filter((c) => c.type === "show");
   const rehs = booked.filter((c) => c.type === "rehearse");
-  const here = LOC_TOWN[getState().location] || "yourtown";
+  const here = currentCity();
   const next = booked[0];
   const venues = (DATA.venues && DATA.venues.venues) || {};
   const byTown = {};
@@ -99,7 +97,7 @@ export function renderMapsApp(container) {
           : `<div class="mp-lock-req">${esc(venueReqText(v.id))}</div>`;
       return `<div class="mp-venue"><div class="mp-venue-h"><strong>${esc(v.name)}</strong>${status}</div>${v.blurb ? `<p class="mp-blurb">${esc(v.blurb)}</p>` : ""}<p class="mp-sched">${esc(sched)}</p>${billHTML}${evts}${action}</div>`;
     }).join("");
-    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc((cityDef(t) && cityDef(t).name) || TOWN_NAME[t] || t)}${t === here ? ` <span class="mp-here">you are here</span>` : ""}</div>${meter}${vrows}</div>`;
+    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc((cityDef(t) && cityDef(t).name) || t)}${t === here ? ` <span class="mp-here">you are here</span>` : ""}</div>${meter}${vrows}</div>`;
   }).join("");
 
   const rehHTML = rehs.length

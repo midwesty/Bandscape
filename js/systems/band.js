@@ -17,7 +17,8 @@ import {
   freeAgents, retiredMusicians, musicianOVR, assignMusician, setMusicianStatus,
   musicianFromNpc, playerFame,
   ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
-  careerStanding, mainGenre, mainGenreName, genreList, subgenresOf
+  careerStanding, mainGenre, mainGenreName, genreList, subgenresOf,
+  cityUnlocked, cityDef
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -87,11 +88,11 @@ function conditionsMet(npc) {
 function bookShowFlow() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const s = getState();
-  const accessible = (t) => t === "yourtown" || (t === "rocktroit" && s.flags && s.flags.rocktroit_unlocked);
+  const accessible = (t) => cityUnlocked(t);
   const vs = venueList().filter((v) => accessible(v.town) && isDiscovered(v.id));
   const rows = vs.map((v) => {
     const elig = venueEligible(v.id);
-    const where = v.town === "rocktroit" ? "Rocktroit" : "your block";
+    const where = (cityDef(v.town) && cityDef(v.town).name) || "out of town";
     const action = elig
       ? `<button class="cal-slot-btn" data-venue="${v.id}">Book here ▸</button>`
       : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
