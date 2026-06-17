@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, setFlag, activeBand, regionUnlocked, propertyStatus } from "../engine/state.js";
+import { getState, addStat, setFlag, activeBand, regionUnlocked, propertyStatus, ownsVehicle, currentCity, cityDef } from "../engine/state.js";
 import { addCondition } from "./conditions.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
@@ -375,6 +375,7 @@ function update(dt) {
 function regionName(id) { const r = (DATA.regions && DATA.regions.regions && DATA.regions.regions[id]); return (r && r.name) || id; }
 function regionPassHeld(regionId) {
   const s = getState();
+  if (ownsVehicle()) return true; // Step 41: your own van/bus rides free
   if (regionId === "midwest") return !!(s.flags && s.flags.rocktroit_unlocked); // the original one-time Midwest bus pass
   return !!(s.travelPasses && s.travelPasses[regionId]);
 }
@@ -458,7 +459,7 @@ function interact(obj) {
   const kind = obj.interact || decorUse(obj) || (obj.to ? "exit" : null);
   switch (kind) {
     case "sleep":
-      if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep();
+      if (confirm("Crash for the night? (advances to tomorrow and saves)")) sleep({ forced: !!obj.poor });
       break;
     case "equip":
       openInstrumentMenu(obj);
@@ -558,6 +559,11 @@ function interact(obj) {
     case "exit":
       travel(obj.to, obj.spawn);
       break;
+    case "vehicleexit": {
+      const _cc = cityDef(currentCity()); const _es = _cc && _cc.entryScene;
+      travel(_es ? _es.scene : "town", _es ? _es.spawn : null);
+      break;
+    }
     default:
       toast(obj.name, "info");
   }

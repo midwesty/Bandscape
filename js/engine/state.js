@@ -537,6 +537,10 @@ export function setPropertyStatus(id, status, extra) {
 }
 // properties the player currently controls (owned or rented)
 export function controlledProperties() { return propDefs().filter((p) => { const st = propertyStatus(p.id); return st === "owned" || st === "rented"; }); }
+export function ownsVehicle() { return controlledProperties().some((p) => p.vehicle); }
+export function propertyMeta(id) { const s = getState(); return (s.properties && s.properties[id]) || {}; }
+export function vehicleBand(id) { return propertyMeta(id).bandId || null; }
+export function bandHasVehicle(bandId) { return controlledProperties().some((p) => p.vehicle && propertyMeta(p.id).bandId === bandId); }
 // scene ids the player can send gear to / enter
 export function controlledLocations() { return controlledProperties().map((p) => p.location); }
 

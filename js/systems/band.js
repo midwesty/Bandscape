@@ -18,7 +18,7 @@ import {
   musicianFromNpc, playerFame,
   ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
   careerStanding, mainGenre, mainGenreName, genreList, subgenresOf,
-  cityUnlocked, cityDef
+  cityUnlocked, cityDef, currentCity
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -90,13 +90,21 @@ function bookShowFlow() {
   const s = getState();
   const accessible = (t) => cityUnlocked(t);
   const vs = venueList().filter((v) => accessible(v.town) && isDiscovered(v.id));
-  const rows = vs.map((v) => {
+  const venueCard = (v) => {
     const elig = venueEligible(v.id);
-    const where = (cityDef(v.town) && cityDef(v.town).name) || "out of town";
     const action = elig
       ? `<button class="cal-slot-btn" data-venue="${v.id}">Book here ▸</button>`
       : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
-    return `<div class="cal-day"><div class="cal-day-h">${esc(v.name)} <small>· ${esc(where)}</small></div><div class="cal-slots">${action}</div></div>`;
+    return `<div class="cal-day"><div class="cal-day-h">${esc(v.name)}</div><div class="cal-slots">${action}</div></div>`;
+  };
+  const byTown = {};
+  vs.forEach((v) => { (byTown[v.town] = byTown[v.town] || []).push(v); });
+  const here = currentCity();
+  const towns = Object.keys(byTown).sort((a, b) => (a === here ? -1 : b === here ? 1 : (((cityDef(a) && cityDef(a).name) || a).localeCompare((cityDef(b) && cityDef(b).name) || b))));
+  const rows = towns.map((t) => {
+    const cn = (cityDef(t) && cityDef(t).name) || t;
+    const tag = t === here ? ` <span class="mp-here">you are here</span>` : "";
+    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc(cn)}${tag}</div>${byTown[t].map(venueCard).join("")}</div>`;
   }).join("");
   const body = rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">PICK A VENUE</span><button class="phone-nav" id="vp-close">✕</button></div>

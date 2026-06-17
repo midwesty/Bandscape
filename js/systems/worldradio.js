@@ -47,7 +47,10 @@ function pickTrack() {
     const rels = b.releases || []; if (!rels.length) continue;
     const top = rels.reduce((a, x) => ((x.streams || 0) > (a.streams || 0) ? x : a), rels[0]);
     const song = (top.songs || [])[0]; if (!song) continue;
-    const mult = b.region === region ? localMult : 1;
+    const big = b.tier === "National" || b.tier === "Legend";
+    const regionMult = b.region === region ? localMult : (big ? (c.nationalReach != null ? c.nationalReach : 1.6) : (c.farMult != null ? c.farMult : 0.5));
+    const tierBoost = big ? (c.nationalBoost != null ? c.nationalBoost : 1.5) : (b.tier === "Touring Act" ? 1.2 : 1);
+    const mult = regionMult * tierBoost;
     pool.push({ kind: "world", songId: song.id, name: song.title, artist: b.name, w: Math.max(1, Math.round((top.streams || 0) / 500) + 1) * mult });
   }
   if (!pool.length) return null;

@@ -215,29 +215,41 @@ function buildBand(rng, id, name, regionId, genreMain, tierForce) {
   return band;
 }
 
+// Guarantee each region has >= perGenre bands of EACH local genre and >= floor total.
+// Purely ADDITIVE — only mints bands to cover gaps, so it safely tops up an existing save.
+function mintCoverage(bands, regions, rng, perGenre, floor) {
+  const used = new Set(bands.map((b) => b.id));
+  const usedNames = new Set(bands.map((b) => b.name));
+  const newName = () => { let nm, g = 0; do { nm = `${pick(rng, ADJ)} ${pick(rng, NOUN)}`; g++; } while (usedNames.has(nm) && g < 20); usedNames.add(nm); return nm; };
+  const newId = (base) => { let i = 0, id = `${base}_0`; while (used.has(id)) { i++; id = `${base}_${i}`; } used.add(id); return id; };
+  for (const region of regions) {
+    const rg = regionGenres(region); const local = (rg.local && rg.local.length) ? rg.local : Object.keys(GENRE_REC);
+    for (const g of local) {
+      let have = bands.filter((b) => b.region === region && b.genreMain === g).length;
+      while (have < perGenre) { bands.push(buildBand(rng, newId(`wb_${region}_${g}`), newName(), region, g)); have++; }
+    }
+    let total = bands.filter((b) => b.region === region).length;
+    while (total < floor) { bands.push(buildBand(rng, newId(`wb_${region}_fill`), newName(), region, pick(rng, local))); total++; }
+  }
+  return bands;
+}
+
 export function ensureWorldBands() {
   const s = getState(); if (!s) return [];
-  if (Array.isArray(s.worldBands) && s.worldBands.length) { if (!_songIndex.size) reindex(s.worldBands); return s.worldBands; }
+  const wc = (DATA.config && DATA.config.world) || {};
+  const perGenre = wc.bandsPerGenre || 4, floor = wc.bandsFloorPerRegion || 20, ver = wc.coverageVersion || 2;
   const regions = Object.keys((DATA.regions && DATA.regions.regions) || {});
-  if (!regions.length) return [];
-  const bands = [];
+  if (!regions.length) return Array.isArray(s.worldBands) ? s.worldBands : [];
   const rng = mulberry32(seedNum("bandscape-world-v1"));
-  // reserved named acts, spread across early regions
-  RESERVED.forEach((r, i) => { const region = regions[i % Math.min(2, regions.length)]; bands.push(buildBand(rng, r.id, r.name, region, r.genreMain)); });
-  // fill each region to ~10 bands
-  const usedNames = new Set(bands.map((b) => b.name));
-  for (const region of regions) {
-    const { local } = regionGenres(region);
-    const have = bands.filter((b) => b.region === region).length;
-    for (let i = have; i < 10; i++) {
-      let name; let guard = 0;
-      do { name = `${pick(rng, ADJ)} ${pick(rng, NOUN)}`; guard++; } while (usedNames.has(name) && guard < 12);
-      usedNames.add(name);
-      const genre = rng() < 0.7 ? pick(rng, local) : pick(rng, Object.keys(GENRE_REC));
-      bands.push(buildBand(rng, `wb_${region}_${i}`, name, region, genre));
-    }
+  if (Array.isArray(s.worldBands) && s.worldBands.length) {
+    if (s.worldCoverageVer !== ver) { mintCoverage(s.worldBands, regions, rng, perGenre, floor); s.worldCoverageVer = ver; reindex(s.worldBands); }
+    else if (!_songIndex.size) reindex(s.worldBands);
+    return s.worldBands;
   }
-  s.worldBands = bands;
+  const bands = [];
+  RESERVED.forEach((r, i) => { const region = regions[i % Math.min(2, regions.length)]; bands.push(buildBand(rng, r.id, r.name, region, r.genreMain)); });
+  mintCoverage(bands, regions, rng, perGenre, floor);
+  s.worldBands = bands; s.worldCoverageVer = ver; reindex(bands);
   return bands;
 }
 

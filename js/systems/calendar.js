@@ -14,7 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandMembers, bandById } from "../engine/state.js";
+import { getState, addStat, activeBand, bandMembers, bandById, cityDef } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -194,6 +194,7 @@ function book(type, day, slot) {
 let calSel = null;  // {day, slot} of the tapped cell
 
 function venueNameOf(id) { const v = DATA.venues && DATA.venues.venues && DATA.venues.venues[id]; return v ? v.name : null; }
+function venueCity(id) { const v = DATA.venues && DATA.venues.venues && DATA.venues.venues[id]; const t = v && v.town; const cd = t && cityDef(t); return cd ? cd.name : null; }
 
 function calDetailHTML(sel) {
   const cs = list().filter((x) => x.status !== "missed" && x.day === sel.day && x.slot === sel.slot);
@@ -202,7 +203,7 @@ function calDetailHTML(sel) {
   const rows = cs.map((c) => {
     const b = bandById(c.bandId); const bn = b ? (b.name || "Unnamed band") : "\u2014";
     const mine = !!(b && b.playerIn);
-    const where = c.type === "show" ? (venueNameOf(c.venue) || "a venue") : "rehearsal space";
+    const where = c.type === "show" ? ((venueNameOf(c.venue) || "a venue") + (venueCity(c.venue) ? " \u00b7 " + venueCity(c.venue) : "")) : "rehearsal space";
     const tag = mine ? `<span class="cal-tag mine">be there</span>` : `<span class="cal-tag mgr">auto-plays</span>`;
     return `<div class="cal-d-row"><span class="cal-d-ic">${c.type === "show" ? "\uD83C\uDFA4" : "\u266C"}</span><div class="cal-d-info"><strong>${esc(bn)}</strong><small>${c.type === "show" ? "Show" : "Rehearsal"} · ${esc(where)}</small></div>${tag}</div>`;
   }).join("");
@@ -234,9 +235,10 @@ export function renderCalendarApp(container) {
     rows.push(`<div class="cal-row"><div class="cal-row-d">Day ${d}${d === today() ? " ·now" : ""}</div><div class="cal-row-cells">${cells}</div></div>`);
   }
   const next = nextCommitment();
+  const nWhere = (next && next.type === "show" && venueNameOf(next.venue)) ? (" at " + venueNameOf(next.venue) + (venueCity(next.venue) ? " in " + venueCity(next.venue) : "")) : "";
   container.innerHTML = `
     <h2 class="app-title">CALENDAR</h2>
-    <p class="muted cal-note">Today is <strong>Day ${today()}</strong>, ${slotLabel(cur)}. ${next ? `Next up: ${esc(next.title)} — Day ${next.day}, ${slotLabel(next.slot)}.` : "Nothing booked. Schedule rehearsals & shows from the BAND app."}</p>
+    <p class="muted cal-note">Today is <strong>Day ${today()}</strong>, ${slotLabel(cur)}. ${next ? `Next up: ${esc(next.title)}${esc(nWhere)} — Day ${next.day}, ${slotLabel(next.slot)}.` : "Nothing booked. Schedule rehearsals & shows from the BAND app."}</p>
     <div class="cal-grid">${rows.join("")}</div>
     ${calSel ? calDetailHTML(calSel) : `<p class="muted cal-legend">Tap any slot to see everything booked then. \u266C rehearsal · \uD83C\uDFA4 show.</p>`}`;
   container.querySelectorAll("[data-day][data-slot]").forEach((b) => b.addEventListener("click", () => {

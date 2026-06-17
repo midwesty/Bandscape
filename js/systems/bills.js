@@ -15,7 +15,7 @@
 // logic, co-booking, bill-aware show outcome) is the next step.
 // ============================================================
 import { DATA } from "../engine/data.js";
-import { getState, regionOfCity, bandById } from "../engine/state.js";
+import { getState, regionOfCity, bandById, mainGenre } from "../engine/state.js";
 import { on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -40,10 +40,12 @@ function bandsPlayingOn(day) { const set = new Set(); const m = billsMap(); for 
 
 function pickBand(venueId, usedThisNight, inThisBill) {
   const region = venueRegion(venueId); const localMult = bcfg().localMult || 3;
+  const v = venueRec(venueId); const vg = (v && v.genre) ? mainGenre(v.genre) : null; const gm = bcfg().genreMatchMult || 2.5;
   const pool = [];
   for (const b of worldBands()) {
     if (usedThisNight.has(b.id) || inThisBill.has(b.id)) continue;
     let w = ((b.fans || 50) / 100 + 1) * (b.region === region ? localMult : 0.15);
+    if (vg) w *= (b.genreMain === vg) ? gm : 0.35;
     pool.push({ b, w });
   }
   if (!pool.length) return null;
@@ -97,10 +99,12 @@ export function tickBills(today) {
 
 export function ensureBills() {
   const s = getState(); if (!s) return;
-  if (s.bills && Object.keys(s.bills).length) return;
   if (!worldBands().length) return;
+  const ver = (DATA.config && DATA.config.bills && DATA.config.bills.coverageVersion) || 1;
+  if (s.bills && Object.keys(s.bills).length && s.billsVer === ver) return;
   const today = currentDay();
-  for (let p = 0; p < 6; p++) tickBills(today);  // bootstrap the horizon to its proximity targets
+  for (let p = 0; p < 6; p++) tickBills(today);  // bootstrap (or re-bootstrap on version bump) to proximity targets
+  s.billsVer = ver;
 }
 
 let _inited = false;
