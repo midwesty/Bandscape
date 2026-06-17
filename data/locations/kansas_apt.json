@@ -1,0 +1,127 @@
+{
+  "_comment": "Apartment scene. In Step 2 this drives the isometric room: 'size' is the tile grid, 'objects' are placed at tile x,y with an interaction. For Step 1 the shell only uses the 'objects' list to place clickable hotspots (bed, etc.) on a placeholder backdrop.",
+  "id": "kansas_apt",
+  "name": "18th St. Walkup",
+  "size": {
+    "w": 8,
+    "h": 6
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bed",
+      "name": "Bed",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/bed.png",
+      "interact": "sleep"
+    },
+    {
+      "id": "fridge",
+      "name": "Fridge",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/fridge.png",
+      "interact": "fridge",
+      "containerId": "fridge"
+    },
+    {
+      "id": "crate",
+      "name": "Storage Crate",
+      "tile": {
+        "x": 6,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/crate.png",
+      "interact": "container",
+      "containerId": "storage"
+    },
+    {
+      "id": "laptop",
+      "name": "Laptop",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/laptop.png",
+      "interact": "daw"
+    },
+    {
+      "id": "pd_kansas_apt_futon",
+      "name": "Futon",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "futon",
+      "sprite": "assets/img/objects/decor/futon.png"
+    },
+    {
+      "id": "pd_kansas_apt_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "lava_lamp",
+      "sprite": "assets/img/objects/decor/lava_lamp.png"
+    },
+    {
+      "id": "pd_kansas_apt_poster",
+      "name": "Band Poster",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "band_poster",
+      "sprite": "assets/img/objects/decor/band_poster.png"
+    },
+    {
+      "id": "pd_kansas_apt_succ",
+      "name": "Succulents",
+      "tile": {
+        "x": 6,
+        "y": 2
+      },
+      "decorId": "succulent_set",
+      "sprite": "assets/img/objects/decor/succulent_set.png"
+    },
+    {
+      "id": "pd_kansas_apt_mat",
+      "name": "Floor Mat",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "vinyl_mat",
+      "sprite": "assets/img/objects/decor/vinyl_mat.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "door",
+      "name": "Out to street",
+      "tile": {
+        "x": 4,
+        "y": 5
+      },
+      "to": "kansas_snarey",
+      "spawn": {
+        "x": 6,
+        "y": 6
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#2a2018",
+    "floorB": "#231a13",
+    "floorEdge": "#4a3826",
+    "bldgL": "#332618",
+    "bldgR": "#261c12",
+    "bldgTop": "#1a130c"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "_comment": "The Foundry \u2014 Rocktroit's open-mic venue (venueId 'foundry'). Works like The Dive: a stage to play, and the city's musicians hanging around to recruit. These players are pickier (recruitConditions in npcs.json) and harder to keep happy (lower happyStart).",
+  "id": "orleans_bar",
+  "name": "The Second Line",
+  "size": {
+    "w": 12,
+    "h": 8
+  },
+  "ambient": "dive_bar",
+  "objects": [
+    {
+      "id": "pd_orleans_bar_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_orleans_bar_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_orleans_bar_string_lights",
+      "name": "String Lights",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "string_lights",
+      "sprite": "assets/img/objects/decor/string_lights.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_orleans_bar_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_orleans_bar_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_orleans_bar_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Stage",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "interact": "stage",
+      "venueId": "jo_secondline",
+      "solid": true
+    },
+    {
+      "id": "pool_table",
+      "name": "Pool Table",
+      "tile": {
+        "x": 9,
+        "y": 2
+      },
+      "interact": "pool",
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Exit to street",
+      "tile": {
+        "x": 6,
+        "y": 7
+      },
+      "to": "jazz_orleans",
+      "spawn": {
+        "x": 6,
+        "y": 5
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#1a221e",
+    "floorB": "#141c18",
+    "floorEdge": "#2a3a30",
+    "bldgL": "#23302a",
+    "bldgR": "#1a241f",
+    "bldgTop": "#121a15"
+  }
+}

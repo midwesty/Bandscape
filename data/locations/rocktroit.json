@@ -123,6 +123,22 @@
         "x": 6,
         "y": 6
       }
+    },
+    {
+      "id": "apt",
+      "name": "Steelyard Lofts",
+      "interact": "property",
+      "propertyId": "apt_rock",
+      "to": "rock_loft",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 4,
+        "y": 1
+      }
     }
   ],
   "world": {

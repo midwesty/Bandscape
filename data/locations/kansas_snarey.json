@@ -1,7 +1,7 @@
 {
-  "_comment": "Flamcago \u2014 first walkable anchor city (Maps & Cities arc, Step 37). Blues/rock 'step-up' town: bigger venue, full enterable POI kit. The electronic district (Warehouse Mile) is a planned second walkable sub-scene. Buildings carry `build` kinds + a smoky-blue palette via the Step 36 skin engine; interiors are city-skinned clones of our shared templates.",
-  "id": "flamcago",
-  "name": "Flamcago \u2014 Blues Alley",
+  "_comment": "Kansas Snarey \u2014 18th & Vinyl \u2014 walkable Midwest anchor city (Step 38). Enterable POI kit reusing shared/cloned interiors, city-skinned. Property building is gated by ownership (interact 'property').",
+  "id": "kansas_snarey",
+  "name": "Kansas Snarey \u2014 18th & Vinyl",
   "size": {
     "w": 12,
     "h": 9
@@ -26,35 +26,25 @@
         "y": 1
       },
       "solid": true,
-      "name": "Shuttered storefront"
+      "name": "Storefront"
     },
     {
-      "id": "facade_c",
-      "build": "general",
-      "tile": {
-        "x": 0,
-        "y": 7
-      },
-      "solid": true,
-      "name": "Walk-up flats"
-    },
-    {
-      "id": "busker_flam",
+      "id": "busker_kansas_snarey",
       "flavorNpc": true,
       "interact": "flavor",
-      "npcId": "flam_busker",
-      "name": "Alley busker",
+      "npcId": "kansas_snarey_busker",
+      "name": "Street player",
       "tile": {
         "x": 5,
         "y": 5
       }
     },
     {
-      "id": "local_flam",
+      "id": "local_kansas_snarey",
       "flavorNpc": true,
       "interact": "flavor",
-      "npcId": "flam_local",
-      "name": "Sharp-dressed regular",
+      "npcId": "kansas_snarey_local",
+      "name": "Local regular",
       "tile": {
         "x": 7,
         "y": 6
@@ -64,9 +54,9 @@
   "exits": [
     {
       "id": "venue",
-      "name": "The Bijou",
+      "name": "The Hey-Hey Club",
       "interact": "enter",
-      "to": "flamcago_venue",
+      "to": "kansas_venue",
       "spawn": {
         "x": 4,
         "y": 6
@@ -79,9 +69,9 @@
     },
     {
       "id": "bar",
-      "name": "The Blue Room",
+      "name": "The Snare",
       "interact": "enter",
-      "to": "flamcago_bar",
+      "to": "kansas_bar",
       "spawn": {
         "x": 4,
         "y": 5
@@ -94,7 +84,7 @@
     },
     {
       "id": "musicstore",
-      "name": "Maxwell St. Music",
+      "name": "Crossroads Music",
       "interact": "enter",
       "to": "musicstore",
       "spawn": {
@@ -109,7 +99,7 @@
     },
     {
       "id": "records",
-      "name": "Wax & Wane Records",
+      "name": "Vinyl & Smoke Records",
       "interact": "enter",
       "to": "records",
       "spawn": {
@@ -124,9 +114,9 @@
     },
     {
       "id": "arcade",
-      "name": "The Loop Arcade",
+      "name": "The Jukebox Arcade",
       "interact": "enter",
-      "to": "flamcago_arcade",
+      "to": "kansas_arcade",
       "spawn": {
         "x": 5,
         "y": 6
@@ -139,7 +129,7 @@
     },
     {
       "id": "diner",
-      "name": "Deep Dish Diner",
+      "name": "Burnt Ends Diner",
       "interact": "diner",
       "build": "diner",
       "tile": {
@@ -149,7 +139,7 @@
     },
     {
       "id": "hotel",
-      "name": "The Drake-ish Hotel",
+      "name": "Hotel Muehleback-ish",
       "interact": "hotel",
       "build": "hotel",
       "tile": {
@@ -159,9 +149,10 @@
     },
     {
       "id": "apt",
-      "name": "Loop Loft",
+      "name": "18th St. Walkup",
       "interact": "property",
-      "to": "flamcago_apt",
+      "propertyId": "apt_kansas",
+      "to": "kansas_apt",
       "spawn": {
         "x": 4,
         "y": 6
@@ -170,8 +161,7 @@
       "tile": {
         "x": 7,
         "y": 7
-      },
-      "propertyId": "apt_flamcago"
+      }
     },
     {
       "id": "bus",
@@ -216,11 +206,11 @@
     }
   },
   "palette": {
-    "floorA": "#1a1f2e",
-    "floorB": "#161a26",
-    "floorEdge": "#2e3850",
-    "bldgL": "#242a3a",
-    "bldgR": "#1a1f2c",
-    "bldgTop": "#13161f"
+    "floorA": "#2a2018",
+    "floorB": "#231a13",
+    "floorEdge": "#4a3826",
+    "bldgL": "#332618",
+    "bldgR": "#261c12",
+    "bldgTop": "#1a130c"
   }
 }

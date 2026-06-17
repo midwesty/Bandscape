@@ -1,7 +1,7 @@
 {
-  "_comment": "Flamcago \u2014 first walkable anchor city (Maps & Cities arc, Step 37). Blues/rock 'step-up' town: bigger venue, full enterable POI kit. The electronic district (Warehouse Mile) is a planned second walkable sub-scene. Buildings carry `build` kinds + a smoky-blue palette via the Step 36 skin engine; interiors are city-skinned clones of our shared templates.",
-  "id": "flamcago",
-  "name": "Flamcago \u2014 Blues Alley",
+  "_comment": "Jazz Orleans \u2014 The Quarter \u2014 walkable Midwest anchor city (Step 38). Enterable POI kit reusing shared/cloned interiors, city-skinned. Property building is gated by ownership (interact 'property').",
+  "id": "jazz_orleans",
+  "name": "Jazz Orleans \u2014 The Quarter",
   "size": {
     "w": 12,
     "h": 9
@@ -26,35 +26,25 @@
         "y": 1
       },
       "solid": true,
-      "name": "Shuttered storefront"
+      "name": "Storefront"
     },
     {
-      "id": "facade_c",
-      "build": "general",
-      "tile": {
-        "x": 0,
-        "y": 7
-      },
-      "solid": true,
-      "name": "Walk-up flats"
-    },
-    {
-      "id": "busker_flam",
+      "id": "busker_jazz_orleans",
       "flavorNpc": true,
       "interact": "flavor",
-      "npcId": "flam_busker",
-      "name": "Alley busker",
+      "npcId": "jazz_orleans_busker",
+      "name": "Street player",
       "tile": {
         "x": 5,
         "y": 5
       }
     },
     {
-      "id": "local_flam",
+      "id": "local_jazz_orleans",
       "flavorNpc": true,
       "interact": "flavor",
-      "npcId": "flam_local",
-      "name": "Sharp-dressed regular",
+      "npcId": "jazz_orleans_local",
+      "name": "Local regular",
       "tile": {
         "x": 7,
         "y": 6
@@ -64,9 +54,9 @@
   "exits": [
     {
       "id": "venue",
-      "name": "The Bijou",
+      "name": "The Brass House",
       "interact": "enter",
-      "to": "flamcago_venue",
+      "to": "orleans_venue",
       "spawn": {
         "x": 4,
         "y": 6
@@ -79,9 +69,9 @@
     },
     {
       "id": "bar",
-      "name": "The Blue Room",
+      "name": "The Second Line",
       "interact": "enter",
-      "to": "flamcago_bar",
+      "to": "orleans_bar",
       "spawn": {
         "x": 4,
         "y": 5
@@ -94,7 +84,7 @@
     },
     {
       "id": "musicstore",
-      "name": "Maxwell St. Music",
+      "name": "Louis' Music Exchange",
       "interact": "enter",
       "to": "musicstore",
       "spawn": {
@@ -109,7 +99,7 @@
     },
     {
       "id": "records",
-      "name": "Wax & Wane Records",
+      "name": "Second Line Records",
       "interact": "enter",
       "to": "records",
       "spawn": {
@@ -124,9 +114,9 @@
     },
     {
       "id": "arcade",
-      "name": "The Loop Arcade",
+      "name": "The Carousel Arcade",
       "interact": "enter",
-      "to": "flamcago_arcade",
+      "to": "orleans_arcade",
       "spawn": {
         "x": 5,
         "y": 6
@@ -139,7 +129,7 @@
     },
     {
       "id": "diner",
-      "name": "Deep Dish Diner",
+      "name": "Po'boy Counter",
       "interact": "diner",
       "build": "diner",
       "tile": {
@@ -149,7 +139,7 @@
     },
     {
       "id": "hotel",
-      "name": "The Drake-ish Hotel",
+      "name": "The Pontchartrain-ish",
       "interact": "hotel",
       "build": "hotel",
       "tile": {
@@ -159,9 +149,10 @@
     },
     {
       "id": "apt",
-      "name": "Loop Loft",
+      "name": "Quarter Studio",
       "interact": "property",
-      "to": "flamcago_apt",
+      "propertyId": "apt_orleans",
+      "to": "orleans_apt",
       "spawn": {
         "x": 4,
         "y": 6
@@ -170,8 +161,7 @@
       "tile": {
         "x": 7,
         "y": 7
-      },
-      "propertyId": "apt_flamcago"
+      }
     },
     {
       "id": "bus",
@@ -216,11 +206,11 @@
     }
   },
   "palette": {
-    "floorA": "#1a1f2e",
-    "floorB": "#161a26",
-    "floorEdge": "#2e3850",
-    "bldgL": "#242a3a",
-    "bldgR": "#1a1f2c",
-    "bldgTop": "#13161f"
+    "floorA": "#1a221e",
+    "floorB": "#141c18",
+    "floorEdge": "#2a3a30",
+    "bldgL": "#23302a",
+    "bldgR": "#1a241f",
+    "bldgTop": "#121a15"
   }
 }

@@ -1,0 +1,101 @@
+{
+  "_comment": "The Dive \u2014 venue interior. Recruit musicians (interact 'talk' + npcId) hanging around the bar; the 'stage' is where shows happen (Step 8). 'out' exits back to the street. NPC data lives in npcs.json.",
+  "id": "kansas_venue",
+  "name": "The Hey-Hey Club",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "dive_bar",
+  "objects": [
+    {
+      "id": "pd_kansas_venue_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_kansas_venue_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_kansas_venue_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_kansas_venue_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_kansas_venue_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Stage",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "interact": "stage",
+      "solid": true,
+      "venueId": "ks_heyhey"
+    },
+    {
+      "id": "out",
+      "name": "Exit to street",
+      "tile": {
+        "x": 5,
+        "y": 6
+      },
+      "to": "kansas_snarey",
+      "spawn": {
+        "x": 6,
+        "y": 5
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#2a2018",
+    "floorB": "#231a13",
+    "floorEdge": "#4a3826",
+    "bldgL": "#332618",
+    "bldgR": "#261c12",
+    "bldgTop": "#1a130c"
+  }
+}

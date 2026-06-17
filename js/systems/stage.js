@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, setFlag, activeBand, regionUnlocked } from "../engine/state.js";
+import { getState, addStat, setFlag, activeBand, regionUnlocked, propertyStatus } from "../engine/state.js";
 import { addCondition } from "./conditions.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
@@ -543,6 +543,12 @@ function interact(obj) {
     case "pool":
       playPool();
       break;
+    case "property": {
+      const st = propertyStatus(obj.propertyId);
+      if (st === "owned" || st === "rented") travel(obj.to, obj.spawn);
+      else toast((obj.name || "This place") + " isn't yours yet - open the Properties app to rent or buy it.", "info");
+      break;
+    }
     case "venue":
       openVenue(obj.venueId);
       break;
