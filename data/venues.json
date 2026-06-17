@@ -183,6 +183,88 @@
         "role": "The Bijou's booker"
       },
       "blurb": "A restored blues theater. Marcus books touring-grade acts - bring a record, a crowd, and some buzz."
+    },
+    "ks_heyhey": {
+      "name": "The Hey-Hey Club",
+      "town": "kansas_snarey",
+      "open": false,
+      "drawMult": 2.2,
+      "payMult": 1.25,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 250,
+        "minBuzz": 25
+      },
+      "billSlots": 3,
+      "genre": "jazz",
+      "booker": {
+        "id": "npc_heyhey",
+        "name": "Pearl",
+        "role": "The Hey-Hey's booker"
+      },
+      "blurb": "A smoky 18th St. jazz room. Pearl books bands with a record and a real following."
+    },
+    "ks_snare": {
+      "name": "The Snare",
+      "town": "kansas_snarey",
+      "open": true,
+      "drawMult": 1.4,
+      "req": {},
+      "genre": "jazz",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "An open jam bar - any band with a demo gets a late slot on the snare-tight stage."
+    },
+    "jo_brass": {
+      "name": "The Brass House",
+      "town": "jazz_orleans",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.35,
+      "days": [
+        "FR",
+        "SA",
+        "SU"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 350,
+        "minBuzz": 35
+      },
+      "billSlots": 4,
+      "genre": "funk",
+      "booker": {
+        "id": "npc_brass",
+        "name": "Antoine",
+        "role": "The Brass House booker"
+      },
+      "blurb": "The Quarter's brass-and-funk cathedral. Antoine books touring-grade acts - the biggest step-up in the Midwest."
+    },
+    "jo_secondline": {
+      "name": "The Second Line",
+      "town": "jazz_orleans",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "funk",
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "blurb": "A funky open bar off Bourbon. Any band can play; the crowd dances regardless."
     }
   }
 }

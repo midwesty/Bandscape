@@ -100,6 +100,48 @@
         "Laptop / DAW"
       ],
       "blurb": "A brick loft a block off Blues Alley. Your bolt-hole in Flamcago - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_kansas",
+      "name": "18th St. Walkup",
+      "tagline": "Jazz District Pad",
+      "location": "kansas_apt",
+      "city": "kansas_snarey",
+      "tier": "decent",
+      "buyPrice": 8500,
+      "rentPrice": 600,
+      "sellValue": 6000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "A warm brick walkup over 18th & Vinyl. Sleep, store gear, soak up the jazz."
+    },
+    {
+      "id": "apt_orleans",
+      "name": "Quarter Studio",
+      "tagline": "French Quarter Loft",
+      "location": "orleans_apt",
+      "city": "jazz_orleans",
+      "tier": "decent",
+      "buyPrice": 9500,
+      "rentPrice": 700,
+      "sellValue": 7000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "A wrought-iron balcony studio in the Quarter. The brass never quite stops below your window."
     }
   ]
 }

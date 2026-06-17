@@ -675,6 +675,390 @@
         "type": "tip",
         "minRapport": 40
       }
+    },
+    {
+      "id": "npc_marcus",
+      "name": "Marcus",
+      "townsfolk": true,
+      "line": "Marcus runs The Bijou. \"Bring me a record and a room full of people, and you headline.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "flamcago_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "flamcago_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "flamcago_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "flamcago",
+      "perk": {
+        "type": "booking",
+        "venue": "flam_bijou",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_pearl",
+      "name": "Pearl",
+      "townsfolk": true,
+      "line": "Pearl books the Hey-Hey. \"This room's heard the greats. Earn your slot.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "kansas_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "kansas_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kansas_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "kansas_snarey",
+      "perk": {
+        "type": "booking",
+        "venue": "ks_heyhey",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_theo",
+      "name": "Theo Banks",
+      "archetype": "Keys",
+      "reliability": 0.75,
+      "skill": 0.72,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_theo"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 7,
+      "potential": 82,
+      "schedule": {
+        "evening": {
+          "at": "kansas_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kansas_bar",
+          "post": [
+            3,
+            2
+          ]
+        }
+      },
+      "town": "kansas_snarey"
+    },
+    {
+      "id": "npc_lena",
+      "name": "Lena Cross",
+      "archetype": "Bassist",
+      "reliability": 0.75,
+      "skill": 0.7,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lena"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 6,
+      "potential": 78,
+      "schedule": {
+        "evening": {
+          "at": "kansas_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kansas_bar",
+          "post": [
+            3,
+            2
+          ]
+        }
+      },
+      "town": "kansas_snarey"
+    },
+    {
+      "id": "npc_antoine",
+      "name": "Antoine",
+      "townsfolk": true,
+      "line": "Antoine holds court at The Brass House. \"You got the pocket? Then we'll talk.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "orleans_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "orleans_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "orleans_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "jazz_orleans",
+      "perk": {
+        "type": "booking",
+        "venue": "jo_brass",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_remy",
+      "name": "Remy LaRose",
+      "archetype": "Keyboardist",
+      "reliability": 0.75,
+      "skill": 0.74,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_remy"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "orleans_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "orleans_bar",
+          "post": [
+            3,
+            2
+          ]
+        }
+      },
+      "town": "jazz_orleans"
+    },
+    {
+      "id": "npc_tunk",
+      "name": "Tunk Joseph",
+      "archetype": "Drummer",
+      "reliability": 0.75,
+      "skill": 0.71,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_tunk"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 7,
+      "potential": 79,
+      "schedule": {
+        "evening": {
+          "at": "orleans_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "orleans_bar",
+          "post": [
+            3,
+            2
+          ]
+        }
+      },
+      "town": "jazz_orleans"
+    },
+    {
+      "id": "npc_flam_sonny",
+      "name": "Sonny Boyd",
+      "archetype": "Guitarist",
+      "reliability": 0.72,
+      "skill": 0.72,
+      "genre": "blues",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_flam_sonny"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 8,
+      "potential": 81,
+      "schedule": {
+        "evening": {
+          "at": "flamcago_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "flamcago_bar",
+          "post": [
+            3,
+            2
+          ]
+        }
+      },
+      "town": "flamcago"
+    },
+    {
+      "id": "npc_flam_hatch",
+      "name": "Hatch Malone",
+      "archetype": "Drummer",
+      "reliability": 0.72,
+      "skill": 0.66,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_flam_hatch"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 5,
+      "potential": 75,
+      "schedule": {
+        "evening": {
+          "at": "flamcago_bar",
+          "post": [
+            9,
+            2
+          ]
+        },
+        "late": {
+          "at": "flamcago_bar",
+          "post": [
+            4,
+            2
+          ]
+        }
+      },
+      "town": "flamcago"
     }
   ]
 }
