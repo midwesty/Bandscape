@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -24,11 +24,6 @@ const TIER_TINT = { crappy: "#6e5a3a", nice: "#3a5a6e", lux: "#5a3a6e" };
 
 function rentPeriod() { return (DATA.config.dwellings && DATA.config.dwellings.rentPeriodDays) || 30; }
 function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
-function cityUnlocked(city) {
-  if (city === "yourtown") return true;
-  const s = getState();
-  return !!(s.flags && s.flags[city + "_unlocked"]);
-}
 
 let screenEl = null;
 
