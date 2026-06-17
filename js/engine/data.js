@@ -41,7 +41,7 @@ const FILES = {
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];
-const LOCATIONS = ["apartment", "town", "venue", "rocktroit", "rocktroit_bar", "arcade", "loft", "rock_loft", "musicstore", "thrift", "apartment_bath", "rock_loft_kitchen", "rock_loft_bath", "rock_loft_bed", "loft_kitchen", "loft_bath", "loft_bed", "loft_balcony", "pokeville", "flamcago", "flamcago_venue", "flamcago_bar", "flamcago_arcade", "flamcago_apt", "records", "kansas_snarey", "kansas_venue", "kansas_bar", "kansas_arcade", "kansas_apt", "jazz_orleans", "orleans_venue", "orleans_bar", "orleans_arcade", "orleans_apt"];
+const LOCATIONS = ["apartment", "town", "venue", "rocktroit", "rocktroit_bar", "arcade", "loft", "rock_loft", "musicstore", "thrift", "apartment_bath", "rock_loft_kitchen", "rock_loft_bath", "rock_loft_bed", "loft_kitchen", "loft_bath", "loft_bed", "loft_balcony", "pokeville", "flamcago", "flamcago_venue", "flamcago_bar", "flamcago_arcade", "flamcago_apt", "records", "kansas_snarey", "kansas_venue", "kansas_bar", "kansas_arcade", "kansas_apt", "jazz_orleans", "orleans_venue", "orleans_bar", "orleans_arcade", "orleans_apt", "flamcago_warehouse", "kansas_levee", "orleans_bourbon", "rocktroit_cut"];
 
 async function fetchJSON(path) {
   const res = await fetch(path + "?v=" + Date.now()); // cache-bust (GitHub Pages caches hard)

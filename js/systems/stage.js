@@ -140,6 +140,7 @@ function rebuildBlocked(except) {
     for (let dy = 0; dy < f.h; dy++) for (let dx = 0; dx < f.w; dx++) { const bx = o.tile.x + dx, by = o.tile.y + dy; if (inBounds(bx, by)) blocked[by][bx] = true; }
   }
   for (const o of exits) { if (o.solid && o.tile && inBounds(o.tile.x, o.tile.y)) blocked[o.tile.y][o.tile.x] = true; }
+  const _W = room && room.world; if (_W && _W.water) for (const r of _W.water) for (let yy = r.y0; yy <= r.y1; yy++) for (let xx = r.x0; xx <= r.x1; xx++) if (inBounds(xx, yy)) blocked[yy][xx] = true; // Step 40: water is non-walkable
 }
 function firstFreeTile() {
   const w = room.size?.w || 8, h = room.size?.h || 6;
@@ -690,10 +691,15 @@ function draw() {
   if (hovered && !arranging) drawLabel();
 }
 
+function inWater(x, y) {
+  const W = room && room.world; if (!W || !W.water) return false;
+  return W.water.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1);
+}
 function drawFloor(w, h) {
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const c = toScreen(x, y);
-    diamond(c.x, c.y, (x + y) % 2 ? pal("floorA") : pal("floorB"), pal("floorEdge"));
+    if (inWater(x, y)) diamond(c.x, c.y, (x + y) % 2 ? pal("waterA", "#1c3a5e") : pal("waterB", "#16314f"), pal("waterEdge", "#2b5277"));
+    else diamond(c.x, c.y, (x + y) % 2 ? pal("floorA") : pal("floorB"), pal("floorEdge"));
   }
 }
 function diamond(cx, cy, fill, stroke) {
@@ -1137,10 +1143,12 @@ function npcFigure(cx, cy, o) {
   const cols = { npc_brian: C.orange, npc_lex: C.blue, npc_ruby: C.pink, npc_jo: C.purple,
     npc_dex: C.pink, npc_marlo: C.orange, npc_pidge: C.green, npc_suzie: C.yellow,
     npc_grim: C.blue, npc_tex: C.orange, npc_vee: C.purple, npc_otis: C.blue };
-  const col = cols[o.npcId] || C.green;
+  const GENRE_COL = { blues: "#4a6fa5", rock: "#c0392b", jazz: "#9b59b6", funk: "#e67e22", electronic: "#1abc9c", country: "#c9a23d", pop: "#ff6fb5", metal: "#7f8c8d", hiphop: "#f1c40f", soul: "#8e44ad", punk: "#e74c3c", indie: "#16a085" };
+  const col = cols[o.npcId] || GENRE_COL[o.genre] || C.green;
   ctx.fillStyle = "#1b1622"; ctx.fillRect(cx - 5, cy - 12, 4, 12); ctx.fillRect(cx + 1, cy - 12, 4, 12);
   ctx.fillStyle = col; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
   roundRect(cx - 7, cy - 26, 14, 16, 3); ctx.fill(); ctx.stroke();
+  if (o.rival) { ctx.fillStyle = "#11121a"; ctx.fillRect(cx - 7, cy - 21, 14, 4); ctx.fillStyle = "#ffd23f"; ctx.fillRect(cx - 4, cy - 20, 8, 2); }
   ctx.fillStyle = "#e9c9a0"; ctx.beginPath(); ctx.arc(cx, cy - 31, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   ctx.fillStyle = col; ctx.fillRect(cx - 6, cy - 37, 12, 4);
   ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 2, cy - 31, 1.2, 0, Math.PI * 2); ctx.fill();
@@ -1260,6 +1268,17 @@ function randomFreeTileNear(cx, cy, rad) {
 }
 function posCar(m) { const r = m.road; m.x = lerp(r.from.x, r.to.x, m.t); m.y = lerp(r.from.y, r.to.y, m.t); }
 function spawnCar(r, t0, dir) { const m = { kind: "car", road: r, t: t0, dir, speed: 1.5, x: 0, y: 0, facing: 1 }; posCar(m); return m; }
+function spawnBoat(r, t0, dir) { const m = { kind: "boat", road: r, t: t0, dir, speed: 0.5, x: 0, y: 0, facing: 1 }; posCar(m); return m; }
+function drawBoat(cx, cy, facing) {
+  shadow(cx, cy, 22, 9);
+  ctx.save();
+  ctx.fillStyle = "rgba(200,230,255,0.16)"; ctx.beginPath(); ctx.ellipse(cx, cy + 5, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#6b5a45"; ctx.strokeStyle = C.line; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 18, cy); ctx.lineTo(cx + 18, cy); ctx.lineTo(cx + 11, cy + 9); ctx.lineTo(cx - 11, cy + 9); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#aeb9c2"; roundRect(cx - 8, cy - 13, 16, 13, 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#3a4750"; ctx.fillRect(cx - 5, cy - 10, 10, 5);
+  ctx.restore();
+}
 function makeWanderer(kind, speed) {
   const w = room.size?.w || 8, h = room.size?.h || 6; let spot = null;
   for (let i = 0; i < 24 && !spot; i++) { const x = Math.floor(Math.random() * w), y = Math.floor(Math.random() * h); if (isFree(x, y)) spot = { x, y }; }
@@ -1276,9 +1295,12 @@ function buildWorld() {
   if (amb.dog) movers.push(makeWanderer("dog", 1.5));
   const nPed = Math.min(4, amb.pedestrians || 0);
   for (let i = 0; i < nPed; i++) movers.push(makeWanderer("ped", 1.0));
+  const lanes = (W.waterLanes || []).map((r) => ({ id: r.id, from: r.from, to: r.to }));
+  const nBoats = Math.min(3, amb.boats || 0);
+  for (let i = 0; i < nBoats; i++) { const r = lanes[i % Math.max(1, lanes.length)]; if (!r) break; const dir = i % 2 ? -1 : 1; movers.push(spawnBoat(r, dir > 0 ? i / Math.max(1, nBoats) : 1 - i / Math.max(1, nBoats), dir)); }
 }
 function updateMovers(dt) {
-  for (const m of movers) m.kind === "car" ? updateCar(m, dt) : updateWanderer(m, dt);
+  for (const m of movers) (m.kind === "car" || m.kind === "boat") ? updateCar(m, dt) : updateWanderer(m, dt);
   for (const m of npcMovers) if (!m.posted) updateWanderer(m, dt);
 }
 function updateCar(m, dt) {
@@ -1307,11 +1329,13 @@ function flipped(cx, facing, fn) { ctx.save(); if (facing < 0) { ctx.translate(c
 function drawMover(m) {
   const c = toScreen(m.x, m.y);
   if (m.kind === "car") return drawCar(c.x, c.y, m.facing);
+  if (m.kind === "boat") return drawBoat(c.x, c.y, m.facing);
   if (m.kind === "dog") return drawDog(c.x, c.y, m.facing);
   if (m.kind === "npc") {
     shadow(c.x, c.y, 12, 6);
-    flipped(c.x, m.facing, () => npcFigure(c.x, c.y, { npcId: m.npcId }));
+    flipped(c.x, m.facing, () => npcFigure(c.x, c.y, { npcId: m.npcId, genre: m.genre, rival: m.rival }));
     if (m.band) { ctx.save(); ctx.fillStyle = "#b388ff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.fillText("\u266A", c.x, c.y - 44); ctx.restore(); }
+    else if (m.interact === "talk") { ctx.save(); ctx.fillStyle = "#ffd23f"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center"; ctx.fillText("\u266A", c.x, c.y - 44); ctx.restore(); }
     return;
   }
   return drawPed(c.x, c.y, m.facing);
@@ -1396,7 +1420,7 @@ function buildSceneNPCs() {
     const posted = !!(r.post && Array.isArray(r.post) && isFree(r.post[0], r.post[1]));
     const spot = posted ? { x: r.post[0], y: r.post[1] } : freeSceneTile();
     npcMovers.push({
-      kind: "npc", npcId: npc.id, name: npc.name || npc.id, band: bandmate,
+      kind: "npc", npcId: npc.id, name: npc.name || npc.id, band: bandmate, genre: npc.genre, rival: !!npc.rival,
       interact: bandmate ? "flavor" : (npc.townsfolk ? "flavor" : "talk"),
       flavor: bandmate ? bandmateLine(npc) : (npc.line || npc.name || ""),
       posted, x: spot.x, y: spot.y, speed: 0.85, target: null, pause: Math.random() * 2, facing: 1
