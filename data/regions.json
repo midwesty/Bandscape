@@ -153,7 +153,7 @@
     "flamcago": {
       "name": "Flamcago",
       "region": "midwest",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": true,
@@ -168,7 +168,14 @@
           "name": "Blues Alley",
           "genre": "blues"
         }
-      ]
+      ],
+      "entryScene": {
+        "scene": "flamcago",
+        "spawn": {
+          "x": 6,
+          "y": 5
+        }
+      }
     },
     "kansas_snarey": {
       "name": "Kansas Snarey",

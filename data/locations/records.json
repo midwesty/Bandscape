@@ -1,0 +1,85 @@
+{
+  "_comment": "Shared record shop interior. Crates print discovery flavor (real crate-digging is a future activity). storeexit returns to wherever you entered from (storeReturn flag), so any city's records building can point here.",
+  "id": "records",
+  "name": "Wax & Wane Records",
+  "size": {
+    "w": 9,
+    "h": 6
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "rec_clerk",
+      "name": "Shop owner",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "records_clerk"
+    },
+    {
+      "id": "crate_a",
+      "name": "Soul / Funk crate",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "You flip through warped soul 45s. Somewhere in here is a record that'll change your sound.",
+      "solid": true
+    },
+    {
+      "id": "crate_b",
+      "name": "Local Bands crate",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "A hand-labeled crate of local pressings. (Crate-digging to discover bands lands in a later build.)",
+      "solid": true
+    },
+    {
+      "id": "crate_c",
+      "name": "Bargain bin",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "Three-for-a-dollar bin. Scratched, loved, mostly unplayable. You love it.",
+      "solid": true
+    },
+    {
+      "id": "pd_records_player",
+      "name": "Listening Station",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "record_player",
+      "sprite": "assets/img/objects/decor/record_player.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit",
+      "name": "Exit",
+      "tile": {
+        "x": 4,
+        "y": 5
+      },
+      "interact": "storeexit"
+    }
+  ],
+  "palette": {
+    "floorA": "#241c22",
+    "floorB": "#1d161c",
+    "floorEdge": "#3a2c34",
+    "bldgL": "#2a2230",
+    "bldgR": "#201823",
+    "bldgTop": "#171019"
+  }
+}

@@ -45,7 +45,7 @@ const C = {
 // absent, so existing scenes are visually unchanged.
 let activePalette = null;
 function pal(key, fb) { return (activePalette && activePalette[key]) || C[key] || fb; }
-const BUILDING_KINDS = { venue: C.pink, saloon: "#c98a3d", hotel: "#7CFC9B", store: C.green, general: "#c9a23d", music: C.purple, pawn: C.yellow, bar: "#ff8a3d", diner: C.orange, records: C.pink, casino: "#ff3b6b", food: C.orange };
+const BUILDING_KINDS = { venue: C.pink, saloon: "#c98a3d", hotel: "#7CFC9B", store: C.green, general: "#c9a23d", music: C.purple, pawn: C.yellow, bar: "#ff8a3d", diner: C.orange, records: C.pink, casino: "#ff3b6b", food: C.orange, arcade: "#3df0ff", apartment: "#9b8cff" };
 function kindColor(kind) { return BUILDING_KINDS[kind] || C.blue; }
 
 const TILE_W = 64, TILE_H = 32, WALL_H = 46, SPEED = 3.6;
@@ -295,7 +295,7 @@ function persist() { const s = getState(); saveToSlot(s.meta.slot, s); }
 function travel(to, spawn) {
   const s = getState();
   if (!to || !DATA.locations[to]) { toast("There's nothing that way yet.", "warn"); return; }
-  if (to === "musicstore" || to === "thrift") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
+  if (to === "musicstore" || to === "thrift" || to === "records") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
   s.location = to;
   if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
@@ -540,6 +540,9 @@ function interact(obj) {
     case "diner":
       dinerEat(obj);
       break;
+    case "pool":
+      playPool();
+      break;
     case "venue":
       openVenue(obj.venueId);
       break;
@@ -551,6 +554,25 @@ function interact(obj) {
       break;
     default:
       toast(obj.name, "info");
+  }
+}
+
+// ---- pool table (Flamcago bar activity, Step 37) ----
+function playPool() {
+  const s = getState();
+  const buyIn = 25;
+  const cash = (s.player && s.player.stats && s.player.stats.money) || 0;
+  if (cash < buyIn) { toast("You're short for the table - $" + buyIn + " to rack 'em.", "warn"); return; }
+  addStat("money", -buyIn);
+  const mood = (s.player && s.player.stats && s.player.stats.mood != null) ? s.player.stats.mood : 50;
+  const won = (Math.random() * 100 + (mood - 50) * 0.25) > 50;
+  if (won) {
+    const pot = buyIn * 2;
+    addStat("money", pot); addStat("mood", 6);
+    toast("You run the table and clear the pot - up $" + (pot - buyIn) + " on the night.", "good");
+  } else {
+    addStat("mood", -3);
+    toast("Scratched on the 8. The regulars grin. Down $" + buyIn + ".", "warn");
   }
 }
 

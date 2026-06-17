@@ -79,6 +79,27 @@
         "bath": "rock_loft_bath",
         "bedroom": "rock_loft_bed"
       }
+    },
+    {
+      "id": "apt_flamcago",
+      "name": "Loop Loft",
+      "tagline": "Blues Alley Pad",
+      "location": "flamcago_apt",
+      "city": "flamcago",
+      "tier": "decent",
+      "buyPrice": 9000,
+      "rentPrice": 650,
+      "sellValue": 6500,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "A brick loft a block off Blues Alley. Your bolt-hole in Flamcago - sleep, store gear, make it yours."
     }
   ]
 }

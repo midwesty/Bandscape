@@ -143,6 +143,46 @@
         "role": "Saloon Row's gatekeeper"
       },
       "blurb": "Pokeville's country-only stage. Dusty books acts with a record out and a real following \u2014 and no, your noise-punk set won't fly here."
+    },
+    "flam_blueroom": {
+      "name": "The Blue Room",
+      "town": "flamcago",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "blues",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Flamcago's open blues bar - a real step up from the basements. Any band with a demo can get a late slot."
+    },
+    "flam_bijou": {
+      "name": "The Bijou",
+      "town": "flamcago",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_bijou",
+        "name": "Marcus",
+        "role": "The Bijou's booker"
+      },
+      "blurb": "A restored blues theater. Marcus books touring-grade acts - bring a record, a crowd, and some buzz."
     }
   }
 }

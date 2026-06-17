@@ -1,0 +1,101 @@
+{
+  "_comment": "The Dive \u2014 venue interior. Recruit musicians (interact 'talk' + npcId) hanging around the bar; the 'stage' is where shows happen (Step 8). 'out' exits back to the street. NPC data lives in npcs.json.",
+  "id": "flamcago_venue",
+  "name": "The Bijou",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "dive_bar",
+  "objects": [
+    {
+      "id": "pd_flamcago_venue_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_flamcago_venue_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_flamcago_venue_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_flamcago_venue_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_flamcago_venue_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Stage",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "interact": "stage",
+      "solid": true,
+      "venueId": "flam_bijou"
+    },
+    {
+      "id": "out",
+      "name": "Exit to Blues Alley",
+      "tile": {
+        "x": 5,
+        "y": 6
+      },
+      "to": "flamcago",
+      "spawn": {
+        "x": 9,
+        "y": 2
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#241c22",
+    "floorB": "#1d161c",
+    "floorEdge": "#3a2c34",
+    "bldgL": "#2a2230",
+    "bldgR": "#201823",
+    "bldgTop": "#171019"
+  }
+}
