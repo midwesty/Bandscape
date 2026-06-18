@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, vehicleBand, bandById } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -89,41 +89,66 @@ function citySection(city) {
     <div class="prop-city-head">${esc((cityDef(city) && cityDef(city).name) || city)}${lock}</div>${cards}</div>`;
 }
 
-function vehicleActions(p, status) {
-  const m = (n) => money(n);
-  if (status === "owned") return `<button class="btn prop-act" data-act="enter" data-id="${p.id}">Enter</button><button class="btn prop-act" data-act="driveshow" data-id="${p.id}">Drive to next show \u25B8</button><button class="btn ghost prop-act" data-act="sell" data-id="${p.id}">Sell (+${m(p.sellValue)})</button>`;
-  if (status === "rented") return `<button class="btn prop-act" data-act="enter" data-id="${p.id}">Enter</button><button class="btn prop-act" data-act="driveshow" data-id="${p.id}">Drive to next show \u25B8</button><button class="btn prop-act" data-act="buyout" data-id="${p.id}">Buy out (${m(p.buyPrice)})</button><button class="btn ghost prop-act" data-act="endlease" data-id="${p.id}">End lease</button>`;
-  const rent = p.rentPrice ? `<button class="btn prop-act" data-act="rent" data-id="${p.id}">Rent ${m(p.rentPrice)}/mo</button>` : "";
-  return `${rent}<button class="btn prop-act" data-act="buy" data-id="${p.id}">Buy ${m(p.buyPrice)}</button>`;
-}
 function vehiclesSection() {
-  const vs = propDefs().filter((p) => p.vehicle);
-  if (!vs.length) return "";
+  const types = propDefs().filter((p) => p.vehicle);
+  if (!types.length) return "";
+  const fleet = ownedVehicles();
   const pbAll = getState().bands.filter((x) => x.playerIn);
-  const cards = vs.map((p) => {
-    const status = propertyStatus(p.id);
-    const controlled = status === "owned" || status === "rented";
+  let yours = "";
+  if (fleet.length) {
+    const seen = {};
+    const cards = fleet.map((v) => {
+      const d = propDef(v.type) || {};
+      const sameType = fleet.filter((x) => x.type === v.type).length;
+      seen[v.type] = (seen[v.type] || 0) + 1;
+      const label = sameType > 1 ? `${d.name || v.type} #${seen[v.type]}` : (d.name || v.type);
+      const ob = bandById(v.bandId);
+      const statusTag = v.status === "leased" ? " \u00b7 leased" : " \u00b7 owned";
+      const enter = `<button class="btn prop-act" data-act="venter" data-veh="${v.id}">Enter</button>`;
+      const drive = `<button class="btn prop-act" data-act="vdrive" data-veh="${v.id}">Drive to next show \u25B8</button>`;
+      const reassign = pbAll.length > 1 ? `<button class="btn ghost prop-act" data-act="vreassign" data-veh="${v.id}">Reassign band \u25B8</button>` : "";
+      const dispose = v.status === "leased"
+        ? `<button class="btn ghost prop-act" data-act="vendlease" data-veh="${v.id}">End lease</button>`
+        : `<button class="btn ghost prop-act" data-act="vsell" data-veh="${v.id}">Sell (+${money(d.sellValue || 0)})</button>`;
+      return `<div class="prop-card"><div class="prop-card-head">${esc(label)}<span class="muted">${esc(d.tagline || "")}${statusTag}</span></div><div class="prop-assign">Assigned to <strong>${esc((ob && ob.name) || "your band")}</strong></div><div class="prop-acts">${enter}${drive}${reassign}${dispose}</div></div>`;
+    }).join("");
+    yours = `<div class="prop-city"><div class="prop-city-head">Your Vehicles</div>${cards}</div>`;
+  }
+  const buy = types.map((p) => {
     const am = (p.amenities || []).map((a) => `<span class="prop-am">${esc(a)}</span>`).join("");
-    const tag = status === "owned" ? " · owned" : status === "rented" ? " · leased" : "";
-    const ob = controlled ? bandById(vehicleBand(p.id)) : null;
-    const assign = controlled ? `<div class="prop-assign">Assigned to <strong>${esc((ob && ob.name) || "your band")}</strong></div>` : "";
-    const reassign = (controlled && pbAll.length > 1) ? `<button class="btn ghost prop-act" data-act="reassign" data-id="${p.id}">Reassign band ▸</button>` : "";
-    return `<div class="prop-card"><div class="prop-card-head">${esc(p.name)}<span class="muted">${esc(p.tagline || "")}${tag}</span></div>${assign}<div class="prop-ams">${am}</div><div class="prop-acts">${vehicleActions(p, status)}${reassign}</div></div>`;
+    const lease = p.rentPrice ? `<button class="btn prop-act" data-act="vlease" data-buytype="${p.id}">Lease ${money(p.rentPrice)}/mo</button>` : "";
+    return `<div class="prop-card"><div class="prop-card-head">${esc(p.name)}<span class="muted">${esc(p.tagline || "")}</span></div><div class="prop-ams">${am}</div><div class="prop-acts">${lease}<button class="btn prop-act" data-act="vbuy" data-buytype="${p.id}">Buy ${money(p.buyPrice)}</button></div></div>`;
   }).join("");
-  return `<div class="prop-city"><div class="prop-city-head">Vehicles</div>${cards}</div>`;
+  return yours + `<div class="prop-city"><div class="prop-city-head">Buy a Vehicle</div>${buy}</div>`;
 }
-function driveToShow() {
-  const cmt = nextCommitment("show", null);
-  if (!cmt) { toast("No shows booked - book one first in the BAND app.", "info"); return; }
+function driveToShow(bandId) {
+  const cmt = nextCommitment("show", bandId || null);
+  if (!cmt) { toast("No shows booked for that band yet.", "info"); return; }
   const v = (DATA.venues && DATA.venues.venues && DATA.venues.venues[cmt.venue]) || null;
   const cd = v && v.town && cityDef(v.town);
   const es = cd && cd.entryScene;
   if (!es) { toast("Can't find the road to that venue yet.", "warn"); return; }
   const mins = (DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45;
-  closePhone();
-  travelTo(es.scene, es.spawn);
-  advanceMinutes(mins);
+  closePhone(); travelTo(es.scene, es.spawn); advanceMinutes(mins);
   toast(`On the road to ${cd.name} \u2014 ${mins} min.`, "good");
+}
+function handleVehicleAct(b, act) {
+  if (b.dataset.veh) {
+    const v = vehicleById(b.dataset.veh); if (!v) return;
+    const d = propDef(v.type) || {};
+    if (act === "venter") { closePhone(); travelTo(d.location, null); return; }
+    if (act === "vdrive") { driveToShow(v.bandId); return; }
+    if (act === "vreassign") { const pb = getState().bands.filter((x) => x.playerIn); if (pb.length > 1) { const i = pb.findIndex((x) => x.id === v.bandId); const nx = pb[(i + 1) % pb.length]; setVehicleBand(v.id, nx.id); toast(`${d.name} now serves ${nx.name || "that band"}.`, "good"); } persist(); renderPropertiesApp(screenEl); return; }
+    if (act === "vsell") { addStat("money", d.sellValue || 0); removeVehicle(v.id); toast(`Sold ${d.name} for ${money(d.sellValue || 0)}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
+    if (act === "vendlease") { removeVehicle(v.id); toast(`Ended the lease on ${d.name}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
+    return;
+  }
+  if (b.dataset.buytype) {
+    const d = propDef(b.dataset.buytype); if (!d) return;
+    const ab = activeBand();
+    if (act === "vbuy") { const r = payForBand(ab && ab.id, d.buyPrice, { label: d.name, category: "vehicle" }); if (!r || !r.ok) return; addVehicle(d.id, "owned", ab && ab.id); toast(`${(ab && ab.name) || "Your band"} bought ${d.name}!`, "good"); persist(); renderPropertiesApp(screenEl); return; }
+    if (act === "vlease") { const r = payForBand(ab && ab.id, d.rentPrice, { label: d.name + " lease", category: "vehicle" }); if (!r || !r.ok) return; addVehicle(d.id, "leased", ab && ab.id, { nextRentDay: currentDay() + rentPeriod(), behind: false }); toast(`${(ab && ab.name) || "Your band"} leased ${d.name}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
+  }
 }
 
 export function renderPropertiesApp(container) {
@@ -141,39 +166,18 @@ export function renderPropertiesApp(container) {
 function bind() {
   screenEl.querySelectorAll("[data-ptab]").forEach((b) => b.addEventListener("click", () => { propTab = b.dataset.ptab; renderPropertiesApp(screenEl); }));
   screenEl.querySelectorAll(".prop-act").forEach((b) => b.addEventListener("click", () => {
-    const p = propDef(b.dataset.id); if (!p) return;
     const act = b.dataset.act;
+    if (b.dataset.veh || b.dataset.buytype) { handleVehicleAct(b, act); return; }
+    const p = propDef(b.dataset.id); if (!p) return;
     if (act === "enter") { closePhone(); travelTo(p.location, null); return; }
-    if (act === "driveshow") { driveToShow(); return; }
-    if (act === "reassign") {
-      const pb = getState().bands.filter((x) => x.playerIn);
-      if (pb.length > 1) { const cur = vehicleBand(p.id); const i = pb.findIndex((x) => x.id === cur); const nx = pb[(i + 1) % pb.length]; setPropertyStatus(p.id, propertyStatus(p.id), { bandId: nx.id }); toast(`${p.name} now belongs to ${nx.name || "that band"}.`, "good"); }
-      persist(); renderPropertiesApp(screenEl); return;
-    }
     if (act === "buy" || act === "buyout") {
-      if (p.vehicle) {
-        const ab = activeBand(); const keep = (act === "buyout" ? vehicleBand(p.id) : null) || (ab && ab.id);
-        const r = payForBand(keep, p.buyPrice, { label: p.name, category: "vehicle" });
-        if (!r || !r.ok) return;
-        setPropertyStatus(p.id, "owned", { bandId: keep });
-        toast(`${(bandById(keep) && bandById(keep).name) || "Your band"} bought ${p.name}!`, "good");
-      } else {
-        if (spendable() < p.buyPrice) { toast("Not enough cash to buy that.", "warn"); return; }
-        addStat("money", -p.buyPrice); setPropertyStatus(p.id, "owned");
-        toast(`You bought ${p.name}!`, "good");
-      }
+      if (spendable() < p.buyPrice) { toast("Not enough cash to buy that.", "warn"); return; }
+      addStat("money", -p.buyPrice); setPropertyStatus(p.id, "owned");
+      toast(`You bought ${p.name}!`, "good");
     } else if (act === "rent") {
-      if (p.vehicle) {
-        const ab = activeBand();
-        const r = payForBand(ab && ab.id, p.rentPrice, { label: p.name + " lease", category: "vehicle" });
-        if (!r || !r.ok) return;
-        setPropertyStatus(p.id, "rented", { nextRentDay: currentDay() + rentPeriod(), behind: false, bandId: ab && ab.id });
-        toast(`${(ab && ab.name) || "Your band"} leased ${p.name}.`, "good");
-      } else {
-        if (spendable() < p.rentPrice) { toast("Can't cover the first month's rent.", "warn"); return; }
-        addStat("money", -p.rentPrice); setPropertyStatus(p.id, "rented", { nextRentDay: currentDay() + rentPeriod(), behind: false });
-        toast(`You signed a lease on ${p.name}.`, "good");
-      }
+      if (spendable() < p.rentPrice) { toast("Can't cover the first month's rent.", "warn"); return; }
+      addStat("money", -p.rentPrice); setPropertyStatus(p.id, "rented", { nextRentDay: currentDay() + rentPeriod(), behind: false });
+      toast(`You signed a lease on ${p.name}.`, "good");
     } else if (act === "sell") {
       addStat("money", p.sellValue); setPropertyStatus(p.id, "none");
       toast(`Sold ${p.name} for ${money(p.sellValue)}.`, "good");
@@ -208,6 +212,20 @@ function chargeDueRent() {
         rec.behind = true;
         toast(`You're short on rent for ${p.name}. Pay up soon.`, "warn");
       }
+      changed = true;
+    }
+  }
+  for (const v of ownedVehicles()) {
+    if (v.status !== "leased") continue;
+    const d = propDef(v.type) || {};
+    if (v.nextRentDay == null) { v.nextRentDay = day + rentPeriod(); changed = true; continue; }
+    if (day >= v.nextRentDay) {
+      const ab = bandById(v.bandId);
+      if (ab && (ab.account || 0) >= d.rentPrice) {
+        bandSpend(v.bandId, d.rentPrice, "vehicle", d.name + " lease");
+        v.nextRentDay = day + rentPeriod(); v.behind = false;
+        toast(`Lease due: -${money(d.rentPrice)} for ${d.name}.`, "info");
+      } else { v.behind = true; toast(`${(ab && ab.name) || "The band"} is short on the lease for ${d.name}.`, "warn"); }
       changed = true;
     }
   }

@@ -1280,3 +1280,8 @@ body:has(.modal-scrim) #log { display: none; }
 .prop-tab.on{opacity:1;background:rgba(201,162,39,.16);border-color:#c9a227;}
 .prop-assign{font-size:12px;opacity:.9;margin:1px 0 7px;}
 .prop-assign strong{color:#e8c34a;}
+
+/* Touring Phase 1: booking clusters (Your Circuit vs On the Road) */
+.mp-cluster{margin:10px 0 4px;}
+.mp-cluster-h{font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;opacity:.95;padding:6px 2px;border-bottom:1px solid #3a3346;margin-bottom:6px;}
+.mp-cluster.road .mp-cluster-h{color:#c9a227;opacity:.85;}

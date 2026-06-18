@@ -536,11 +536,37 @@ export function setPropertyStatus(id, status, extra) {
   return s.properties[id];
 }
 // properties the player currently controls (owned or rented)
-export function controlledProperties() { return propDefs().filter((p) => { const st = propertyStatus(p.id); return st === "owned" || st === "rented"; }); }
-export function ownsVehicle() { return controlledProperties().some((p) => p.vehicle); }
+// ---- Fleet: vehicles are owned INSTANCES (own many, each assigned to a band) ----
+function nextVehId(s) { s._vehSeq = (s._vehSeq || 0) + 1; return "veh#" + s._vehSeq; }
+export function ownedVehicles() {
+  const s = getState(); if (!s) return [];
+  if (!Array.isArray(s.vehicles)) s.vehicles = [];
+  if (!s.vehiclesMigrated) {                       // migrate the old single-of-each ownership into the fleet, once
+    for (const p of propDefs()) {
+      if (!p.vehicle) continue;
+      const rec = s.properties && s.properties[p.id];
+      if (rec && (rec.status === "owned" || rec.status === "rented")) {
+        s.vehicles.push({ id: nextVehId(s), type: p.id, status: rec.status, bandId: rec.bandId || (activeBand() && activeBand().id) || null, nextRentDay: rec.nextRentDay, behind: !!rec.behind });
+        s.properties[p.id] = { status: "none" };
+      }
+    }
+    s.vehiclesMigrated = true;
+  }
+  return s.vehicles;
+}
+export function vehicleById(id) { return ownedVehicles().find((v) => v.id === id) || null; }
+export function addVehicle(type, status, bandId, extra) { const s = getState(); ownedVehicles(); const inst = Object.assign({ id: nextVehId(s), type, status, bandId: bandId || null }, extra || {}); s.vehicles.push(inst); return inst; }
+export function removeVehicle(id) { const s = getState(); ownedVehicles(); s.vehicles = s.vehicles.filter((v) => v.id !== id); }
+export function setVehicleBand(id, bandId) { const v = vehicleById(id); if (v) v.bandId = bandId; return v; }
+export function ownsVehicle() { return ownedVehicles().length > 0; }
+export function bandHasVehicle(bandId) { return ownedVehicles().some((v) => v.bandId === bandId); }
+export function controlledProperties() {
+  const phys = propDefs().filter((p) => { const st = propertyStatus(p.id); return st === "owned" || st === "rented"; });
+  const vehTypes = new Set(ownedVehicles().map((v) => v.type));
+  const veh = [...vehTypes].map((t) => propDef(t)).filter((d) => d && !phys.includes(d));
+  return phys.concat(veh);
+}
 export function propertyMeta(id) { const s = getState(); return (s.properties && s.properties[id]) || {}; }
-export function vehicleBand(id) { return propertyMeta(id).bandId || null; }
-export function bandHasVehicle(bandId) { return controlledProperties().some((p) => p.vehicle && propertyMeta(p.id).bandId === bandId); }
 // scene ids the player can send gear to / enter
 export function controlledLocations() { return controlledProperties().map((p) => p.location); }
 
@@ -723,6 +749,10 @@ export function payPayroll(cover) {
 // nests above venue rep: career tier -> region unlock -> regional fame -> mastery.
 export function regionDef(id) { return ((DATA.regions && DATA.regions.regions) || {})[id] || null; }
 export function cityDef(id) { return ((DATA.regions && DATA.regions.cities) || {})[id] || null; }
+export function cityCluster(id) { const c = ((DATA.regions && DATA.regions.cities) || {})[id] || {}; return c.cluster || "home"; }
+export function clusterDef(cid) { return ((DATA.regions && DATA.regions.clusters) || {})[cid] || { dayCost: 0 }; }
+export function cityDayCost(id) { return clusterDef(cityCluster(id)).dayCost || 0; }
+export function inHomeCircuit(id) { return cityDayCost(id) === 0; }
 export function currentCity() { const s = getState(); return (s && s.currentCity) || "yourtown"; }
 export function regionOfCity(cityId) { const c = cityDef(cityId); return c ? c.region : null; }
 

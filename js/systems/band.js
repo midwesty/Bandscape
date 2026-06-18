@@ -18,7 +18,7 @@ import {
   musicianFromNpc, playerFame,
   ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
   careerStanding, mainGenre, mainGenreName, genreList, subgenresOf,
-  cityUnlocked, cityDef, currentCity
+  cityUnlocked, cityDef, currentCity, inHomeCircuit, cityDayCost, bandHasVehicle
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -90,22 +90,36 @@ function bookShowFlow() {
   const s = getState();
   const accessible = (t) => cityUnlocked(t);
   const vs = venueList().filter((v) => accessible(v.town) && isDiscovered(v.id));
+  const ab = activeBand();
+  const hasVeh = !!(ab && bandHasVehicle(ab.id));
+  const grouped = {};
+  vs.forEach((v) => { (grouped[v.town] = grouped[v.town] || []).push(v); });
+  const here = currentCity();
+  const byName = (a, b) => ((cityDef(a) && cityDef(a).name) || a).localeCompare((cityDef(b) && cityDef(b).name) || b);
   const venueCard = (v) => {
-    const elig = venueEligible(v.id);
-    const action = elig
-      ? `<button class="cal-slot-btn" data-venue="${v.id}">Book here ▸</button>`
-      : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
+    const road = !inHomeCircuit(v.town);
+    let action;
+    if (road && !hasVeh) action = `<button class="cal-slot-btn" disabled style="opacity:.5">Requires a vehicle</button>`;
+    else {
+      const elig = venueEligible(v.id);
+      action = elig
+        ? `<button class="cal-slot-btn" data-venue="${v.id}">Book here \u25B8</button>`
+        : `<button class="cal-slot-btn" disabled style="opacity:.5">${esc(venueReqText(v.id))}</button>`;
+    }
     return `<div class="cal-day"><div class="cal-day-h">${esc(v.name)}</div><div class="cal-slots">${action}</div></div>`;
   };
-  const byTown = {};
-  vs.forEach((v) => { (byTown[v.town] = byTown[v.town] || []).push(v); });
-  const here = currentCity();
-  const towns = Object.keys(byTown).sort((a, b) => (a === here ? -1 : b === here ? 1 : (((cityDef(a) && cityDef(a).name) || a).localeCompare((cityDef(b) && cityDef(b).name) || b))));
-  const rows = towns.map((t) => {
-    const cn = (cityDef(t) && cityDef(t).name) || t;
-    const tag = t === here ? ` <span class="mp-here">you are here</span>` : "";
-    return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc(cn)}${tag}</div>${byTown[t].map(venueCard).join("")}</div>`;
-  }).join("");
+  const townBlock = (t) => { const cn = (cityDef(t) && cityDef(t).name) || t; const tag = t === here ? ` <span class="mp-here">you are here</span>` : ""; return `<div class="mp-town ${t === here ? "here" : ""}"><div class="mp-town-h">${esc(cn)}${tag}</div>${(grouped[t] || []).map(venueCard).join("")}</div>`; };
+  const circuitTowns = Object.keys(grouped).filter((t) => inHomeCircuit(t)).sort((a, b) => (a === here ? -1 : b === here ? 1 : byName(a, b)));
+  const roadTowns = Object.keys(grouped).filter((t) => !inHomeCircuit(t));
+  let rows = "";
+  if (circuitTowns.length) rows += `<div class="mp-cluster"><div class="mp-cluster-h">Your Circuit</div>${circuitTowns.map(townBlock).join("")}</div>`;
+  const byCost = {};
+  roadTowns.forEach((t) => { const c = cityDayCost(t); (byCost[c] = byCost[c] || []).push(t); });
+  Object.keys(byCost).map(Number).sort((a, b) => a - b).forEach((c) => {
+    const lab = `On the Road \u00b7 ${c} day${c === 1 ? "" : "s"}`;
+    const note = hasVeh ? "" : ` <span class="muted">\u2014 needs a vehicle</span>`;
+    rows += `<div class="mp-cluster road"><div class="mp-cluster-h">${lab}${note}</div>${byCost[c].sort(byName).map(townBlock).join("")}</div>`;
+  });
   const body = rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">PICK A VENUE</span><button class="phone-nav" id="vp-close">✕</button></div>
     <div class="cal-body"><p class="shop-note">Where do you want to play? Locked rooms show what they still need.</p>${body}</div></div>`;
