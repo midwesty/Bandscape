@@ -98,7 +98,8 @@
           "x": 3,
           "y": 5
         }
-      }
+      },
+      "cluster": "home"
     },
     "rocktroit": {
       "name": "Rocktroit",
@@ -131,7 +132,8 @@
           "x": 6,
           "y": 7
         }
-      }
+      },
+      "cluster": "home"
     },
     "pokeville": {
       "name": "Pokeville",
@@ -154,7 +156,8 @@
           "x": 6,
           "y": 7
         }
-      }
+      },
+      "cluster": "home"
     },
     "flamcago": {
       "name": "Flamcago",
@@ -182,7 +185,8 @@
           "x": 6,
           "y": 5
         }
-      }
+      },
+      "cluster": "flamcago"
     },
     "kansas_snarey": {
       "name": "Kansas Snarey",
@@ -205,7 +209,8 @@
           "x": 6,
           "y": 5
         }
-      }
+      },
+      "cluster": "kansas"
     },
     "jazz_orleans": {
       "name": "Jazz Orleans",
@@ -233,7 +238,8 @@
           "x": 6,
           "y": 5
         }
-      }
+      },
+      "cluster": "orleans"
     },
     "new_funk_city": {
       "name": "New Funk City",
@@ -253,7 +259,8 @@
           "name": "Boombox Heights",
           "genre": "rap"
         }
-      ]
+      ],
+      "cluster": "east_coast"
     },
     "bostone": {
       "name": "Bostone",
@@ -268,7 +275,8 @@
           "name": "Brick Row",
           "genre": "indie"
         }
-      ]
+      ],
+      "cluster": "east_coast"
     },
     "jamlanta": {
       "name": "Jamlanta",
@@ -288,7 +296,8 @@
           "name": "Peachtree Soul",
           "genre": "soul"
         }
-      ]
+      ],
+      "cluster": "east_coast"
     },
     "cost_angeles": {
       "name": "Cost Angeles",
@@ -308,7 +317,8 @@
           "name": "The Pit",
           "genre": "metal"
         }
-      ]
+      ],
+      "cluster": "west_coast"
     },
     "porthole": {
       "name": "Porthole",
@@ -323,7 +333,8 @@
           "name": "Fog District",
           "genre": "indie"
         }
-      ]
+      ],
+      "cluster": "west_coast"
     },
     "san_flamenco": {
       "name": "San Flamenco",
@@ -343,7 +354,8 @@
           "name": "Costa Loud",
           "genre": "latin"
         }
-      ]
+      ],
+      "cluster": "west_coast"
     },
     "londrum": {
       "name": "Londrum",
@@ -363,7 +375,8 @@
           "name": "The Grid",
           "genre": "electronic"
         }
-      ]
+      ],
+      "cluster": "europe"
     },
     "berlinn": {
       "name": "Berlinn",
@@ -378,7 +391,8 @@
           "name": "Bunker Block",
           "genre": "techno"
         }
-      ]
+      ],
+      "cluster": "europe"
     },
     "amsterjam": {
       "name": "Amsterjam",
@@ -393,7 +407,8 @@
           "name": "Canal Sessions",
           "genre": "jam"
         }
-      ]
+      ],
+      "cluster": "europe"
     },
     "tokyolo": {
       "name": "Tokyolo",
@@ -413,7 +428,8 @@
           "name": "Static Alley",
           "genre": "noise"
         }
-      ]
+      ],
+      "cluster": "japan"
     },
     "osanka": {
       "name": "Osanka",
@@ -428,7 +444,8 @@
           "name": "Dotonbori Din",
           "genre": "punk"
         }
-      ]
+      ],
+      "cluster": "japan"
     },
     "kyodo": {
       "name": "Kyodo",
@@ -443,7 +460,42 @@
           "name": "Old Town Strings",
           "genre": "traditional"
         }
-      ]
+      ],
+      "cluster": "japan"
+    }
+  },
+  "clusters": {
+    "home": {
+      "name": "Home Circuit",
+      "dayCost": 0
+    },
+    "flamcago": {
+      "name": "Flamcago",
+      "dayCost": 1
+    },
+    "kansas": {
+      "name": "Kansas Snarey",
+      "dayCost": 2
+    },
+    "orleans": {
+      "name": "Jazz Orleans",
+      "dayCost": 2
+    },
+    "east_coast": {
+      "name": "East Coast",
+      "dayCost": 7
+    },
+    "west_coast": {
+      "name": "West Coast",
+      "dayCost": 7
+    },
+    "europe": {
+      "name": "Europe",
+      "dayCost": 10
+    },
+    "japan": {
+      "name": "Japan",
+      "dayCost": 12
     }
   }
 }
