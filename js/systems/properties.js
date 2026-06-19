@@ -9,13 +9,13 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, cityDayCost } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
 import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
-import { advanceMinutes } from "./time.js";
+import { advanceMinutes, sleep } from "./time.js";
 import { currentDay, nextCommitment } from "./calendar.js";
 import { payForBand } from "./bank.js";
 
@@ -93,7 +93,7 @@ function vehiclesSection() {
   const types = propDefs().filter((p) => p.vehicle);
   if (!types.length) return "";
   const fleet = ownedVehicles();
-  const pbAll = getState().bands.filter((x) => x.playerIn);
+  const pbAll = getState().bands; // any band you control (incl. ones you formed) can own a vehicle
   let yours = "";
   if (fleet.length) {
     const seen = {};
@@ -128,9 +128,17 @@ function driveToShow(bandId) {
   const cd = v && v.town && cityDef(v.town);
   const es = cd && cd.entryScene;
   if (!es) { toast("Can't find the road to that venue yet.", "warn"); return; }
-  const mins = (DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45;
-  closePhone(); travelTo(es.scene, es.spawn); advanceMinutes(mins);
-  toast(`On the road to ${cd.name} \u2014 ${mins} min.`, "good");
+  const days = cityDayCost(v.town);
+  closePhone(); travelTo(es.scene, es.spawn);
+  if (days > 0) {
+    const veh = ownedVehicles().find((x) => x.bandId === (bandId || null));
+    const poor = !veh || veh.type === "veh_van";   // a van bunk is rough; the bus rests well
+    for (let i = 0; i < days; i++) sleep({ poor });
+    toast(`Drove ${days} day${days > 1 ? "s" : ""} to ${cd.name}.`, "good");
+  } else {
+    advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45);
+    toast(`On the road to ${cd.name} \u2014 a quick hop.`, "good");
+  }
 }
 function handleVehicleAct(b, act) {
   if (b.dataset.veh) {
@@ -138,7 +146,7 @@ function handleVehicleAct(b, act) {
     const d = propDef(v.type) || {};
     if (act === "venter") { closePhone(); travelTo(d.location, null); return; }
     if (act === "vdrive") { driveToShow(v.bandId); return; }
-    if (act === "vreassign") { const pb = getState().bands.filter((x) => x.playerIn); if (pb.length > 1) { const i = pb.findIndex((x) => x.id === v.bandId); const nx = pb[(i + 1) % pb.length]; setVehicleBand(v.id, nx.id); toast(`${d.name} now serves ${nx.name || "that band"}.`, "good"); } persist(); renderPropertiesApp(screenEl); return; }
+    if (act === "vreassign") { const pb = getState().bands; if (pb.length > 1) { const i = pb.findIndex((x) => x.id === v.bandId); const nx = pb[(i + 1) % pb.length]; setVehicleBand(v.id, nx.id); toast(`${d.name} now serves ${nx.name || "that band"}.`, "good"); } persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vsell") { addStat("money", d.sellValue || 0); removeVehicle(v.id); toast(`Sold ${d.name} for ${money(d.sellValue || 0)}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vendlease") { removeVehicle(v.id); toast(`Ended the lease on ${d.name}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
     return;

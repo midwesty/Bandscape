@@ -12,7 +12,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, setFlag, activeBand, regionUnlocked, propertyStatus, ownsVehicle, currentCity, cityDef } from "../engine/state.js";
+import { getState, addStat, setFlag, activeBand, regionUnlocked, propertyStatus, ownsVehicle, currentCity, cityDef, discoverTown } from "../engine/state.js";
 import { addCondition } from "./conditions.js";
 import { emit, on } from "../engine/bus.js";
 import { sleep } from "./time.js";
@@ -299,7 +299,7 @@ function travel(to, spawn) {
   if (to === "musicstore" || to === "thrift" || to === "records") { s.flags = s.flags || {}; s.flags.storeReturn = { to: s.location, spawn: (s.player && s.player.tile) ? { x: s.player.tile.x, y: s.player.tile.y } : null }; }
   s.location = to;
   const _cityHit = Object.entries((DATA.regions && DATA.regions.cities) || {}).find(([id, c]) => c.entryScene && c.entryScene.scene === to);
-  if (_cityHit) s.currentCity = _cityHit[0];   // Step 39: track which city you are in (data-driven)
+  if (_cityHit) { s.currentCity = _cityHit[0]; discoverTown(_cityHit[0]); }   // Step 39: track current city; Phase 2a: arriving reveals the local scene
   if (to === "venue") { s.flags = s.flags || {}; s.flags.venue_discovered = true; }
   s.player = s.player || {};
   s.player.tile = spawn ? { x: spawn.x, y: spawn.y } : null;
@@ -787,7 +787,9 @@ function drawProc(o, cx, cy) {
       case "microphone": return micShape(cx, cy);
     }
   }
-  switch (o.id) {
+  const SHAPE_BY_INTERACT = { sleep: "bed", container: "crate", daw: "laptop", fridge: "fridge", beerfridge: "fridge" };
+  const drawId = SHAPE_BY_INTERACT[o.interact] || o.id;
+  switch (drawId) {
     case "bed":    cuboid(cx, cy, 26, 13, 14, "#3a2740", "#2a1c30", "#241828");
                    ctx.fillStyle = C.yellow; ctx.fillRect(cx - 10, cy - 14, 14, 7); break;
     case "fridge": cuboid(cx, cy, 14, 7, 40, "#cfd6dd", "#9aa3ad", "#7c858f");

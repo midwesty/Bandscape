@@ -336,6 +336,7 @@ export function isDiscovered(venueId) {
   return !!((getState().discovered || {})[venueId]);
 }
 export function discoverVenue(venueId) { const s = getState(); s.discovered = s.discovered || {}; s.discovered[venueId] = true; }
+export function discoverTown(cityId) { const vs = (DATA.venues && DATA.venues.venues) || {}; for (const id in vs) { if (vs[id].town === cityId) discoverVenue(id); } }
 export function contacts() { return getState().contacts || []; }
 export function getRapport(id) { return ((getState().rapport || {})[id]) || 0; }
 export function addRapport(id, n) { const s = getState(); if (!id || !n) return; s.rapport = s.rapport || {}; s.rapport[id] = Math.max(0, Math.min(100, (s.rapport[id] || 0) + n)); }

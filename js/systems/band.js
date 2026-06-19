@@ -117,7 +117,7 @@ function bookShowFlow() {
   roadTowns.forEach((t) => { const c = cityDayCost(t); (byCost[c] = byCost[c] || []).push(t); });
   Object.keys(byCost).map(Number).sort((a, b) => a - b).forEach((c) => {
     const lab = `On the Road \u00b7 ${c} day${c === 1 ? "" : "s"}`;
-    const note = hasVeh ? "" : ` <span class="muted">\u2014 needs a vehicle</span>`;
+    const note = hasVeh ? "" : ` <span class="muted">\u2014 ${esc((ab && ab.name) || "your band")} needs a vehicle</span>`;
     rows += `<div class="mp-cluster road"><div class="mp-cluster-h">${lab}${note}</div>${byCost[c].sort(byName).map(townBlock).join("")}</div>`;
   });
   const body = rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`;
