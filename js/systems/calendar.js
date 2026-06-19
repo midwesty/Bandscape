@@ -14,7 +14,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, addStat, activeBand, bandMembers, bandById, cityDef } from "../engine/state.js";
+import { getState, addStat, activeBand, bandMembers, bandById, cityDef, inHomeCircuit, bandHasVehicle } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
 import { toast } from "../ui/toast.js";
@@ -172,6 +172,14 @@ function book(type, day, slot) {
   const title = type === "show" ? `Show · ${band.name || "your band"} @ ${vName}` : `Rehearsal · ${band.name || "your band"}`;
   if (band.id && bandBusyAt(band.id, day, slot)) { toast(`${band.name || "That band"} is already booked then.`, "warn"); return; }
   if (type === "show") {
+    // Per-band vehicle gate (Bug 2): the band ACTUALLY being booked must own a vehicle to play an
+    // out-of-circuit room. UI button-disable alone was bypassable by switching bands before booking.
+    const vTown = ((DATA.venues && DATA.venues.venues && DATA.venues.venues[venueId]) || {}).town;
+    if (vTown && !inHomeCircuit(vTown) && !bandHasVehicle(band.id)) {
+      toast(`${band.name || "That band"} needs a vehicle to tour out of town.`, "warn"); return;
+    }
+    // NOTE: multiple of YOUR bands MAY share one bill — as long as the room has open slots and each
+    // band clears the venue's requirements. We only block the SAME band double-booking a slot (above).
     if (billOpenSlots(venueId, day) <= 0) { toast("That bill is full that night.", "warn"); return; }
     if (!addPlayerAct(venueId, day, band)) { toast("No open slot on that bill.", "warn"); return; }
   }
