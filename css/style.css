@@ -1336,3 +1336,22 @@ body:has(.modal-scrim) #log { display: none; }
 .rs-gig-h{font-size:13px;}
 .rs-flavor{font-size:11px;opacity:.72;font-style:italic;margin:3px 0 5px;}
 .rs-take{font-size:12px;font-weight:700;color:#8fe388;}
+
+/* ---- Step 54: locked anchor chips + per-band tour ---- */
+.tp-venue.locked{border-color:#5a4a4a;background:#241c1c;color:#b89a9a;opacity:.78;cursor:default;display:block;margin:4px 0;text-align:left;}
+.tp-venue.locked small{display:block;opacity:.85;font-weight:500;margin-top:2px;}
+
+/* ---- Step 55: tour cost recap rows ---- */
+.rs-cost{margin:9px 0 4px;padding:8px 11px;border-radius:10px;background:#2a2620;border:1px solid #4a4030;}
+.rs-cost-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:2px 0;}
+.rs-cost-row span:last-child{font-weight:700;color:#e6b860;}
+
+/* ---- Step 56: Vehicle Outfitter ---- */
+.of-bar{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;padding:8px 11px;margin-bottom:8px;border-radius:9px;background:#241f30;border:1px solid #3a3346;}
+.of-h{margin:13px 0 5px;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.85;border-top:1px solid #3a3346;padding-top:10px;}
+.of-cat{margin:8px 0 3px;font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.03em;}
+.of-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;font-size:13px;}
+.of-buy,.of-rm{padding:5px 12px;border-radius:13px;border:1px solid #6a6080;background:#2c2838;color:#e8e0f4;font-size:12px;font-weight:600;cursor:pointer;}
+.of-buy:hover:not([disabled]),.of-rm:hover{border-color:#8a7fb0;background:rgba(138,127,176,.15);}
+.of-buy[disabled]{opacity:.4;cursor:default;}
+.of-rm{border-color:#5a4a4a;color:#caa;}

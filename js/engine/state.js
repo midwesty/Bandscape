@@ -556,6 +556,32 @@ export function ownedVehicles() {
   return s.vehicles;
 }
 export function vehicleById(id) { return ownedVehicles().find((v) => v.id === id) || null; }
+// Tour capacity comes ONLY from what the player has installed in the vehicle interior (no built-in default).
+// Beds detected by decor shape, a sleep interaction, or id; each sleeps its `sleeps` tag (default 1).
+export function vehicleScene(veh) {
+  if (!veh) return null;
+  const def = propDef(veh.type); const base = def && def.location; if (!base) return null;
+  const key = `${base}__${veh.id}`;                                   // each vehicle gets its OWN interior instance
+  if (DATA.locations && DATA.locations[base] && !DATA.locations[key]) DATA.locations[key] = DATA.locations[base]; // share the read-only template def; placed items live per-instance in placedObjects[key]
+  return key;
+}
+export function registerVehicleScenes() { for (const v of ownedVehicles()) vehicleScene(v); }   // boot hook so saved interiors resolve before first render
+export function vehicleSleeps(veh) {
+  const scene = vehicleScene(veh); if (!scene) return 0;
+  const st = getState();
+  const objs = (st.placedObjects && st.placedObjects[scene]) || (DATA.locations[scene] && DATA.locations[scene].objects) || [];
+  const items = (DATA.decor && DATA.decor.items) || {};
+  let beds = 0;
+  for (const o of objs) { const d = items[o.id] || {}; if (d.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(o.id || "")) beds += (d.sleeps || o.sleeps || 1); }
+  return beds;
+}
+export function vehicleHasKitchen(veh) {
+  const scene = vehicleScene(veh); if (!scene) return false;
+  const st = getState();
+  const objs = (st.placedObjects && st.placedObjects[scene]) || (DATA.locations[scene] && DATA.locations[scene].objects) || [];
+  const items = (DATA.decor && DATA.decor.items) || {};
+  return objs.some((o) => { const d = items[o.id] || {}; return d.shape === "stove" || d.use === "cook" || o.interact === "cook" || /stove|range|kitchen/i.test(o.id || ""); });
+}
 export function addVehicle(type, status, bandId, extra) { const s = getState(); ownedVehicles(); const inst = Object.assign({ id: nextVehId(s), type, status, bandId: bandId || null }, extra || {}); s.vehicles.push(inst); return inst; }
 export function removeVehicle(id) { const s = getState(); ownedVehicles(); s.vehicles = s.vehicles.filter((v) => v.id !== id); }
 export function setVehicleBand(id, bandId) { const v = vehicleById(id); if (v) v.bandId = bandId; return v; }

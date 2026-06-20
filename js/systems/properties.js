@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, cityDayCost, inHomeCircuit, cityRegion, isDiscovered } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, bandEarn, bandMembers, vehicleSleeps, vehicleScene, cityDayCost, inHomeCircuit, cityRegion, isDiscovered } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -17,8 +17,8 @@ import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
 import { advanceMinutes, sleep, travelAwake } from "./time.js";
 import { roadsideStop, playRoadsideGig } from "./roadside.js";
-import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn } from "./calendar.js";
-import { venueList } from "./shows.js";
+import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn, setSchedBand } from "./calendar.js";
+import { venueList, venueEligible, venueReqText } from "./shows.js";
 import { payForBand } from "./bank.js";
 
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -109,12 +109,13 @@ function vehiclesSection() {
       const ob = bandById(v.bandId);
       const statusTag = v.status === "leased" ? " \u00b7 leased" : " \u00b7 owned";
       const enter = `<button class="btn prop-act" data-act="venter" data-veh="${v.id}">Enter</button>`;
+      const outfit = `<button class="btn ghost prop-act" data-act="voutfit" data-veh="${v.id}">Outfit \u25b8</button>`;
       const drive = `<button class="btn prop-act" data-act="vdrive" data-veh="${v.id}">Hit the road \u25B8</button>`;
       const reassign = pbAll.length > 1 ? `<button class="btn ghost prop-act" data-act="vreassign" data-veh="${v.id}">Reassign band \u25B8</button>` : "";
       const dispose = v.status === "leased"
         ? `<button class="btn ghost prop-act" data-act="vendlease" data-veh="${v.id}">End lease</button>`
         : `<button class="btn ghost prop-act" data-act="vsell" data-veh="${v.id}">Sell (+${money(d.sellValue || 0)})</button>`;
-      return `<div class="prop-card"><div class="prop-card-head">${esc(label)}<span class="muted">${esc(d.tagline || "")}${statusTag}</span></div><div class="prop-assign">Assigned to <strong>${esc((ob && ob.name) || "your band")}</strong></div><div class="prop-acts">${enter}${drive}${reassign}${dispose}</div></div>`;
+      return `<div class="prop-card"><div class="prop-card-head">${esc(label)}<span class="muted">${esc(d.tagline || "")}${statusTag}</span></div><div class="prop-assign">Assigned to <strong>${esc((ob && ob.name) || "your band")}</strong></div><div class="prop-acts">${enter}${drive}${outfit}${reassign}${dispose}</div></div>`;
     }).join("");
     yours = `<div class="prop-city"><div class="prop-city-head">Your Vehicles</div>${cards}</div>`;
   }
@@ -142,9 +143,10 @@ function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) 
 function renderDriveMenu() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const today = currentDay();
-  const shows = bookedCommitments().filter((c) => c.type === "show");
+  const bid = _tourBandId();
+  const shows = bookedCommitments().filter((c) => c.type === "show" && c.bandId === bid);
   let body;
-  if (!shows.length) body = `<p class="shop-note">No shows booked yet. Book one from the BAND app, then come back to hit the road.</p>`;
+  if (!shows.length) body = `<p class="shop-note">No road shows booked for <strong>${esc(_tourBandName())}</strong> yet. Book this region\u2019s shows in the BAND app, or hit <em>Plan a tour</em> to book out-of-region anchors.</p>`;
   else body = shows.map((c) => {
     const a = driveAssess(c, today); const mine = _isMine(c.bandId); const b = bandById(c.bandId) || {};
     const cityNm = (a.cd && a.cd.name) || a.town || "somewhere"; const vnm = a.v.name || "a venue";
@@ -168,8 +170,8 @@ function renderDriveMenu() {
       `<div class="drive-row-sub">${esc(vnm)} \u00b7 ${esc(cityNm)} \u2014 Day ${c.day} \u00b7 <span class="drive-dist">${esc(dist)}</span></div>` +
       expand + `</div>`;
   }).join("");
-  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD</span><button class="tp-link" id="drive-plan">Plan a tour \u25B8</button><button class="phone-nav" id="drive-close">\u2715</button></div>` +
-    `<div class="cal-body"><p class="shop-note">Pick a show to drive to. <span class="drive-tag mine">be there</span> = your band \u2014 show up. <span class="drive-tag mgr">auto-plays</span> = a band that plays itself; drive over to catch it for a boost.</p>${body}</div></div>`;
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD \u00b7 ${esc(_tourBandName())}</span><button class="tp-link" id="drive-plan">Plan a tour \u25B8</button><button class="phone-nav" id="drive-close">\u2715</button></div>` +
+    `<div class="cal-body"><p class="shop-note">Driving with <strong>${esc(_tourBandName())}</strong> \u2014 pick a show to drive to. Same-region circuit shows are a quick hop; distant ones cost days on the road.</p>${body}</div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
   // One delegated handler on the stable overlay. Robust across re-renders AND reliable on iOS, where a
   // tap on a non-pointer child div otherwise fails to fire a click that bubbles up to the row.
@@ -179,12 +181,7 @@ function renderDriveMenu() {
     const driveBtn = e.target.closest("[data-drive]");
     if (driveBtn) { execDrive(driveBtn.dataset.cid, driveBtn.dataset.drive); return; }
     const row = e.target.closest("[data-pick]");
-    if (row) {
-      const c = bookedCommitments().find((x) => x.id === row.dataset.pick);
-      // Out-of-REGION shows hand off to the Tour Planner (plan a multi-stop run); in-region shows drive directly.
-      if (c && _showRegion(c) !== _currentRegion()) { openTourPlanner(); return; }
-      _driveSel = (_driveSel === row.dataset.pick) ? null : row.dataset.pick; renderDriveMenu();
-    }
+    if (row) { _driveSel = (_driveSel === row.dataset.pick) ? null : row.dataset.pick; renderDriveMenu(); }   // every booked show expands -> Fast-travel / Ride-along, in or out of region
   };
 }
 function execDrive(cid, mode) {
@@ -195,38 +192,133 @@ function execDrive(cid, mode) {
   if (a.days <= 0) { advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45); toast(`Over to ${a.cd.name} \u2014 quick hop.`, "good"); return; }
   // Day-by-day drive: each night you marked in the Tour Planner (s.tour.fills) auto-resolves into a
   // roadside pickup gig as you pass through; unmarked nights just pass. Plan-then-execute, no skipped nights.
-  const st = getState(); st.tour = st.tour || { fills: {} };
+  const fills = _tourFills();
+  const bid = _tourBandId();
   const veh = _driveVeh ? vehicleById(_driveVeh) : null; const poor = !veh || veh.type === "veh_van";
   const gigs = [];
   for (let i = 0; i < a.days; i++) {
     if (mode === "ride") travelAwake(1); else sleep({ poor });
     const d = currentDay();
-    if (st.tour.fills[d]) { const stop = roadsideStop(d); gigs.push({ stop, res: playRoadsideGig(stop) }); delete st.tour.fills[d]; }
+    if (fills[d]) { const stop = roadsideStop(d); gigs.push({ stop, res: playRoadsideGig(stop, bid) }); delete fills[d]; }
   }
+  // Road costs \u2014 hybrid model: gas + lodging bill NOW (food + idle upkeep settle monthly, next step).
+  // Lodging is charged per band member with no bed installed in the vehicle, per night. Paid by the band;
+  // if the band + your wallet can't cover it, the band account goes into the red (limp home broke).
+  const members = bandMembers(bid).length || 1;
+  const sleeps = vehicleSleeps(veh);
+  const cfgT = DATA.config.tour || {}; const gasRate = cfgT.gasPerDay || 45;
+  const hotel = (DATA.config.lodging && DATA.config.lodging.hotelPrice) || 60;
+  const gas = Math.round(gasRate * a.days);
+  const bedShort = Math.max(0, members - sleeps);
+  const lodging = bedShort * hotel * a.days;
+  const roadCost = gas + lodging;
+  if (roadCost > 0) { const r = bandSpend(bid, roadCost, "tour", "Gas & lodging on the road"); if (!r || !r.ok) { const b = bandById(bid); if (b) b.account = (b.account || 0) - roadCost; } }
   persist();
-  roadsideArrive(a.cd.name, a.days, mode, gigs);
+  roadsideArrive(a.cd.name, a.days, mode, gigs, { gas, lodging, total: roadCost, members, sleeps, bedShort });
 }
 
 // Recap after a multi-day drive. If you played roadside gigs along the way, show the haul; otherwise
 // just confirm the arrival. Reuses the #cal overlay.
-function roadsideArrive(destName, days, mode, gigs) {
+function roadsideArrive(destName, days, mode, gigs, costs) {
+  costs = costs || { total: 0 };
   const dayTxt = `${days} day${days > 1 ? "s" : ""}`;
-  if (!gigs.length) {
+  if (!gigs.length && !(costs.total > 0)) {
     toast(mode === "ride" ? `Rode along ${dayTxt} to ${destName} \u2014 wiped, but awake.` : `Slept the drive \u2014 ${dayTxt} to ${destName}.`, "good");
     return;
   }
   const ov = document.getElementById("cal");
   const totPay = gigs.reduce((s, g) => s + g.res.pay, 0);
-  const totFans = gigs.reduce((s, g) => s + g.res.fans, 0);
-  if (!ov) { toast(`Played ${gigs.length} roadside gig${gigs.length > 1 ? "s" : ""} en route \u2014 +$${totPay}, +${totFans} fans.`, "good"); return; }
+  const net = totPay - (costs.total || 0);
+  const netTxt = `${net >= 0 ? "+" : "\u2212"}$${Math.abs(net)}`;
+  if (!ov) { toast(`${destName}: +$${totPay} gigs, \u2212$${costs.total || 0} road \u2014 net ${netTxt}.`, net >= 0 ? "good" : "warn"); return; }
   const rows = gigs.map((g) => `<div class="rs-gig"><div class="rs-gig-h"><strong>${esc(g.stop.town)}</strong> \u2014 ${esc(g.stop.venue.name)}</div><div class="rs-flavor">${esc(g.stop.flavor)}</div><div class="rs-take">+$${g.res.pay} \u00b7 +${g.res.fans} fans</div></div>`).join("");
+  const lodgeRow = costs.lodging > 0
+    ? `<div class="rs-cost-row"><span>\uD83C\uDFE8 Hotels \u00b7 ${costs.bedShort} of ${costs.members} (no bed aboard)</span><span>\u2212$${costs.lodging}</span></div>`
+    : `<div class="rs-cost-row"><span>\uD83D\uDECC Slept in the vehicle (${costs.sleeps} bed${costs.sleeps === 1 ? "" : "s"})</span><span>free</span></div>`;
+  const costRows = `<div class="rs-cost"><div class="rs-cost-row"><span>\u26fd Gas \u00b7 ${dayTxt}</span><span>\u2212$${costs.gas || 0}</span></div>${lodgeRow}</div>`;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">ON THE ROAD</span><button class="phone-nav" id="rs-x">\u2715</button></div>` +
-    `<div class="cal-body"><p class="shop-note">Pickup gigs in the middle of nowhere, on the way to ${esc(destName)}:</p>${rows}` +
-    `<div class="tp-foot">${gigs.length} roadside gig${gigs.length > 1 ? "s" : ""} \u00b7 +$${totPay} \u00b7 +${totFans} fans</div>` +
+    `<div class="cal-body">` +
+    (gigs.length ? `<p class="shop-note">Pickup gigs on the way to ${esc(destName)}:</p>${rows}` : `<p class="shop-note">Drove ${dayTxt} to ${esc(destName)}.</p>`) +
+    costRows +
+    `<div class="tp-foot">${gigs.length ? `+$${totPay} gigs \u00b7 ` : ""}\u2212$${costs.total || 0} road \u00b7 net ${netTxt}</div>` +
     `<button class="cal-slot-btn" id="rs-roll" style="margin-top:11px">Roll on into ${esc(destName)} \u25b8</button></div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
   const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
   ov.onclick = (e) => { if (e.target.closest("#rs-x") || e.target.closest("#rs-roll")) close(); };
+}
+
+// ---- Vehicle Outfitter (Step 56): kit out THIS vehicle's own interior, remotely. Reads/writes
+// placedObjects[vehicleScene(v)] so each vehicle is outfitted independently. Beds + a kitchen feed
+// the tour economy (free sleep / cheaper food); comfort + vibe items are staged here for the morale pass. ----
+let _outfitVeh = null;
+function outfitScene(v) {
+  const scene = vehicleScene(v); const s = getState(); s.placedObjects = s.placedObjects || {};
+  if (!s.placedObjects[scene]) { const base = (propDef(v.type) || {}).location; s.placedObjects[scene] = JSON.parse(JSON.stringify((DATA.locations[base] && DATA.locations[base].objects) || [])); }
+  return scene;
+}
+function outfitFreeTile(scene, base) {
+  const grid = (DATA.locations[base] && DATA.locations[base].grid) || { w: 6, h: 4 };
+  const occ = new Set((getState().placedObjects[scene] || []).map((o) => `${o.tile.x},${o.tile.y}`));
+  for (let y = 0; y < grid.h; y++) for (let x = 0; x < grid.w; x++) { if (!occ.has(`${x},${y}`)) return { x, y }; }
+  return null;
+}
+function openOutfitter(vehId) { _outfitVeh = vehId; const v = vehicleById(vehId); if (!v) { toast("No vehicle.", "warn"); return; } outfitScene(v); renderOutfitter(); }
+function closeOutfitter() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
+function renderOutfitter() {
+  const ov = document.getElementById("cal"); if (!ov) return;
+  const v = vehicleById(_outfitVeh); if (!v) return;
+  const def = propDef(v.type) || {}; const scene = vehicleScene(v);
+  const s = getState(); const placed = s.placedObjects[scene] || [];
+  const cap = def.slots || 10; const used = placed.length;
+  const ob = bandById(v.bandId); const acct = (ob && ob.account) || 0; const wallet = spendable();
+  const items = (DATA.decor && DATA.decor.items) || {};
+  const instRows = placed.map((o, i) => { const di = items[o.id] || {}; const nm = o.name || di.name || o.id; const isBed = di.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(o.id || ""); return `<div class="of-row"><span>${esc(nm)}${isBed ? ` <small class="muted">sleeps ${di.sleeps || 1}</small>` : ""}</span><button class="of-rm" data-rm="${i}">Remove</button></div>`; }).join("") || `<p class="shop-note">Empty inside.</p>`;
+  const labels = { sleep: "Sleeping", kitchen: "Kitchen", comfort: "Comfort", vibe: "Vibe", audio: "Audio / Screens" };
+  const groups = {};
+  for (const [id, it] of Object.entries(items)) { if (!it.vehicleOk) continue; const c = it.vcat || "other"; (groups[c] = groups[c] || []).push({ id, it }); }
+  let cat = "";
+  for (const c of ["sleep", "kitchen", "comfort", "vibe", "audio"]) {
+    if (!groups[c]) continue;
+    cat += `<div class="of-cat">${esc(labels[c] || c)}</div>` + groups[c].map(({ id, it }) => {
+      const price = it.price || 0; const full = used >= cap; const broke = (acct + wallet) < price; const dis = full || broke;
+      const note = it.shape === "bed" ? ` \u00b7 sleeps ${it.sleeps || 1}` : (c === "kitchen" ? " \u00b7 food" : "");
+      return `<div class="of-row"><span>${esc(it.name || id)} <small class="muted">${money(price)}${note}</small></span><button class="of-buy" data-buy="${id}" ${dis ? "disabled" : ""}>${full ? "Full" : "Install"}</button></div>`;
+    }).join("");
+  }
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">OUTFIT \u00b7 ${esc(def.name || "Vehicle")}</span><button class="phone-nav" id="of-x">\u2715</button></div>` +
+    `<div class="cal-body">` +
+    `<div class="of-bar"><span>Space ${used}/${cap}</span><span>${esc((ob && ob.name) || "Band")} acct ${money(acct)}</span></div>` +
+    `<div class="of-h">Installed</div>${instRows}` +
+    `<div class="of-h">Add to this vehicle</div>${cat}` +
+    `<p class="shop-note">Each vehicle is outfitted on its own. Step inside to rearrange where things sit.</p></div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  ov.onclick = (e) => {
+    if (e.target.closest("#of-x")) { closeOutfitter(); return; }
+    const buy = e.target.closest("[data-buy]"); if (buy) { outfitInstall(buy.dataset.buy); return; }
+    const rm = e.target.closest("[data-rm]"); if (rm) { outfitRemove(parseInt(rm.dataset.rm, 10)); return; }
+  };
+}
+function outfitInstall(itemId) {
+  const v = vehicleById(_outfitVeh); if (!v) return;
+  const def = propDef(v.type) || {}; const scene = outfitScene(v); const base = def.location;
+  const placed = getState().placedObjects[scene]; const cap = def.slots || 10;
+  if (placed.length >= cap) { toast("No room left inside.", "warn"); return; }
+  const it = ((DATA.decor && DATA.decor.items) || {})[itemId]; if (!it) return;
+  const tile = outfitFreeTile(scene, base); if (!tile) { toast("No open spot inside.", "warn"); return; }
+  const price = it.price || 0;
+  if (price > 0) { const r = bandSpend(v.bandId, price, "vehicle", `Outfit \u2014 ${it.name || itemId}`); if (!r || !r.ok) { toast("Can't afford that.", "warn"); return; } }
+  placed.push({ id: itemId, name: it.name || itemId, sprite: it.sprite, tile });
+  persist(); toast(`Installed ${it.name || itemId}.`, "good"); renderOutfitter();
+}
+function outfitRemove(idx) {
+  const v = vehicleById(_outfitVeh); if (!v) return;
+  const scene = vehicleScene(v); const placed = getState().placedObjects[scene] || [];
+  const o = placed[idx]; if (!o) return;
+  const it = ((DATA.decor && DATA.decor.items) || {})[o.id];
+  placed.splice(idx, 1);
+  if (it && it.price && v.bandId) { const refund = Math.floor(it.price * 0.5); bandEarn(v.bandId, refund, "vehicle", `Removed ${it.name || o.id}`); toast(`Removed ${it.name || o.id} (+${money(refund)}).`, "good"); }
+  else toast(`Removed ${o.name || o.id}.`, "good");
+  persist(); renderOutfitter();
 }
 
 // ---- The Tour Planner (Step 51): plan-then-execute. Lay out the road route (anchors + the nights
@@ -234,17 +326,24 @@ function roadsideArrive(destName, days, mode, gigs) {
 // executes the plan instead of skipping those nights. Anchors are your booked out-of-circuit shows. ----
 function _cityRegionOf(town) { const cd = town && cityDef(town); return (cd && cd.region) || "midwest"; }
 function _showRegion(c) { return _cityRegionOf(_venueOf(c.venue).town); }
+// A tour belongs to ONE band: the band assigned to the vehicle you hit the road with. Everything
+// (the route, the anchors shown, the fill-nights, who gets booked) scopes to this band so two bands
+// never share a tour.
+function _tourBandId() { const v = _driveVeh ? vehicleById(_driveVeh) : null; return (v && v.bandId) || ((activeBand() || {}).id) || "band_1"; }
+function _tourBandName() { return (bandById(_tourBandId()) || {}).name || "Your band"; }
+function _tourFills() { const s = getState(); s.tour = s.tour || {}; const bid = _tourBandId(); if (!s.tour[bid] || typeof s.tour[bid] !== "object" || !s.tour[bid].fills) s.tour[bid] = { fills: {} }; return s.tour[bid].fills; }
 function _currentRegion() { return _cityRegionOf(currentCity ? currentCity() : null); }
 function openTourPlanner() { renderTourPlanner(); }
 function closeTourPlanner() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
 function renderTourPlanner() {
   const ov = document.getElementById("cal"); if (!ov) return;
-  const s = getState(); s.tour = s.tour || { fills: {} }; const fills = s.tour.fills;
+  const bid = _tourBandId(); const bandNm = _tourBandName();
+  const fills = _tourFills();
   const today = currentDay();
-  const anchors = bookedCommitments().filter((c) => c.type === "show" && !inHomeCircuit(_venueOf(c.venue).town)).sort((a, b) => a.day - b.day);
+  const anchors = bookedCommitments().filter((c) => c.type === "show" && c.bandId === bid && !inHomeCircuit(_venueOf(c.venue).town)).sort((a, b) => a.day - b.day);
   let body;
   if (!anchors.length) {
-    body = `<p class="shop-note">No road shows booked yet. Book a show in a distant city from the BAND app, then plan your route here \u2014 set your anchor shows first, then choose the nights in between to fill.</p>`;
+    body = `<p class="shop-note">No road shows on <strong>${esc(bandNm)}</strong>\u2019s tour yet. Book your anchor cities below \u2014 then plan the nights in between to fill with pickup gigs.</p>`;
   } else {
     let rows = `<div class="tp-node tp-home">\uD83C\uDFE0 <strong>Home base</strong> \u2014 Day ${today}</div>`;
     let prevDay = today, totalDrive = 0;
@@ -275,14 +374,20 @@ function renderTourPlanner() {
   const cityIds = Object.keys(byCity).sort((a, b) => (((cityDef(a) || {}).name) || a).localeCompare(((cityDef(b) || {}).name) || b));
   let addHTML = `<div class="tp-add-h">+ Add an anchor (book a road show)</div>`;
   if (!cityIds.length) addHTML += `<p class="shop-note">No out-of-region rooms open to you yet \u2014 tour somewhere new or build fame to unlock them.</p>`;
-  else addHTML += cityIds.map((town) => { const cd = cityDef(town); return `<div class="tp-city"><div class="tp-city-h">${esc((cd && cd.name) || town)} \u00b7 ${esc(_cityRegionOf(town))}</div>` + byCity[town].map((v) => `<button class="tp-venue" data-book="${v.id}">${esc(v.name)}${v.open ? "" : " \uD83D\uDD12"}</button>`).join("") + `</div>`; }).join("");
+  else addHTML += cityIds.map((town) => { const cd = cityDef(town); return `<div class="tp-city"><div class="tp-city-h">${esc((cd && cd.name) || town)} \u00b7 ${esc(_cityRegionOf(town))}</div>` + byCity[town].map((v) => {
+    return venueEligible(v.id)
+      ? `<button class="tp-venue" data-book="${v.id}">${esc(v.name)}</button>`
+      : `<button class="tp-venue locked" data-locked="${v.id}">${esc(v.name)} \uD83D\uDD12 <small>${esc(venueReqText(v.id))}</small></button>`;
+  }).join("") + `</div>`; }).join("");
   body += addHTML;
-  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">TOUR PLANNER</span><button class="phone-nav" id="tp-close">\u2715</button></div><div class="cal-body">${body}</div></div>`;
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">TOUR PLANNER \u00b7 ${esc(bandNm)}</span><button class="phone-nav" id="tp-close">\u2715</button></div><div class="cal-body">${body}</div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
   ov.onclick = (e) => {
     if (e.target.closest("#tp-close")) { closeTourPlanner(); return; }
+    const lk = e.target.closest("[data-locked]");
+    if (lk) { toast(venueReqText(lk.dataset.locked) || "That room isn\u2019t open to you yet.", "warn"); return; }
     const bk = e.target.closest("[data-book]");
-    if (bk) { setSchedulerReturn(() => openTourPlanner()); openScheduler("show", bk.dataset.book); return; }
+    if (bk) { setSchedBand(bid, true); setSchedulerReturn(() => openTourPlanner()); openScheduler("show", bk.dataset.book); return; }
     const fb = e.target.closest(".tp-fill");
     if (fb) { const days = fb.dataset.gap.split(",").map(Number); const allFilled = days.every((d) => fills[d]); days.forEach((d) => { if (allFilled) delete fills[d]; else fills[d] = true; }); persist(); renderTourPlanner(); }
   };
@@ -291,8 +396,9 @@ function handleVehicleAct(b, act) {
   if (b.dataset.veh) {
     const v = vehicleById(b.dataset.veh); if (!v) return;
     const d = propDef(v.type) || {};
-    if (act === "venter") { closePhone(); travelTo(d.location, null); return; }
+    if (act === "venter") { closePhone(); travelTo(vehicleScene(v), null); return; }
     if (act === "vdrive") { openDriveMenu(v.id); return; }
+    if (act === "voutfit") { openOutfitter(v.id); return; }
     if (act === "vreassign") { const pb = getState().bands; if (pb.length > 1) { const i = pb.findIndex((x) => x.id === v.bandId); const nx = pb[(i + 1) % pb.length]; setVehicleBand(v.id, nx.id); toast(`${d.name} now serves ${nx.name || "that band"}.`, "good"); } persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vsell") { addStat("money", d.sellValue || 0); removeVehicle(v.id); toast(`Sold ${d.name} for ${money(d.sellValue || 0)}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vendlease") { removeVehicle(v.id); toast(`Ended the lease on ${d.name}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }

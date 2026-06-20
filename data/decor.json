@@ -43,7 +43,10 @@
       "ambient": {
         "tag": "rest",
         "amount": 2
-      }
+      },
+      "sleeps": 1,
+      "vehicleOk": true,
+      "vcat": "sleep"
     },
     "beanbag": {
       "name": "Beanbag Chair",
@@ -55,7 +58,9 @@
       "desc": "Swallows you whole. In a good way.",
       "shape": "chair",
       "color": "#c0506a",
-      "use": "rest"
+      "use": "rest",
+      "vehicleOk": true,
+      "vcat": "comfort"
     },
     "papasan": {
       "name": "Papasan Chair",
@@ -67,7 +72,9 @@
       "desc": "The bowl chair. Peak dorm luxury.",
       "shape": "chair",
       "color": "#9a7a4a",
-      "use": "rest"
+      "use": "rest",
+      "vehicleOk": true,
+      "vcat": "comfort"
     },
     "recliner": {
       "name": "Worn Recliner",
@@ -79,7 +86,9 @@
       "desc": "Reclines into another dimension.",
       "shape": "chair",
       "color": "#8a5a3a",
-      "use": "rest"
+      "use": "rest",
+      "vehicleOk": true,
+      "vcat": "comfort"
     },
     "leather_sofa": {
       "name": "Leather Sofa",
@@ -99,7 +108,9 @@
       "ambient": {
         "tag": "social",
         "amount": 2
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "comfort"
     },
     "sectional": {
       "name": "Modular Sectional",
@@ -138,7 +149,9 @@
       "ambient": {
         "tag": "mood",
         "amount": 2
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "vibe"
     },
     "string_lights": {
       "name": "String Lights",
@@ -176,7 +189,9 @@
       "ambient": {
         "tag": "rest",
         "amount": 2
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "vibe"
     },
     "floor_lamp": {
       "name": "Arc Floor Lamp",
@@ -195,7 +210,9 @@
       "ambient": {
         "tag": "mood",
         "amount": 1
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "vibe"
     },
     "neon_sign": {
       "name": "Neon Sign",
@@ -259,7 +276,9 @@
       "room": "kitchen",
       "shape": "appliance",
       "color": "#3a3540",
-      "use": "microwave"
+      "use": "microwave",
+      "vehicleOk": true,
+      "vcat": "kitchen"
     },
     "mini_fridge": {
       "name": "Mini Fridge",
@@ -272,7 +291,9 @@
       "room": "kitchen",
       "shape": "fridge",
       "color": "#dfe3e8",
-      "use": "beerfridge"
+      "use": "beerfridge",
+      "vehicleOk": true,
+      "vcat": "kitchen"
     },
     "espresso_machine": {
       "name": "Espresso Machine",
@@ -298,7 +319,9 @@
       "room": "kitchen",
       "shape": "stove",
       "color": "#cfd6dd",
-      "use": "cook"
+      "use": "cook",
+      "vehicleOk": true,
+      "vcat": "kitchen"
     },
     "kitchen_island": {
       "name": "Kitchen Island",
@@ -450,7 +473,9 @@
       "sprite": "assets/img/objects/decor/flatscreen_tv.png",
       "desc": "Wall-mounted, cinematic.",
       "shape": "tv",
-      "color": "#15131a"
+      "color": "#15131a",
+      "vehicleOk": true,
+      "vcat": "audio"
     },
     "studio_monitor": {
       "name": "Studio Monitor",
@@ -461,7 +486,9 @@
       "sprite": "assets/img/objects/decor/studio_monitor.png",
       "desc": "Flat response. Hear everything.",
       "shape": "tv",
-      "color": "#15131a"
+      "color": "#15131a",
+      "vehicleOk": true,
+      "vcat": "audio"
     },
     "band_poster": {
       "name": "Band Poster",
@@ -664,7 +691,9 @@
       "ambient": {
         "tag": "rest",
         "amount": 1
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "vibe"
     },
     "shag_rug": {
       "name": "Shag Rug",
@@ -679,7 +708,9 @@
       "ambient": {
         "tag": "rest",
         "amount": 2
-      }
+      },
+      "vehicleOk": true,
+      "vcat": "vibe"
     },
     "cowhide_rug": {
       "name": "Cowhide Rug",
@@ -939,7 +970,10 @@
       "ambient": {
         "tag": "rest",
         "amount": 3
-      }
+      },
+      "sleeps": 2,
+      "vehicleOk": true,
+      "vcat": "sleep"
     }
   }
 }

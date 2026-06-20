@@ -3,7 +3,7 @@
 // so a marked night auto-resolves into a quick gig as you drive past it; an unmarked night just passes.
 // Stops are seeded by the calendar day, so the same night always yields the same town/venue/flavor.
 import { DATA } from "../engine/data.js";
-import { getState, addStat } from "../engine/state.js";
+import { getState, addStat, bandEarn } from "../engine/state.js";
 
 // deterministic 0..1 from a seed (stable per night, no RNG state to persist)
 function seeded(n) { const x = Math.sin(n) * 43758.5453; return x - Math.floor(x); }
@@ -23,7 +23,7 @@ export function roadsideStop(day) {
 
 // Resolve one roadside gig. Modest, fame-scaled: a paycheck, a few new fans, a tick of fame,
 // and it costs energy. Returns a summary for the recap card.
-export function playRoadsideGig(stop) {
+export function playRoadsideGig(stop, bandId) {
   const s = getState();
   const rw = (DATA.roadside && DATA.roadside.reward) || {};
   const fame = (s.stats && s.stats.fame) || 0;
@@ -32,7 +32,7 @@ export function playRoadsideGig(stop) {
   const pay = Math.max(20, Math.round(((rw.basePay || 60) + fame * (rw.payPerFame || 1.4)) * draw * wob));
   const fans = Math.max(1, Math.round(((rw.fansBase || 4) + fame * (rw.fansPerFame || 0.15)) * draw));
   const fameUp = rw.fameUp || 1;
-  addStat("money", pay);
+  if (bandId) bandEarn(bandId, pay, "show", `Roadside gig \u2014 ${stop.town}`); else addStat("money", pay);
   addStat("fans", fans);
   addStat("fame", fameUp);
   addStat("energy", -(rw.energyCost || 12));

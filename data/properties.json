@@ -159,7 +159,8 @@
         "Cooler",
         "A little storage"
       ],
-      "blurb": "A rusty van that gets you to the gig. Sleep rough, stash some gear, and never miss a show for want of a ride."
+      "blurb": "A rusty van that gets you to the gig. Sleep rough, stash some gear, and never miss a show for want of a ride.",
+      "slots": 10
     },
     {
       "id": "veh_bus",
@@ -179,7 +180,8 @@
         "Gear storage",
         "Decorate it like home"
       ],
-      "blurb": "A proper tour bus - a furnished home on wheels. Buy it outright or lease by the month, like any place you'd live."
+      "blurb": "A proper tour bus - a furnished home on wheels. Buy it outright or lease by the month, like any place you'd live.",
+      "slots": 24
     },
     {
       "id": "apt_newfunk",

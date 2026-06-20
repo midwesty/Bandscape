@@ -103,11 +103,13 @@ function availableSlots(type) {
 }
 
 // ---- scheduler picker ----
-let schedBand = null, schedType = "show";
+let schedBand = null, schedType = "show", schedLock = false;
 function playerBands() { return (getState().bands || []); }   // every band the player manages is bookable
-function ensureSchedBand() { const pb = playerBands(); const ab = activeBand(); schedBand = (ab && pb.find((b) => b.id === ab.id)) ? ab : ((schedBand && pb.find((b) => b.id === schedBand.id)) ? schedBand : (pb[0] || null)); }
+export function setSchedBand(bandId, lock) { const pb = playerBands().find((b) => b.id === bandId); if (pb) schedBand = pb; schedLock = !!lock; }
+function ensureSchedBand() { if (schedLock && schedBand) return; const pb = playerBands(); const ab = activeBand(); schedBand = (ab && pb.find((b) => b.id === ab.id)) ? ab : ((schedBand && pb.find((b) => b.id === schedBand.id)) ? schedBand : (pb[0] || null)); }
 function bandPillsHTML() {
   const pb = playerBands(); if (pb.length <= 1) return "";
+  if (schedLock && schedBand) return `<div class="sched-bands"><span class="sched-bands-lbl">Booking</span> <strong>${esc(schedBand.name || "your band")}</strong> <span class="sched-bands-lbl">\u00b7 this tour</span></div>`;
   return `<div class="sched-bands"><span class="sched-bands-lbl">Booking as:</span>${pb.map((b) => `<button class="sched-band-pill ${schedBand && b.id === schedBand.id ? "on" : ""}" data-band="${esc(b.id)}">${esc(b.name || "Your band")}</button>`).join("")}</div>`;
 }
 function showNightCard(o) {
@@ -165,7 +167,7 @@ function closeScheduler() {
   overlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   setTimeout(() => overlay.classList.add("hidden"), 200);
-  const r = schedReturn; schedReturn = null; if (r) setTimeout(r, 215);   // hand back to the Tour Planner if it opened us
+  const r = schedReturn; schedReturn = null; schedLock = false; if (r) setTimeout(r, 215);   // hand back to the Tour Planner if it opened us
 }
 function book(type, day, slot) {
   const band = type === "show" ? (schedBand || activeBand() || {}) : (activeBand() || {});
