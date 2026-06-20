@@ -15,11 +15,13 @@ import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
 import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
-import { advanceMinutes, sleep } from "./time.js";
-import { currentDay, nextCommitment } from "./calendar.js";
+import { advanceMinutes, sleep, travelAwake } from "./time.js";
+import { currentDay, nextCommitment, bookedCommitments } from "./calendar.js";
 import { payForBand } from "./bank.js";
 
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let _driveSel = null, _driveVeh = null;
+function _isMine(bandId) { const b = bandById(bandId); return !!(b && b.playerIn); }
 let propTab = "properties";
 const money = (n) => "$" + Math.round(n || 0).toLocaleString();
 
@@ -105,7 +107,7 @@ function vehiclesSection() {
       const ob = bandById(v.bandId);
       const statusTag = v.status === "leased" ? " \u00b7 leased" : " \u00b7 owned";
       const enter = `<button class="btn prop-act" data-act="venter" data-veh="${v.id}">Enter</button>`;
-      const drive = `<button class="btn prop-act" data-act="vdrive" data-veh="${v.id}">Drive to next show \u25B8</button>`;
+      const drive = `<button class="btn prop-act" data-act="vdrive" data-veh="${v.id}">Hit the road \u25B8</button>`;
       const reassign = pbAll.length > 1 ? `<button class="btn ghost prop-act" data-act="vreassign" data-veh="${v.id}">Reassign band \u25B8</button>` : "";
       const dispose = v.status === "leased"
         ? `<button class="btn ghost prop-act" data-act="vendlease" data-veh="${v.id}">End lease</button>`
@@ -121,31 +123,71 @@ function vehiclesSection() {
   }).join("");
   return yours + `<div class="prop-city"><div class="prop-city-head">Buy a Vehicle</div>${buy}</div>`;
 }
-function driveToShow(bandId) {
-  const cmt = nextCommitment("show", bandId || null);
-  if (!cmt) { toast("No shows booked for that band yet.", "info"); return; }
-  const v = (DATA.venues && DATA.venues.venues && DATA.venues.venues[cmt.venue]) || null;
-  const cd = v && v.town && cityDef(v.town);
-  const es = cd && cd.entryScene;
-  if (!es) { toast("Can't find the road to that venue yet.", "warn"); return; }
-  const days = cityDayCost(v.town);
-  closePhone(); travelTo(es.scene, es.spawn);
-  if (days > 0) {
-    const veh = ownedVehicles().find((x) => x.bandId === (bandId || null));
-    const poor = !veh || veh.type === "veh_van";   // a van bunk is rough; the bus rests well
-    for (let i = 0; i < days; i++) sleep({ poor });
-    toast(`Drove ${days} day${days > 1 ? "s" : ""} to ${cd.name}.`, "good");
-  } else {
-    advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45);
-    toast(`On the road to ${cd.name} \u2014 a quick hop.`, "good");
-  }
+// ---- The Drive menu (Step 47): pick which show to drive to, warned about anything you'd miss ----
+function _venueOf(id) { return (DATA.venues && DATA.venues.venues && DATA.venues.venues[id]) || {}; }
+function driveAssess(c, today) {
+  const v = _venueOf(c.venue); const town = v.town; const cd = town ? cityDef(town) : null;
+  const days = town ? cityDayCost(town) : 0;
+  const arrivalDay = today + days;
+  const here = currentCity ? currentCity() : null;
+  const alreadyHere = !!(town && here === town && days === 0);
+  const reachable = c.day >= arrivalDay;                 // you land on or before its day
+  const missed = bookedCommitments().filter((o) => o.type === "show" && o.id !== c.id && _isMine(o.bandId) && o.day >= today && o.day <= arrivalDay);
+  return { v, town, cd, days, arrivalDay, reachable, alreadyHere, missed };
+}
+function openDriveMenu(vehId) { _driveVeh = vehId || null; _driveSel = null; renderDriveMenu(); }
+function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) return; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
+function renderDriveMenu() {
+  const ov = document.getElementById("cal"); if (!ov) return;
+  const today = currentDay();
+  const shows = bookedCommitments().filter((c) => c.type === "show");
+  let body;
+  if (!shows.length) body = `<p class="shop-note">No shows booked yet. Book one from the BAND app, then come back to hit the road.</p>`;
+  else body = shows.map((c) => {
+    const a = driveAssess(c, today); const mine = _isMine(c.bandId); const b = bandById(c.bandId) || {};
+    const cityNm = (a.cd && a.cd.name) || a.town || "somewhere"; const vnm = a.v.name || "a venue";
+    const dist = a.alreadyHere ? "you're already here" : a.days === 0 ? "in your circuit \u2014 quick hop" : `${a.days} day${a.days > 1 ? "s" : ""} away`;
+    const tag = mine ? `<span class="drive-tag mine">be there</span>` : `<span class="drive-tag mgr">auto-plays</span>`;
+    let expand = "";
+    if (_driveSel === c.id) {
+      const warns = [];
+      if (!a.reachable) warns.push(`\u26A0 Can't reach this in time \u2014 it's Day ${c.day}, but the drive lands you Day ${a.arrivalDay}.`);
+      a.missed.forEach((m) => { const mb = bandById(m.bandId) || {}; const mv = _venueOf(m.venue).name || "a venue"; warns.push(`\u26A0 You'd miss <strong>${esc(mb.name || "your band")}</strong> @ ${esc(mv)}, Day ${m.day}.`); });
+      const warnHTML = warns.length ? `<div class="drive-warn">${warns.join("<br>")}</div>` : `<div class="drive-ok">Clear run \u2014 nothing booked in the way.</div>`;
+      const danger = warns.length ? " anyway" : "";
+      const fastLbl = a.days === 0 ? "Drive over" : `Fast-travel${danger} (sleep there)`;
+      expand = `<div class="drive-exp">${warnHTML}<div class="drive-modes">` +
+        `<button class="cal-slot-btn" data-drive="fast" data-cid="${c.id}">\uD83D\uDECC ${fastLbl} \u25B8</button>` +
+        (a.days === 0 ? "" : `<button class="cal-slot-btn" data-drive="ride" data-cid="${c.id}">\u2615 Ride along${danger} (stay awake) \u25B8</button>`) +
+        `</div></div>`;
+    }
+    return `<div class="drive-row ${mine ? "mine" : "mgr"} ${_driveSel === c.id ? "sel" : ""}" data-pick="${c.id}">` +
+      `<div class="drive-row-h"><strong>${esc(b.name || "Your band")}</strong>${tag}</div>` +
+      `<div class="drive-row-sub">${esc(vnm)} \u00b7 ${esc(cityNm)} \u2014 Day ${c.day} \u00b7 <span class="drive-dist">${esc(dist)}</span></div>` +
+      expand + `</div>`;
+  }).join("");
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD</span><button class="phone-nav" id="drive-close">\u2715</button></div>` +
+    `<div class="cal-body"><p class="shop-note">Pick a show to drive to. <span class="drive-tag mine">be there</span> = your band \u2014 show up. <span class="drive-tag mgr">auto-plays</span> = a band that plays itself; drive over to catch it for a boost.</p>${body}</div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  ov.querySelector("#drive-close").addEventListener("click", closeDriveMenu);
+  ov.querySelectorAll("[data-pick]").forEach((el) => el.addEventListener("click", (e) => { if (e.target.closest("[data-drive]")) return; _driveSel = (_driveSel === el.dataset.pick) ? null : el.dataset.pick; renderDriveMenu(); }));
+  ov.querySelectorAll("[data-drive]").forEach((bn) => bn.addEventListener("click", (e) => { e.stopPropagation(); execDrive(bn.dataset.cid, bn.dataset.drive); }));
+}
+function execDrive(cid, mode) {
+  const c = bookedCommitments().find((x) => x.id === cid); if (!c) { closeDriveMenu(); return; }
+  const a = driveAssess(c, currentDay()); const es = a.cd && a.cd.entryScene;
+  if (!es) { toast("Can't find the road there yet.", "warn"); return; }
+  closeDriveMenu(); closePhone(); travelTo(es.scene, es.spawn);
+  if (a.days <= 0) { advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45); toast(`Over to ${a.cd.name} \u2014 quick hop.`, "good"); return; }
+  if (mode === "ride") { travelAwake(a.days); toast(`Rode along ${a.days} day${a.days > 1 ? "s" : ""} to ${a.cd.name} \u2014 wiped, but awake.`, "good"); }
+  else { const veh = _driveVeh ? vehicleById(_driveVeh) : null; const poor = !veh || veh.type === "veh_van"; for (let i = 0; i < a.days; i++) sleep({ poor }); toast(`Slept the drive \u2014 ${a.days} day${a.days > 1 ? "s" : ""} to ${a.cd.name}.`, "good"); }
 }
 function handleVehicleAct(b, act) {
   if (b.dataset.veh) {
     const v = vehicleById(b.dataset.veh); if (!v) return;
     const d = propDef(v.type) || {};
     if (act === "venter") { closePhone(); travelTo(d.location, null); return; }
-    if (act === "vdrive") { driveToShow(v.bandId); return; }
+    if (act === "vdrive") { openDriveMenu(v.id); return; }
     if (act === "vreassign") { const pb = getState().bands; if (pb.length > 1) { const i = pb.findIndex((x) => x.id === v.bandId); const nx = pb[(i + 1) % pb.length]; setVehicleBand(v.id, nx.id); toast(`${d.name} now serves ${nx.name || "that band"}.`, "good"); } persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vsell") { addStat("money", d.sellValue || 0); removeVehicle(v.id); toast(`Sold ${d.name} for ${money(d.sellValue || 0)}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }
     if (act === "vendlease") { removeVehicle(v.id); toast(`Ended the lease on ${d.name}.`, "good"); persist(); renderPropertiesApp(screenEl); return; }

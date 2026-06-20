@@ -152,6 +152,29 @@ export function sleep({ forced = false, poor = false } = {}) {
   emit("renderAll");
 }
 
+// Ride along (stay awake) for N travel days. Unlike sleep(): no energy restore, no well-rested —
+// you're up in the cab the whole way, so energy/needs drain and you arrive with the evening ahead
+// (so an arrival-day show is still playable). Rolls the day each leg so the world ticks normally
+// (bills, and the missed-show sweep — which is fine, the Drive menu warned about any missed shows).
+export function travelAwake(days) {
+  const s = getState(); const cfg = DATA.config.time;
+  const tcfg = (DATA.config.travel || {});
+  const perDay = tcfg.rideAlongEnergyPerDay != null ? tcfg.rideAlongEnergyPerDay : 35;
+  const dayHours = (cfg.sleepDrainHours || 8) * 1.5;   // awake far longer than a night
+  for (let d = 0; d < days; d++) {
+    s.time.day += 1;
+    addStat("energy", -perDay);
+    for (const def of DATA.stats.stats) {
+      if (def.kind === "need" && def.decayPerHour) addStat(def.id, -(def.decayPerHour * dayHours));
+    }
+    emit("day:advanced", { day: s.time.day, forced: false });
+  }
+  s.time.hour = tcfg.arriveHour != null ? tcfg.arriveHour : 15;   // pull in mid-afternoon
+  s.time.minute = 0;
+  if ((s.stats.energy || 0) <= 0) addCondition("exhausted");      // ran yourself ragged on the road
+  emit("renderAll");
+}
+
 // Advance the clock by N minutes (busking, traveling, activities). Rolls hours
 // (with hourly decay/conditions) but never advances the day — only sleep does.
 export function advanceMinutes(mins) {

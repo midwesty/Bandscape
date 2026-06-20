@@ -1285,3 +1285,22 @@ body:has(.modal-scrim) #log { display: none; }
 .mp-cluster{margin:10px 0 4px;}
 .mp-cluster-h{font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;opacity:.95;padding:6px 2px;border-bottom:1px solid #3a3346;margin-bottom:6px;}
 .mp-cluster.road .mp-cluster-h{color:#c9a227;opacity:.85;}
+
+/* ---- Step 47: Drive menu (HIT THE ROAD) ---- */
+.drive-row{border:2px solid #3a3346;border-radius:5px;padding:8px 10px;margin:7px 0;cursor:pointer;background:rgba(255,255,255,.02);transition:border-color .12s,background .12s;}
+.drive-row:hover{border-color:#6a6080;}
+.drive-row.sel{border-color:#8a7fb0;background:rgba(138,127,176,.10);}
+.drive-row.mine{border-left:5px solid #4caf72;}
+.drive-row.mgr{border-left:5px solid #6a6478;}
+.drive-row-h{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.drive-row-h strong{font-size:14px;}
+.drive-row-sub{font-size:12px;opacity:.82;margin-top:2px;}
+.drive-dist{font-weight:700;opacity:.95;}
+.drive-tag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.drive-tag.mine{background:#1f5134;color:#9fe9bc;border:1px solid #4caf72;}
+.drive-tag.mgr{background:#2c2836;color:#b9b2c8;border:1px solid #6a6478;}
+.drive-exp{margin-top:9px;padding-top:8px;border-top:1px dashed #3a3346;}
+.drive-warn{font-size:12px;line-height:1.5;color:#ffd07a;background:rgba(255,160,40,.10);border:1px solid #7a5a20;border-radius:4px;padding:7px 9px;margin-bottom:8px;}
+.drive-ok{font-size:12px;color:#9fe9bc;opacity:.9;margin-bottom:8px;}
+.drive-modes{display:flex;flex-direction:column;gap:7px;}
+.drive-modes .cal-slot-btn{width:100%;text-align:left;}
