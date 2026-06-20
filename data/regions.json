@@ -244,7 +244,7 @@
     "new_funk_city": {
       "name": "New Funk City",
       "region": "east_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
@@ -260,208 +260,333 @@
           "genre": "rap"
         }
       ],
-      "cluster": "east_coast"
+      "cluster": "east_coast",
+      "entryScene": {
+        "scene": "new_funk_city",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "bostone": {
       "name": "Bostone",
       "region": "east_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "bos_indie",
+          "id": "bostone_dist",
+          "name": "The Wharf",
+          "genre": "metal",
+          "scene": "bost_block"
+        },
+        {
+          "id": "bostone_dist2",
           "name": "Brick Row",
-          "genre": "indie"
+          "genre": "rock"
         }
       ],
-      "cluster": "east_coast"
+      "cluster": "east_coast",
+      "entryScene": {
+        "scene": "bostone",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "jamlanta": {
       "name": "Jamlanta",
       "region": "east_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "jam_rap",
-          "name": "Trap House Hill",
-          "genre": "rap"
+          "id": "jamlanta_dist",
+          "name": "The Bando",
+          "genre": "hiphop",
+          "scene": "jam_block"
         },
         {
-          "id": "jam_soul",
+          "id": "jamlanta_dist2",
           "name": "Peachtree Soul",
           "genre": "soul"
         }
       ],
-      "cluster": "east_coast"
+      "cluster": "east_coast",
+      "entryScene": {
+        "scene": "jamlanta",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "cost_angeles": {
       "name": "Cost Angeles",
       "region": "west_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "ca_pop",
-          "name": "Sunset Strip Mall",
-          "genre": "pop"
+          "id": "cost_angeles_dist",
+          "name": "The Strip",
+          "genre": "metal",
+          "scene": "cost_block"
         },
         {
-          "id": "ca_metal",
-          "name": "The Pit",
-          "genre": "metal"
+          "id": "cost_angeles_dist2",
+          "name": "Sunset",
+          "genre": "pop"
         }
       ],
-      "cluster": "west_coast"
+      "cluster": "west_coast",
+      "entryScene": {
+        "scene": "cost_angeles",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "porthole": {
       "name": "Porthole",
       "region": "west_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "po_indie",
+          "id": "porthole_dist",
+          "name": "The Riverfront",
+          "genre": "country",
+          "scene": "port_block"
+        },
+        {
+          "id": "porthole_dist2",
           "name": "Fog District",
-          "genre": "indie"
+          "genre": "rock"
         }
       ],
-      "cluster": "west_coast"
+      "cluster": "west_coast",
+      "entryScene": {
+        "scene": "porthole",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "san_flamenco": {
       "name": "San Flamenco",
       "region": "west_coast",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "sf_punk",
-          "name": "Border Pit",
-          "genre": "punk"
+          "id": "san_flamenco_dist",
+          "name": "The Bay Lights",
+          "genre": "electronic",
+          "scene": "sanf_block"
         },
         {
-          "id": "sf_latin",
-          "name": "Costa Loud",
-          "genre": "latin"
+          "id": "san_flamenco_dist2",
+          "name": "Fillmore Row",
+          "genre": "rock"
         }
       ],
-      "cluster": "west_coast"
+      "cluster": "west_coast",
+      "entryScene": {
+        "scene": "san_flamenco",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "londrum": {
       "name": "Londrum",
       "region": "europe",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "lon_rock",
+          "id": "londrum_dist",
           "name": "Camden Crawl",
-          "genre": "rock"
+          "genre": "rock",
+          "scene": "lon_block"
         },
         {
-          "id": "lon_electro",
-          "name": "The Grid",
-          "genre": "electronic"
+          "id": "londrum_dist2",
+          "name": "The Estate",
+          "genre": "pop"
         }
       ],
-      "cluster": "europe"
+      "cluster": "europe",
+      "entryScene": {
+        "scene": "londrum",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "berlinn": {
       "name": "Berlinn",
       "region": "europe",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "ber_techno",
+          "id": "berlinn_dist",
           "name": "Bunker Block",
-          "genre": "techno"
+          "genre": "electronic",
+          "scene": "ber_block"
+        },
+        {
+          "id": "berlinn_dist2",
+          "name": "The Mitte",
+          "genre": "rock"
         }
       ],
-      "cluster": "europe"
+      "cluster": "europe",
+      "entryScene": {
+        "scene": "berlinn",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "amsterjam": {
       "name": "Amsterjam",
       "region": "europe",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "ams_jam",
+          "id": "amsterjam_dist",
           "name": "Canal Sessions",
-          "genre": "jam"
+          "genre": "jazz",
+          "scene": "ams_block"
+        },
+        {
+          "id": "amsterjam_dist2",
+          "name": "The Canals",
+          "genre": "rock"
         }
       ],
-      "cluster": "europe"
+      "cluster": "europe",
+      "entryScene": {
+        "scene": "amsterjam",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "tokyolo": {
       "name": "Tokyolo",
       "region": "japan",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "tok_jpop",
-          "name": "Neon Mile",
-          "genre": "jpop"
+          "id": "tokyolo_dist",
+          "name": "Static Alley",
+          "genre": "electronic",
+          "scene": "tok_block"
         },
         {
-          "id": "tok_noise",
-          "name": "Static Alley",
-          "genre": "noise"
+          "id": "tokyolo_dist2",
+          "name": "The Crossing",
+          "genre": "pop"
         }
       ],
-      "cluster": "japan"
+      "cluster": "japan",
+      "entryScene": {
+        "scene": "tokyolo",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "osanka": {
       "name": "Osanka",
       "region": "japan",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "osa_punk",
+          "id": "osanka_dist",
           "name": "Dotonbori Din",
-          "genre": "punk"
+          "genre": "metal",
+          "scene": "osa_block"
+        },
+        {
+          "id": "osanka_dist2",
+          "name": "Dotonbori",
+          "genre": "rock"
         }
       ],
-      "cluster": "japan"
+      "cluster": "japan",
+      "entryScene": {
+        "scene": "osanka",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     },
     "kyodo": {
       "name": "Kyodo",
       "region": "japan",
-      "built": false,
+      "built": true,
       "explorable": true,
       "startUnlocked": false,
       "tourEligible": false,
       "districts": [
         {
-          "id": "kyo_trad",
+          "id": "kyodo_dist",
           "name": "Old Town Strings",
-          "genre": "traditional"
+          "genre": "country",
+          "scene": "kyo_block"
+        },
+        {
+          "id": "kyodo_dist2",
+          "name": "Old Town",
+          "genre": "jazz"
         }
       ],
-      "cluster": "japan"
+      "cluster": "japan",
+      "entryScene": {
+        "scene": "kyodo",
+        "spawn": {
+          "x": 6,
+          "y": 4
+        }
+      }
     }
   },
   "clusters": {

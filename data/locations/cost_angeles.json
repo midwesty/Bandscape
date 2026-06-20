@@ -1,0 +1,241 @@
+{
+  "_comment": "Cost Angeles \u2014 West-Coast everything-town (cluster west_coast). Palms, smog, billboards, broken dreams set to music. Open pop bar, the Echo step-up, and a glam-metal Sunset district (The Strip).",
+  "id": "cost_angeles",
+  "name": "Cost Angeles \u2014 The Strip",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "facade_a",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Brownstone"
+    },
+    {
+      "id": "facade_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Shuttered storefront"
+    },
+    {
+      "id": "facade_c",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 7
+      },
+      "solid": true,
+      "name": "Walk-up flats"
+    },
+    {
+      "id": "busker_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "cost_busker",
+      "name": "Boulevard busker",
+      "tile": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "id": "local_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "cost_local",
+      "name": "Scene veteran",
+      "tile": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "exits": [
+    {
+      "id": "venue",
+      "name": "The Echo Chamber",
+      "interact": "enter",
+      "to": "cost_venue",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "venue",
+      "tile": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "id": "bar",
+      "name": "The Troubadont",
+      "interact": "enter",
+      "to": "cost_bar",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "bar",
+      "tile": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "id": "musicstore",
+      "name": "Sunset Sound Shop",
+      "interact": "enter",
+      "to": "musicstore",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "music",
+      "tile": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "id": "records",
+      "name": "Amoeba-ish Records",
+      "interact": "enter",
+      "to": "records",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "id": "arcade",
+      "name": "Starcade",
+      "interact": "enter",
+      "to": "cost_arcade",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "arcade",
+      "tile": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "id": "diner",
+      "name": "The 101 Diner",
+      "interact": "diner",
+      "build": "diner",
+      "tile": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "id": "hotel",
+      "name": "Chateau Mar-ish",
+      "interact": "hotel",
+      "build": "hotel",
+      "tile": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "id": "apt",
+      "name": "Laurel Walk-up",
+      "interact": "property",
+      "to": "cost_apt",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 7,
+        "y": 7
+      },
+      "propertyId": "apt_cost_angeles"
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "interact": "bus",
+      "to": "town",
+      "tile": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "id": "district",
+      "name": "The Strip \u25b8",
+      "interact": "enter",
+      "to": "cost_block",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 11,
+          "y": 4
+        }
+      },
+      {
+        "id": "cross",
+        "from": {
+          "x": 6,
+          "y": 0
+        },
+        "to": {
+          "x": 6,
+          "y": 8
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 3,
+      "dog": false,
+      "pedestrians": 4
+    }
+  },
+  "palette": {
+    "floorA": "#2e1c2a",
+    "floorB": "#251622",
+    "floorEdge": "#4e2f47",
+    "bldgL": "#442542",
+    "bldgR": "#3a2038",
+    "bldgTop": "#291728"
+  }
+}

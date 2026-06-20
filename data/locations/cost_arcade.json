@@ -1,0 +1,117 @@
+{
+  "_comment": "Starcade \u2014 enterable arcade, flavor cabinets.",
+  "id": "cost_arcade",
+  "name": "Starcade",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "arcade",
+  "objects": [
+    {
+      "id": "pd_cost_arcade_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_cost_arcade_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_cost_arcade_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "cab1",
+      "name": "SPACED cabinet",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "A SPACED cabinet hums in the corner. OUT OF ORDER\u2026 for now. (Playable here in a later build.)",
+      "solid": true
+    },
+    {
+      "id": "cab2",
+      "name": "Poojectile cabinet",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "POOJECTILE. The screen flickers an invitation. INSERT QUARTER \u2014 soon.",
+      "solid": true
+    },
+    {
+      "id": "cab3",
+      "name": "Pinball Buddy",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "A pinball machine with your face on the backglass. How did they\u2014? (Later.)",
+      "solid": true
+    },
+    {
+      "id": "cab4",
+      "name": "Mystery cabinet",
+      "tile": {
+        "x": 8,
+        "y": 1
+      },
+      "interact": "flavor",
+      "flavor": "An unmarked cabinet. It just says BOP. It's warm to the touch.",
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Exit to The Strip",
+      "tile": {
+        "x": 5,
+        "y": 6
+      },
+      "to": "cost_angeles",
+      "spawn": {
+        "x": 11,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "ambient": {
+      "pedestrians": 2
+    }
+  },
+  "palette": {
+    "floorA": "#2c1c28",
+    "floorB": "#241620",
+    "floorEdge": "#4a2f44",
+    "bldgL": "#3e253f",
+    "bldgR": "#352036",
+    "bldgTop": "#261726"
+  }
+}

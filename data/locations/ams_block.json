@@ -1,0 +1,108 @@
+{
+  "_comment": "Canal Sessions \u2014 genre-locked jazz room (ams_groove).",
+  "id": "ams_block",
+  "name": "Canal Sessions",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "ams_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old warehouse"
+    },
+    {
+      "id": "ams_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Bicycle shop"
+    },
+    {
+      "id": "ams_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked beer kegs"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Houseboat",
+      "interact": "stage",
+      "venueId": "ams_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Canals",
+      "interact": "enter",
+      "to": "amsterjam",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "lake",
+        "from": {
+          "x": 0,
+          "y": 8
+        },
+        "to": {
+          "x": 11,
+          "y": 8
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 7,
+        "x1": 11,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#1c2838",
+    "floorB": "#16202d",
+    "floorEdge": "#2f445f",
+    "bldgL": "#2a3b50",
+    "bldgR": "#243244",
+    "bldgTop": "#192430",
+    "waterA": "#1a4a6a",
+    "waterB": "#143b54",
+    "waterEdge": "#2872a4"
+  }
+}

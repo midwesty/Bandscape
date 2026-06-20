@@ -1,0 +1,127 @@
+{
+  "_comment": "Dotonbori Flat",
+  "id": "osa_apt",
+  "name": "Dotonbori Flat",
+  "size": {
+    "w": 8,
+    "h": 6
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bed",
+      "name": "Bed",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/bed.png",
+      "interact": "sleep"
+    },
+    {
+      "id": "fridge",
+      "name": "Fridge",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/fridge.png",
+      "interact": "fridge",
+      "containerId": "fridge"
+    },
+    {
+      "id": "crate",
+      "name": "Storage Crate",
+      "tile": {
+        "x": 6,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/crate.png",
+      "interact": "container",
+      "containerId": "storage"
+    },
+    {
+      "id": "laptop",
+      "name": "Laptop",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/laptop.png",
+      "interact": "daw"
+    },
+    {
+      "id": "pd_osa_apt_futon",
+      "name": "Futon",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "futon",
+      "sprite": "assets/img/objects/decor/futon.png"
+    },
+    {
+      "id": "pd_osa_apt_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "lava_lamp",
+      "sprite": "assets/img/objects/decor/lava_lamp.png"
+    },
+    {
+      "id": "pd_osa_apt_poster",
+      "name": "Band Poster",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "band_poster",
+      "sprite": "assets/img/objects/decor/band_poster.png"
+    },
+    {
+      "id": "pd_osa_apt_succ",
+      "name": "Succulents",
+      "tile": {
+        "x": 6,
+        "y": 2
+      },
+      "decorId": "succulent_set",
+      "sprite": "assets/img/objects/decor/succulent_set.png"
+    },
+    {
+      "id": "pd_osa_apt_mat",
+      "name": "Floor Mat",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "vinyl_mat",
+      "sprite": "assets/img/objects/decor/vinyl_mat.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "door",
+      "name": "Out to Dotonbori",
+      "tile": {
+        "x": 4,
+        "y": 5
+      },
+      "to": "osanka",
+      "spawn": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#2c1e18",
+    "floorB": "#241813",
+    "floorEdge": "#4a3328",
+    "bldgL": "#3f2c21",
+    "bldgR": "#36261c",
+    "bldgTop": "#261b14"
+  }
+}

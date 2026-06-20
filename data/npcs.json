@@ -1507,6 +1507,2262 @@
           "at": "rocktroit_cut"
         }
       }
+    },
+    {
+      "id": "npc_newfunk_booker",
+      "name": "Roz",
+      "townsfolk": true,
+      "line": "Roz runs The Soul Cellar. \"Bring me a record and a room that moves, and you headline.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "newfunk_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "newfunk_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "newfunk_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "new_funk_city",
+      "perk": {
+        "type": "booking",
+        "venue": "nf_cellar",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_nf_dee",
+      "name": "Dee Sharp",
+      "archetype": "Bassist",
+      "reliability": 0.74,
+      "skill": 0.74,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_nf_dee"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 82,
+      "schedule": {
+        "evening": {
+          "at": "newfunk_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "newfunk_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "new_funk_city"
+    },
+    {
+      "id": "npc_nf_cleo",
+      "name": "Cleo Vaughn",
+      "archetype": "Vocalist",
+      "reliability": 0.7,
+      "skill": 0.78,
+      "genre": "soul",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_nf_cleo"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "newfunk_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "newfunk_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "new_funk_city"
+    },
+    {
+      "id": "npc_nf_jam",
+      "name": "Jam Foster",
+      "archetype": "Drummer",
+      "reliability": 0.76,
+      "skill": 0.71,
+      "genre": "funk",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_nf_jam"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 7,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "newfunk_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "newfunk_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "new_funk_city"
+    },
+    {
+      "id": "nf_busker",
+      "name": "Sidewalk bassist",
+      "townsfolk": true,
+      "town": "new_funk_city",
+      "line": "A bassist thumbs a slow groove on the corner. \"This whole city runs on the one, baby.\""
+    },
+    {
+      "id": "nf_local",
+      "name": "Block regular",
+      "townsfolk": true,
+      "town": "new_funk_city",
+      "line": "\"Groove Row never sleeps. Cellar's where you wanna end up - but you gotta earn The Pocket first.\""
+    },
+    {
+      "id": "npc_bostone_booker",
+      "name": "Sully",
+      "townsfolk": true,
+      "line": "Sully books The Brick House. \"Bring a record and a packed room, kid, and it's yours.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "bost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "bost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "bost_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "bostone",
+      "perk": {
+        "type": "booking",
+        "venue": "bost_hall",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_bost_1",
+      "name": "Patty Quinn",
+      "archetype": "Guitarist",
+      "reliability": 0.73,
+      "skill": 0.74,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_bost_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 82,
+      "schedule": {
+        "evening": {
+          "at": "bost_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "bost_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "bostone"
+    },
+    {
+      "id": "npc_bost_2",
+      "name": "Mickey Doyle",
+      "archetype": "Bassist",
+      "reliability": 0.75,
+      "skill": 0.7,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_bost_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 7,
+      "potential": 80,
+      "schedule": {
+        "evening": {
+          "at": "bost_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "bost_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "bostone"
+    },
+    {
+      "id": "npc_bost_3",
+      "name": "Bricks Salvo",
+      "archetype": "Drummer",
+      "reliability": 0.7,
+      "skill": 0.78,
+      "genre": "metal",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_bost_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "afternoon": {
+          "at": "bost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "bost_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "bostone"
+    },
+    {
+      "id": "bost_busker",
+      "name": "Subway guitarist",
+      "townsfolk": true,
+      "town": "bostone",
+      "line": "A kid shreds a beat-up Strat by the T stop. \"Whole city's a basement show, man.\""
+    },
+    {
+      "id": "bost_local",
+      "name": "Townie regular",
+      "townsfolk": true,
+      "town": "bostone",
+      "line": "\"Brick House if you've got a record. The Wharf's where the pit lives - bring the heavy stuff.\""
+    },
+    {
+      "id": "npc_jamlanta_booker",
+      "name": "Keish",
+      "townsfolk": true,
+      "line": "Keish runs Peachtree Hall. \"You got a record and a crowd that moves? We talk numbers.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "jam_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "jam_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "jam_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "jamlanta",
+      "perk": {
+        "type": "booking",
+        "venue": "jam_hall",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_jam_1",
+      "name": "Tasha Wren",
+      "archetype": "Vocalist",
+      "reliability": 0.71,
+      "skill": 0.79,
+      "genre": "soul",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_jam_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 12,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "jam_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "jam_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "jamlanta"
+    },
+    {
+      "id": "npc_jam_2",
+      "name": "Lo Banks",
+      "archetype": "Keys",
+      "reliability": 0.74,
+      "skill": 0.73,
+      "genre": "hiphop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_jam_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 81,
+      "schedule": {
+        "evening": {
+          "at": "jam_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "jam_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "jamlanta"
+    },
+    {
+      "id": "npc_jam_3",
+      "name": "Pockets Reed",
+      "archetype": "Drummer",
+      "reliability": 0.76,
+      "skill": 0.71,
+      "genre": "soul",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_jam_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "jam_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "jam_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "jamlanta"
+    },
+    {
+      "id": "jam_busker",
+      "name": "Corner rapper",
+      "townsfolk": true,
+      "town": "jamlanta",
+      "line": "A kid spits a sixteen over a phone beat. \"Down here the bass IS the weather.\""
+    },
+    {
+      "id": "jam_local",
+      "name": "Block regular",
+      "townsfolk": true,
+      "town": "jamlanta",
+      "line": "\"Honeycomb to cut your teeth, Peachtree Hall when you blow up. The Bando? That's where the real ones go.\""
+    },
+    {
+      "id": "npc_cost_angeles_booker",
+      "name": "Brandi",
+      "townsfolk": true,
+      "line": "Brandi books The Echo. \"Everyone in this town has a demo. Bring a crowd or bring buzz - ideally both.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "cost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "cost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "cost_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "cost_angeles",
+      "perk": {
+        "type": "booking",
+        "venue": "cost_hall",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_cost_1",
+      "name": "Vance Steele",
+      "archetype": "Guitarist",
+      "reliability": 0.69,
+      "skill": 0.8,
+      "genre": "metal",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_cost_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 13,
+      "potential": 86,
+      "schedule": {
+        "evening": {
+          "at": "cost_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "cost_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "cost_angeles"
+    },
+    {
+      "id": "npc_cost_2",
+      "name": "Coco Vega",
+      "archetype": "Vocalist",
+      "reliability": 0.72,
+      "skill": 0.77,
+      "genre": "pop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_cost_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "cost_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "cost_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "cost_angeles"
+    },
+    {
+      "id": "npc_cost_3",
+      "name": "Dez Marlow",
+      "archetype": "Bassist",
+      "reliability": 0.74,
+      "skill": 0.72,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_cost_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "cost_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "cost_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "cost_angeles"
+    },
+    {
+      "id": "cost_busker",
+      "name": "Boulevard busker",
+      "townsfolk": true,
+      "town": "cost_angeles",
+      "line": "A guy in fringe noodles a solo nobody asked for. \"Discovered? Baby, I'm a vibe.\""
+    },
+    {
+      "id": "cost_local",
+      "name": "Scene veteran",
+      "townsfolk": true,
+      "town": "cost_angeles",
+      "line": "\"Troubadont for the open mic, The Echo to get seen. The Strip eats posers - bring the riffs.\""
+    },
+    {
+      "id": "npc_porthole_booker",
+      "name": "Wren",
+      "townsfolk": true,
+      "line": "Wren books The Aladdinn. \"We like a record and a quiet kind of crowd. No rock-star nonsense.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "port_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "port_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "port_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "porthole",
+      "perk": {
+        "type": "booking",
+        "venue": "port_hall",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_port_1",
+      "name": "Sage Holloway",
+      "archetype": "Guitarist",
+      "reliability": 0.75,
+      "skill": 0.73,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_port_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 7,
+      "potential": 81,
+      "schedule": {
+        "evening": {
+          "at": "port_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "port_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "porthole"
+    },
+    {
+      "id": "npc_port_2",
+      "name": "Marlo Finch",
+      "archetype": "Vocalist",
+      "reliability": 0.73,
+      "skill": 0.76,
+      "genre": "country",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_port_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "port_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "port_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "porthole"
+    },
+    {
+      "id": "npc_port_3",
+      "name": "Bex Aldous",
+      "archetype": "Keys",
+      "reliability": 0.74,
+      "skill": 0.72,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_port_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "port_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "port_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "porthole"
+    },
+    {
+      "id": "port_busker",
+      "name": "Fingerpicker",
+      "townsfolk": true,
+      "town": "porthole",
+      "line": "A picker hums an old tune under an awning, out of the rain. \"Everybody here's in three bands.\""
+    },
+    {
+      "id": "port_local",
+      "name": "Flannel regular",
+      "townsfolk": true,
+      "town": "porthole",
+      "line": "\"Knotty Pine's always open. Aladdinn when you've got a record. The Foghorn's for the folk crowd down by the water.\""
+    },
+    {
+      "id": "npc_san_flamenco_booker",
+      "name": "Marisol",
+      "townsfolk": true,
+      "line": "Marisol books Golden Gate Hall. \"Bring a record, a following, and good vibes. We're picky.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "sanf_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "sanf_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "sanf_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "san_flamenco",
+      "perk": {
+        "type": "booking",
+        "venue": "sanf_hall",
+        "minRapport": 40,
+        "payMult": 1.2
+      }
+    },
+    {
+      "id": "npc_sanf_1",
+      "name": "Indra Vale",
+      "archetype": "Guitarist",
+      "reliability": 0.74,
+      "skill": 0.75,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_sanf_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 10,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "sanf_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "sanf_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "san_flamenco"
+    },
+    {
+      "id": "npc_sanf_2",
+      "name": "Cyan Park",
+      "archetype": "Keys",
+      "reliability": 0.72,
+      "skill": 0.78,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_sanf_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 12,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "sanf_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "sanf_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "san_flamenco"
+    },
+    {
+      "id": "npc_sanf_3",
+      "name": "Wolf Okafor",
+      "archetype": "Bassist",
+      "reliability": 0.75,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_sanf_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "sanf_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "sanf_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "san_flamenco"
+    },
+    {
+      "id": "sanf_busker",
+      "name": "Hill-street busker",
+      "townsfolk": true,
+      "town": "san_flamenco",
+      "line": "Someone loops a synth into a busted amp on the corner. \"The fog does the reverb for free.\""
+    },
+    {
+      "id": "sanf_local",
+      "name": "Foghead regular",
+      "townsfolk": true,
+      "town": "san_flamenco",
+      "line": "\"Fillmost to start, Golden Gate Hall to arrive. The Foglab down on the Bay is electronic-only - bring the machines.\""
+    },
+    {
+      "id": "npc_londrum_booker",
+      "name": "Nigel",
+      "townsfolk": true,
+      "line": "Nigel books Brixton Hall. \"Bring a record and a proper crowd, mate, and the night's yours.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "lon_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "lon_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "lon_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "londrum",
+      "perk": {
+        "type": "booking",
+        "venue": "lon_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_lon_1",
+      "name": "Birdie Cole",
+      "archetype": "Vocalist",
+      "reliability": 0.72,
+      "skill": 0.78,
+      "genre": "pop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lon_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "lon_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "lon_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "londrum"
+    },
+    {
+      "id": "npc_lon_2",
+      "name": "Reg Hatton",
+      "archetype": "Guitarist",
+      "reliability": 0.74,
+      "skill": 0.74,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lon_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 82,
+      "schedule": {
+        "evening": {
+          "at": "lon_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "lon_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "londrum"
+    },
+    {
+      "id": "npc_lon_3",
+      "name": "Davo Pike",
+      "archetype": "Bassist",
+      "reliability": 0.75,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_lon_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "lon_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "lon_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "londrum"
+    },
+    {
+      "id": "lon_busker",
+      "name": "Tube busker",
+      "townsfolk": true,
+      "town": "londrum",
+      "line": "A busker bashes out a singalong on the platform. \"Three chords and the truth, innit.\""
+    },
+    {
+      "id": "lon_local",
+      "name": "Estate regular",
+      "townsfolk": true,
+      "town": "londrum",
+      "line": "\"Crown & Anchor to start, Brixton Hall to get seen. Camden Crawl's where the guitars live - bring the riffs.\""
+    },
+    {
+      "id": "npc_berlinn_booker",
+      "name": "Heike",
+      "townsfolk": true,
+      "line": "Heike books Funkhall. \"A record, a crowd, and no drama. We start late and end later.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "ber_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "ber_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ber_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "berlinn",
+      "perk": {
+        "type": "booking",
+        "venue": "ber_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_ber_1",
+      "name": "Otto Frei",
+      "archetype": "Keys",
+      "reliability": 0.73,
+      "skill": 0.79,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ber_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 12,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "ber_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ber_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "berlinn"
+    },
+    {
+      "id": "npc_ber_2",
+      "name": "Mara Voss",
+      "archetype": "Guitarist",
+      "reliability": 0.74,
+      "skill": 0.73,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ber_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 81,
+      "schedule": {
+        "evening": {
+          "at": "ber_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ber_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "berlinn"
+    },
+    {
+      "id": "npc_ber_3",
+      "name": "Klaus Reiner",
+      "archetype": "Drummer",
+      "reliability": 0.76,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ber_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "ber_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "ber_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "berlinn"
+    },
+    {
+      "id": "ber_busker",
+      "name": "U-Bahn busker",
+      "townsfolk": true,
+      "town": "berlinn",
+      "line": "Someone runs a drum machine into a busking amp. \"In this city, you sleep when the sun's up.\""
+    },
+    {
+      "id": "ber_local",
+      "name": "Kreuzberg regular",
+      "townsfolk": true,
+      "town": "berlinn",
+      "line": "\"Klub 36 for the loud stuff. The Vault out on Bunker Block is techno only - bring the machines and your stamina.\""
+    },
+    {
+      "id": "npc_amsterjam_booker",
+      "name": "Joost",
+      "townsfolk": true,
+      "line": "Joost books The Melkhuis. \"Bring a record and a warm room. We like it loose and a little smoky.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "ams_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "ams_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ams_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "amsterjam",
+      "perk": {
+        "type": "booking",
+        "venue": "ams_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_ams_1",
+      "name": "Sanne Bakker",
+      "archetype": "Guitarist",
+      "reliability": 0.74,
+      "skill": 0.75,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ams_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 10,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "ams_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ams_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "amsterjam"
+    },
+    {
+      "id": "npc_ams_2",
+      "name": "Tijn de Vries",
+      "archetype": "Keys",
+      "reliability": 0.72,
+      "skill": 0.78,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ams_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "ams_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "ams_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "amsterjam"
+    },
+    {
+      "id": "npc_ams_3",
+      "name": "Femke Roos",
+      "archetype": "Bassist",
+      "reliability": 0.75,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_ams_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "ams_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "ams_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "amsterjam"
+    },
+    {
+      "id": "ams_busker",
+      "name": "Bridge busker",
+      "townsfolk": true,
+      "town": "amsterjam",
+      "line": "A guitarist noodles on a bridge over the canal. \"Everything echoes off the water here, man.\""
+    },
+    {
+      "id": "ams_local",
+      "name": "Cafe regular",
+      "townsfolk": true,
+      "town": "amsterjam",
+      "line": "\"Cafe Bruin's always warm. The Houseboat on Canal Sessions is jazz - bring the brushes, not the distortion.\""
+    },
+    {
+      "id": "npc_tokyolo_booker",
+      "name": "Aiko",
+      "townsfolk": true,
+      "line": "Aiko books Liquid Hall. \"A record, a crowd, and punctuality. We run a tight night here.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "tok_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "tok_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "tok_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "tokyolo",
+      "perk": {
+        "type": "booking",
+        "venue": "tok_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_tok_1",
+      "name": "Mika Sato",
+      "archetype": "Vocalist",
+      "reliability": 0.73,
+      "skill": 0.79,
+      "genre": "pop",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_tok_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 12,
+      "potential": 85,
+      "schedule": {
+        "evening": {
+          "at": "tok_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "tok_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "tokyolo"
+    },
+    {
+      "id": "npc_tok_2",
+      "name": "Ren Takeda",
+      "archetype": "Keys",
+      "reliability": 0.72,
+      "skill": 0.78,
+      "genre": "electronic",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_tok_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "tok_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "tok_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "tokyolo"
+    },
+    {
+      "id": "npc_tok_3",
+      "name": "Yuki Mori",
+      "archetype": "Drummer",
+      "reliability": 0.76,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_tok_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "tok_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "tok_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "tokyolo"
+    },
+    {
+      "id": "tok_busker",
+      "name": "Underpass busker",
+      "townsfolk": true,
+      "town": "tokyolo",
+      "line": "A kid loops a synth under the overpass. \"In Tokyolo even the silence has a BPM.\""
+    },
+    {
+      "id": "tok_local",
+      "name": "Shibuya regular",
+      "townsfolk": true,
+      "town": "tokyolo",
+      "line": "\"Club Neon to start, Liquid Hall to rise. The Noise Floor on Static Alley is electronic - bring the gear.\""
+    },
+    {
+      "id": "npc_osanka_booker",
+      "name": "Goro",
+      "townsfolk": true,
+      "line": "Goro books Namba Dome. \"Bring a record and a rowdy crowd. Osanka likes it loud and a little stupid.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "osa_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "osa_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "osa_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "osanka",
+      "perk": {
+        "type": "booking",
+        "venue": "osa_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_osa_1",
+      "name": "Jiro Kan",
+      "archetype": "Guitarist",
+      "reliability": 0.7,
+      "skill": 0.8,
+      "genre": "metal",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_osa_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 13,
+      "potential": 86,
+      "schedule": {
+        "evening": {
+          "at": "osa_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "osa_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "osanka"
+    },
+    {
+      "id": "npc_osa_2",
+      "name": "Hana Ito",
+      "archetype": "Bassist",
+      "reliability": 0.74,
+      "skill": 0.73,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_osa_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 9,
+      "potential": 81,
+      "schedule": {
+        "evening": {
+          "at": "osa_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "osa_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "osanka"
+    },
+    {
+      "id": "npc_osa_3",
+      "name": "Tora Kimura",
+      "archetype": "Drummer",
+      "reliability": 0.76,
+      "skill": 0.71,
+      "genre": "rock",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_osa_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "osa_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "osa_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "osanka"
+    },
+    {
+      "id": "osa_busker",
+      "name": "Bridge busker",
+      "townsfolk": true,
+      "town": "osanka",
+      "line": "Someone shreds over the canal under the Glico sign. \"Tokyolo's polite. Osanka's fun.\""
+    },
+    {
+      "id": "osa_local",
+      "name": "Namba regular",
+      "townsfolk": true,
+      "town": "osanka",
+      "line": "\"Namba Rocks for the loud stuff. The Pit on Dotonbori Din is metal only - bring the heavy.\""
+    },
+    {
+      "id": "npc_kyodo_booker",
+      "name": "Emi",
+      "townsfolk": true,
+      "line": "Emi books Gion Hall. \"Bring a record and a respectful room. We keep it quiet and very good.\"",
+      "schedule": {
+        "afternoon": {
+          "at": "kyo_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "kyo_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kyo_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "kyodo",
+      "perk": {
+        "type": "booking",
+        "venue": "kyo_hall",
+        "minRapport": 45,
+        "payMult": 1.3
+      }
+    },
+    {
+      "id": "npc_kyo_1",
+      "name": "Haru Ono",
+      "archetype": "Keys",
+      "reliability": 0.73,
+      "skill": 0.78,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_kyo_1"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 11,
+      "potential": 84,
+      "schedule": {
+        "evening": {
+          "at": "kyo_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kyo_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "kyodo"
+    },
+    {
+      "id": "npc_kyo_2",
+      "name": "Nao Ueda",
+      "archetype": "Vocalist",
+      "reliability": 0.74,
+      "skill": 0.75,
+      "genre": "country",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_kyo_2"
+      },
+      "availability": [
+        "evening",
+        "late"
+      ],
+      "fame": 10,
+      "potential": 83,
+      "schedule": {
+        "evening": {
+          "at": "kyo_bar",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "late": {
+          "at": "kyo_bar",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "kyodo"
+    },
+    {
+      "id": "npc_kyo_3",
+      "name": "Sho Tanaka",
+      "archetype": "Guitarist",
+      "reliability": 0.75,
+      "skill": 0.72,
+      "genre": "jazz",
+      "requires": {
+        "practice": [
+          "food"
+        ],
+        "gig": [
+          "food",
+          "drink"
+        ]
+      },
+      "vices": [
+        "snacks"
+      ],
+      "recruitConditions": {
+        "flag": "met_npc_kyo_3"
+      },
+      "availability": [
+        "afternoon",
+        "evening"
+      ],
+      "fame": 8,
+      "potential": 80,
+      "schedule": {
+        "afternoon": {
+          "at": "kyo_venue",
+          "post": [
+            8,
+            2
+          ]
+        },
+        "evening": {
+          "at": "kyo_venue",
+          "post": [
+            8,
+            2
+          ]
+        }
+      },
+      "town": "kyodo"
+    },
+    {
+      "id": "kyo_busker",
+      "name": "Riverbank busker",
+      "townsfolk": true,
+      "town": "kyodo",
+      "line": "A picker plays something old by the river. \"The water keeps the time here.\""
+    },
+    {
+      "id": "kyo_local",
+      "name": "Old Town regular",
+      "townsfolk": true,
+      "town": "kyodo",
+      "line": "\"Kissa Blue for the jazz, Gion Hall when you've arrived. The Teahouse by the river is traditional strings - play gentle.\""
     }
   ]
 }

@@ -1,0 +1,84 @@
+{
+  "_comment": "The Strip \u2014 cost_angeles's district. Genre-locked metal room (cost_groove).",
+  "id": "cost_block",
+  "name": "The Strip",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "cost_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Tattoo parlor"
+    },
+    {
+      "id": "cost_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Liquor mart"
+    },
+    {
+      "id": "cost_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked Marshall cab"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Whiskey Glow",
+      "interact": "stage",
+      "venueId": "cost_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Strip",
+      "interact": "enter",
+      "to": "cost_angeles",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#2c1e22",
+    "floorB": "#24181b",
+    "floorEdge": "#4a3339",
+    "bldgL": "#422c38",
+    "bldgR": "#382630",
+    "bldgTop": "#281b22"
+  }
+}

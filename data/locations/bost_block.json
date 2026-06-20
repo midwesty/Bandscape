@@ -1,0 +1,108 @@
+{
+  "_comment": "The Wharf \u2014 bostone's district. Genre-locked metal room (bost_groove).",
+  "id": "bost_block",
+  "name": "The Wharf",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "bost_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old fish house"
+    },
+    {
+      "id": "bost_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Dockside warehouse"
+    },
+    {
+      "id": "bost_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Lobster traps"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Tide Room",
+      "interact": "stage",
+      "venueId": "bost_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Common",
+      "interact": "enter",
+      "to": "bostone",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "lake",
+        "from": {
+          "x": 0,
+          "y": 8
+        },
+        "to": {
+          "x": 11,
+          "y": 8
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 7,
+        "x1": 11,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#23262c",
+    "floorB": "#1c1f24",
+    "floorEdge": "#3b404a",
+    "bldgL": "#333842",
+    "bldgR": "#2c3038",
+    "bldgTop": "#1f2228",
+    "waterA": "#1c4a5e",
+    "waterB": "#163b4b",
+    "waterEdge": "#2b7291"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "_comment": "The Bay Lights \u2014 san_flamenco's district. Genre-locked electronic room (sanf_groove).",
+  "id": "sanf_block",
+  "name": "The Bay Lights",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "sanf_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old ferry terminal"
+    },
+    {
+      "id": "sanf_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Pier warehouse"
+    },
+    {
+      "id": "sanf_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked shipping crates"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Foglab",
+      "interact": "stage",
+      "venueId": "sanf_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Bay",
+      "interact": "enter",
+      "to": "san_flamenco",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "lake",
+        "from": {
+          "x": 0,
+          "y": 8
+        },
+        "to": {
+          "x": 11,
+          "y": 8
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 7,
+        "x1": 11,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#1a2630",
+    "floorB": "#151f27",
+    "floorEdge": "#2c4051",
+    "bldgL": "#283d46",
+    "bldgR": "#22343c",
+    "bldgTop": "#18252b",
+    "waterA": "#163e6e",
+    "waterB": "#113158",
+    "waterEdge": "#2260aa"
+  }
+}

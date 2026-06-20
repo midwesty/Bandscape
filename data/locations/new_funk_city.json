@@ -1,0 +1,241 @@
+{
+  "_comment": "New Funk City \u2014 first East-Coast anchor (cluster east_coast). Funk/soul/boogie step-up town: open groove bar, a soul theater step-up, and a genre-locked funk block (The Boogie Block). City-skinned clones of the shared templates with a purple-and-gold skin.",
+  "id": "new_funk_city",
+  "name": "New Funk City \u2014 Groove Row",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "facade_a",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Brownstone"
+    },
+    {
+      "id": "facade_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Shuttered storefront"
+    },
+    {
+      "id": "facade_c",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 7
+      },
+      "solid": true,
+      "name": "Walk-up flats"
+    },
+    {
+      "id": "busker_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "nf_busker",
+      "name": "Sidewalk bassist",
+      "tile": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "id": "local_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "nf_local",
+      "name": "Block regular",
+      "tile": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "exits": [
+    {
+      "id": "venue",
+      "name": "The Soul Cellar",
+      "interact": "enter",
+      "to": "newfunk_venue",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "venue",
+      "tile": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "id": "bar",
+      "name": "The Pocket",
+      "interact": "enter",
+      "to": "newfunk_bar",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "bar",
+      "tile": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "id": "musicstore",
+      "name": "Brass & Reed Music",
+      "interact": "enter",
+      "to": "musicstore",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "music",
+      "tile": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "id": "records",
+      "name": "Crate Diggers",
+      "interact": "enter",
+      "to": "records",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "id": "arcade",
+      "name": "Tokens Funkade",
+      "interact": "enter",
+      "to": "newfunk_arcade",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "arcade",
+      "tile": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "id": "diner",
+      "name": "Chrome Car Diner",
+      "interact": "diner",
+      "build": "diner",
+      "tile": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "id": "hotel",
+      "name": "Hotel Boogaloo",
+      "interact": "hotel",
+      "build": "hotel",
+      "tile": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "id": "apt",
+      "name": "Groove Row Walk-up",
+      "interact": "property",
+      "to": "newfunk_apt",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 7,
+        "y": 7
+      },
+      "propertyId": "apt_newfunk"
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "interact": "bus",
+      "to": "town",
+      "tile": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "id": "district",
+      "name": "The Boogie Block \u25b8",
+      "interact": "enter",
+      "to": "newfunk_block",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 11,
+          "y": 4
+        }
+      },
+      {
+        "id": "cross",
+        "from": {
+          "x": 6,
+          "y": 0
+        },
+        "to": {
+          "x": 6,
+          "y": 8
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 3,
+      "dog": false,
+      "pedestrians": 4
+    }
+  },
+  "palette": {
+    "floorA": "#221830",
+    "floorB": "#1b1326",
+    "floorEdge": "#3a2a52",
+    "bldgL": "#2c2040",
+    "bldgR": "#211830",
+    "bldgTop": "#160f22"
+  }
+}

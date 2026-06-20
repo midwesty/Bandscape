@@ -180,6 +180,258 @@
         "Decorate it like home"
       ],
       "blurb": "A proper tour bus - a furnished home on wheels. Buy it outright or lease by the month, like any place you'd live."
+    },
+    {
+      "id": "apt_newfunk",
+      "name": "Groove Row Walk-up",
+      "tagline": "Groove Row Pad",
+      "location": "newfunk_apt",
+      "city": "new_funk_city",
+      "tier": "decent",
+      "buyPrice": 11000,
+      "rentPrice": 800,
+      "sellValue": 8000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "A brownstone walk-up off Groove Row. Your bolt-hole in New Funk City - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_bostone",
+      "name": "Beacon Walk-up",
+      "tagline": "The Common Pad",
+      "location": "bost_apt",
+      "city": "bostone",
+      "tier": "decent",
+      "buyPrice": 11000,
+      "rentPrice": 800,
+      "sellValue": 8000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Bostone - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_jamlanta",
+      "name": "Peachtree Walk-up",
+      "tagline": "The Peach Pad",
+      "location": "jam_apt",
+      "city": "jamlanta",
+      "tier": "decent",
+      "buyPrice": 11000,
+      "rentPrice": 800,
+      "sellValue": 8000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Jamlanta - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_cost_angeles",
+      "name": "Laurel Walk-up",
+      "tagline": "The Strip Pad",
+      "location": "cost_apt",
+      "city": "cost_angeles",
+      "tier": "decent",
+      "buyPrice": 13000,
+      "rentPrice": 950,
+      "sellValue": 9500,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Cost Angeles - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_porthole",
+      "name": "Hawthorne Walk-up",
+      "tagline": "The Riverfront Pad",
+      "location": "port_apt",
+      "city": "porthole",
+      "tier": "decent",
+      "buyPrice": 13000,
+      "rentPrice": 950,
+      "sellValue": 9500,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Porthole - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_san_flamenco",
+      "name": "Mission Walk-up",
+      "tagline": "The Bay Pad",
+      "location": "sanf_apt",
+      "city": "san_flamenco",
+      "tier": "decent",
+      "buyPrice": 13000,
+      "rentPrice": 950,
+      "sellValue": 9500,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in San Flamenco - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_londrum",
+      "name": "Estate Flat",
+      "tagline": "The Estate Pad",
+      "location": "lon_apt",
+      "city": "londrum",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Londrum - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_berlinn",
+      "name": "Mitte Flat",
+      "tagline": "The Mitte Pad",
+      "location": "ber_apt",
+      "city": "berlinn",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Berlinn - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_amsterjam",
+      "name": "Canal Flat",
+      "tagline": "The Canals Pad",
+      "location": "ams_apt",
+      "city": "amsterjam",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Amsterjam - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_tokyolo",
+      "name": "Crossing Flat",
+      "tagline": "The Crossing Pad",
+      "location": "tok_apt",
+      "city": "tokyolo",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Tokyolo - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_osanka",
+      "name": "Dotonbori Flat",
+      "tagline": "Dotonbori Pad",
+      "location": "osa_apt",
+      "city": "osanka",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Osanka - sleep, store gear, make it yours."
+    },
+    {
+      "id": "apt_kyodo",
+      "name": "Old Town Flat",
+      "tagline": "Old Town Pad",
+      "location": "kyo_apt",
+      "city": "kyodo",
+      "tier": "decent",
+      "buyPrice": 16000,
+      "rentPrice": 1200,
+      "sellValue": 12000,
+      "gearSlots": 8,
+      "startsControlled": "none",
+      "photo": "",
+      "amenities": [
+        "Bed",
+        "Fridge",
+        "Storage crate",
+        "Laptop / DAW"
+      ],
+      "blurb": "Your bolt-hole in Kyodo - sleep, store gear, make it yours."
     }
   ]
 }

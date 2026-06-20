@@ -1,0 +1,241 @@
+{
+  "_comment": "Jamlanta \u2014 Southern hip-hop & soul capital (cluster east_coast). Gold teeth, 808s, peach light. Open soul bar, Peachtree Hall step-up, and a trap district (The Bando).",
+  "id": "jamlanta",
+  "name": "Jamlanta \u2014 The Peach",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "facade_a",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Brownstone"
+    },
+    {
+      "id": "facade_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Shuttered storefront"
+    },
+    {
+      "id": "facade_c",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 7
+      },
+      "solid": true,
+      "name": "Walk-up flats"
+    },
+    {
+      "id": "busker_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "jam_busker",
+      "name": "Corner rapper",
+      "tile": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "id": "local_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "jam_local",
+      "name": "Block regular",
+      "tile": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "exits": [
+    {
+      "id": "venue",
+      "name": "Peachtree Hall",
+      "interact": "enter",
+      "to": "jam_venue",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "venue",
+      "tile": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "id": "bar",
+      "name": "The Honeycomb",
+      "interact": "enter",
+      "to": "jam_bar",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "bar",
+      "tile": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "id": "musicstore",
+      "name": "Sweet Auburn Music",
+      "interact": "enter",
+      "to": "musicstore",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "music",
+      "tile": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "id": "records",
+      "name": "Crate Royalty",
+      "interact": "enter",
+      "to": "records",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "id": "arcade",
+      "name": "Tokens & Tings",
+      "interact": "enter",
+      "to": "jam_arcade",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "arcade",
+      "tile": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "id": "diner",
+      "name": "Waffle Spot",
+      "interact": "diner",
+      "build": "diner",
+      "tile": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "id": "hotel",
+      "name": "Hotel Peachy",
+      "interact": "hotel",
+      "build": "hotel",
+      "tile": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "id": "apt",
+      "name": "Peachtree Walk-up",
+      "interact": "property",
+      "to": "jam_apt",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 7,
+        "y": 7
+      },
+      "propertyId": "apt_jamlanta"
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "interact": "bus",
+      "to": "town",
+      "tile": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "id": "district",
+      "name": "The Bando \u25b8",
+      "interact": "enter",
+      "to": "jam_block",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 11,
+          "y": 4
+        }
+      },
+      {
+        "id": "cross",
+        "from": {
+          "x": 6,
+          "y": 0
+        },
+        "to": {
+          "x": 6,
+          "y": 8
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 3,
+      "dog": false,
+      "pedestrians": 4
+    }
+  },
+  "palette": {
+    "floorA": "#2e2418",
+    "floorB": "#251d13",
+    "floorEdge": "#4e3d28",
+    "bldgL": "#44331e",
+    "bldgR": "#3a2c1a",
+    "bldgTop": "#291f12"
+  }
+}

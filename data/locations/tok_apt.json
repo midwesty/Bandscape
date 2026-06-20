@@ -1,0 +1,127 @@
+{
+  "_comment": "Crossing Flat",
+  "id": "tok_apt",
+  "name": "Crossing Flat",
+  "size": {
+    "w": 8,
+    "h": 6
+  },
+  "ambient": "warm_dim",
+  "objects": [
+    {
+      "id": "bed",
+      "name": "Bed",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/bed.png",
+      "interact": "sleep"
+    },
+    {
+      "id": "fridge",
+      "name": "Fridge",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "sprite": "assets/img/objects/fridge.png",
+      "interact": "fridge",
+      "containerId": "fridge"
+    },
+    {
+      "id": "crate",
+      "name": "Storage Crate",
+      "tile": {
+        "x": 6,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/crate.png",
+      "interact": "container",
+      "containerId": "storage"
+    },
+    {
+      "id": "laptop",
+      "name": "Laptop",
+      "tile": {
+        "x": 3,
+        "y": 4
+      },
+      "sprite": "assets/img/objects/laptop.png",
+      "interact": "daw"
+    },
+    {
+      "id": "pd_tok_apt_futon",
+      "name": "Futon",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "futon",
+      "sprite": "assets/img/objects/decor/futon.png"
+    },
+    {
+      "id": "pd_tok_apt_lava",
+      "name": "Lava Lamp",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "lava_lamp",
+      "sprite": "assets/img/objects/decor/lava_lamp.png"
+    },
+    {
+      "id": "pd_tok_apt_poster",
+      "name": "Band Poster",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "band_poster",
+      "sprite": "assets/img/objects/decor/band_poster.png"
+    },
+    {
+      "id": "pd_tok_apt_succ",
+      "name": "Succulents",
+      "tile": {
+        "x": 6,
+        "y": 2
+      },
+      "decorId": "succulent_set",
+      "sprite": "assets/img/objects/decor/succulent_set.png"
+    },
+    {
+      "id": "pd_tok_apt_mat",
+      "name": "Floor Mat",
+      "tile": {
+        "x": 1,
+        "y": 3
+      },
+      "decorId": "vinyl_mat",
+      "sprite": "assets/img/objects/decor/vinyl_mat.png"
+    }
+  ],
+  "exits": [
+    {
+      "id": "door",
+      "name": "Out to The Crossing",
+      "tile": {
+        "x": 4,
+        "y": 5
+      },
+      "to": "tokyolo",
+      "spawn": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#281c2c",
+    "floorB": "#201624",
+    "floorEdge": "#442f4a",
+    "bldgL": "#3b2842",
+    "bldgR": "#322238",
+    "bldgTop": "#241828"
+  }
+}

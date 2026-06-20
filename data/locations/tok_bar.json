@@ -1,0 +1,123 @@
+{
+  "_comment": "Club Neon",
+  "id": "tok_bar",
+  "name": "Club Neon",
+  "size": {
+    "w": 12,
+    "h": 8
+  },
+  "ambient": "dive_bar",
+  "objects": [
+    {
+      "id": "pd_tok_bar_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_tok_bar_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_tok_bar_string_lights",
+      "name": "String Lights",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "string_lights",
+      "sprite": "assets/img/objects/decor/string_lights.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_tok_bar_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 7,
+        "y": 1
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_tok_bar_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 4,
+        "y": 1
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_tok_bar_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Stage",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "interact": "stage",
+      "venueId": "tok_pocket",
+      "solid": true
+    },
+    {
+      "id": "pool_table",
+      "name": "Pool Table",
+      "tile": {
+        "x": 9,
+        "y": 2
+      },
+      "interact": "flavor",
+      "solid": true,
+      "flavor": "A worn pool table, racked and waiting. (Playable once we drop the real game in.)"
+    },
+    {
+      "id": "out",
+      "name": "Exit to The Crossing",
+      "tile": {
+        "x": 6,
+        "y": 7
+      },
+      "to": "tokyolo",
+      "spawn": {
+        "x": 6,
+        "y": 2
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#281c2c",
+    "floorB": "#201624",
+    "floorEdge": "#442f4a",
+    "bldgL": "#3b2842",
+    "bldgR": "#322238",
+    "bldgTop": "#241828"
+  }
+}

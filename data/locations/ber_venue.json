@@ -1,0 +1,101 @@
+{
+  "_comment": "Funkhall",
+  "id": "ber_venue",
+  "name": "Funkhall",
+  "size": {
+    "w": 10,
+    "h": 7
+  },
+  "ambient": "dive_bar",
+  "objects": [
+    {
+      "id": "pd_ber_venue_neon_sign",
+      "name": "Neon Sign",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "decorId": "neon_sign",
+      "sprite": "assets/img/objects/decor/neon_sign.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_ber_venue_disco_ball",
+      "name": "Disco Ball",
+      "tile": {
+        "x": 2,
+        "y": 1
+      },
+      "decorId": "disco_ball",
+      "sprite": "assets/img/objects/decor/disco_ball.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_ber_venue_leather_sofa",
+      "name": "Leather Sofa",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "decorId": "leather_sofa",
+      "sprite": "assets/img/objects/decor/leather_sofa.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_ber_venue_bar_booth",
+      "name": "Bar Booth",
+      "tile": {
+        "x": 3,
+        "y": 1
+      },
+      "decorId": "bar_booth",
+      "sprite": "assets/img/objects/decor/bar_booth.png",
+      "exclusive": true
+    },
+    {
+      "id": "pd_ber_venue_cafe_table",
+      "name": "Cafe Table",
+      "tile": {
+        "x": 1,
+        "y": 2
+      },
+      "decorId": "cafe_table",
+      "sprite": "assets/img/objects/decor/cafe_table.png",
+      "exclusive": true
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Stage",
+      "tile": {
+        "x": 5,
+        "y": 1
+      },
+      "interact": "stage",
+      "solid": true,
+      "venueId": "ber_hall"
+    },
+    {
+      "id": "out",
+      "name": "Exit to The Mitte",
+      "tile": {
+        "x": 5,
+        "y": 6
+      },
+      "to": "berlinn",
+      "spawn": {
+        "x": 9,
+        "y": 2
+      }
+    }
+  ],
+  "palette": {
+    "floorA": "#26282a",
+    "floorB": "#1f2022",
+    "floorEdge": "#404447",
+    "bldgL": "#383b3d",
+    "bldgR": "#303234",
+    "bldgTop": "#222425"
+  }
+}

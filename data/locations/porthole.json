@@ -1,0 +1,241 @@
+{
+  "_comment": "Porthole \u2014 rainy West-Coast indie/folk town (cluster west_coast). Flannel, coffee, moss, DIY everything. Open indie bar, the Aladdinn step-up, and a folk waterfront district.",
+  "id": "porthole",
+  "name": "Porthole \u2014 The Riverfront",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "facade_a",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Brownstone"
+    },
+    {
+      "id": "facade_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Shuttered storefront"
+    },
+    {
+      "id": "facade_c",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 7
+      },
+      "solid": true,
+      "name": "Walk-up flats"
+    },
+    {
+      "id": "busker_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "port_busker",
+      "name": "Fingerpicker",
+      "tile": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "id": "local_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "port_local",
+      "name": "Flannel regular",
+      "tile": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "exits": [
+    {
+      "id": "venue",
+      "name": "The Aladdinn",
+      "interact": "enter",
+      "to": "port_venue",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "venue",
+      "tile": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "id": "bar",
+      "name": "The Knotty Pine",
+      "interact": "enter",
+      "to": "port_bar",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "bar",
+      "tile": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "id": "musicstore",
+      "name": "Old Growth Music",
+      "interact": "enter",
+      "to": "musicstore",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "music",
+      "tile": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "id": "records",
+      "name": "Mossback Records",
+      "interact": "enter",
+      "to": "records",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "id": "arcade",
+      "name": "Pinball Parlor",
+      "interact": "enter",
+      "to": "port_arcade",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "arcade",
+      "tile": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "id": "diner",
+      "name": "The Overcast Cafe",
+      "interact": "diner",
+      "build": "diner",
+      "tile": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "id": "hotel",
+      "name": "The Benson-ish",
+      "interact": "hotel",
+      "build": "hotel",
+      "tile": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "id": "apt",
+      "name": "Hawthorne Walk-up",
+      "interact": "property",
+      "to": "port_apt",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 7,
+        "y": 7
+      },
+      "propertyId": "apt_porthole"
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "interact": "bus",
+      "to": "town",
+      "tile": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "id": "district",
+      "name": "The Riverfront \u25b8",
+      "interact": "enter",
+      "to": "port_block",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 11,
+          "y": 4
+        }
+      },
+      {
+        "id": "cross",
+        "from": {
+          "x": 6,
+          "y": 0
+        },
+        "to": {
+          "x": 6,
+          "y": 8
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 3,
+      "dog": false,
+      "pedestrians": 4
+    }
+  },
+  "palette": {
+    "floorA": "#1c2620",
+    "floorB": "#161f1a",
+    "floorEdge": "#2f4036",
+    "bldgL": "#283831",
+    "bldgR": "#22302a",
+    "bldgTop": "#18221e"
+  }
+}

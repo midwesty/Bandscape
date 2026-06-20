@@ -1,0 +1,108 @@
+{
+  "_comment": "Old Town Strings \u2014 genre-locked country room (kyo_groove).",
+  "id": "kyo_block",
+  "name": "Old Town Strings",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "kyo_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old machiya house"
+    },
+    {
+      "id": "kyo_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Tea warehouse"
+    },
+    {
+      "id": "kyo_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked koto cases"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Teahouse",
+      "interact": "stage",
+      "venueId": "kyo_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to Old Town",
+      "interact": "enter",
+      "to": "kyodo",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "waterLanes": [
+      {
+        "id": "lake",
+        "from": {
+          "x": 0,
+          "y": 8
+        },
+        "to": {
+          "x": 11,
+          "y": 8
+        }
+      }
+    ],
+    "water": [
+      {
+        "x0": 0,
+        "y0": 7,
+        "x1": 11,
+        "y1": 8
+      }
+    ],
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#22281c",
+    "floorB": "#1b2016",
+    "floorEdge": "#39442f",
+    "bldgL": "#363d2a",
+    "bldgR": "#2e3424",
+    "bldgTop": "#212519",
+    "waterA": "#1c4a44",
+    "waterB": "#163b36",
+    "waterEdge": "#2b7269"
+  }
+}

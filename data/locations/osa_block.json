@@ -1,0 +1,84 @@
+{
+  "_comment": "Dotonbori Din \u2014 genre-locked metal room (osa_groove).",
+  "id": "osa_block",
+  "name": "Dotonbori Din",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "osa_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Old kuidaore hall"
+    },
+    {
+      "id": "osa_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Pachinko tower"
+    },
+    {
+      "id": "osa_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked cabs"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The Pit",
+      "interact": "stage",
+      "venueId": "osa_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to Dotonbori",
+      "interact": "enter",
+      "to": "osanka",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#2a1a1a",
+    "floorB": "#221515",
+    "floorEdge": "#472c2c",
+    "bldgL": "#3d2424",
+    "bldgR": "#341f1f",
+    "bldgTop": "#251616"
+  }
+}

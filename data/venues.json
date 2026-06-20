@@ -340,6 +340,702 @@
         "minReleases": 1
       },
       "blurb": "A hip-hop spot in a converted drydock. Bars only - bring yours."
+    },
+    "nf_pocket": {
+      "name": "The Pocket",
+      "town": "new_funk_city",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "funk",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "New Funk City's open groove bar - a real step up from the basements. Any band with a demo can grab a late slot and find the pocket."
+    },
+    "nf_cellar": {
+      "name": "The Soul Cellar",
+      "town": "new_funk_city",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_newfunk_booker",
+        "name": "Roz",
+        "role": "The Soul Cellar's booker"
+      },
+      "blurb": "A velvet-seat soul theater. Roz books touring-grade acts - bring a record, a crowd, and some buzz."
+    },
+    "nf_boogie": {
+      "name": "The Groove Room",
+      "town": "new_funk_city",
+      "open": false,
+      "genre": "funk",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "A neon basement on The Boogie Block. Funk acts only - bring the groove."
+    },
+    "bost_pocket": {
+      "name": "The Rathskeller",
+      "town": "bostone",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Rathskeller - the open room. Any band with a demo can grab a late slot."
+    },
+    "bost_hall": {
+      "name": "The Brick House",
+      "town": "bostone",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_bostone_booker",
+        "name": "Sully",
+        "role": "The Brick House's booker"
+      },
+      "blurb": "The Brick House - Sully books touring-grade acts. Bring a record, a crowd, and buzz."
+    },
+    "bost_groove": {
+      "name": "The Tide Room",
+      "town": "bostone",
+      "open": false,
+      "genre": "metal",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Tide Room on The Wharf. Metal acts only."
+    },
+    "jam_pocket": {
+      "name": "The Honeycomb",
+      "town": "jamlanta",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "soul",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Honeycomb - the open room. Any band with a demo can grab a late slot."
+    },
+    "jam_hall": {
+      "name": "Peachtree Hall",
+      "town": "jamlanta",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_jamlanta_booker",
+        "name": "Keish",
+        "role": "Peachtree Hall's booker"
+      },
+      "blurb": "Peachtree Hall - Keish books touring-grade acts. Bring a record, a crowd, and buzz."
+    },
+    "jam_groove": {
+      "name": "The 808 Room",
+      "town": "jamlanta",
+      "open": false,
+      "genre": "hiphop",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The 808 Room on The Bando. Hiphop acts only."
+    },
+    "cost_pocket": {
+      "name": "The Troubadont",
+      "town": "cost_angeles",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "pop",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Troubadont - the open room. Any band with a demo can grab a late slot."
+    },
+    "cost_hall": {
+      "name": "The Echo Chamber",
+      "town": "cost_angeles",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_cost_angeles_booker",
+        "name": "Brandi",
+        "role": "The Echo Chamber's booker"
+      },
+      "blurb": "The Echo Chamber - Brandi books touring-grade acts. Bring a record, a crowd, and buzz."
+    },
+    "cost_groove": {
+      "name": "The Whiskey Glow",
+      "town": "cost_angeles",
+      "open": false,
+      "genre": "metal",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Whiskey Glow on The Strip. Metal acts only."
+    },
+    "port_pocket": {
+      "name": "The Knotty Pine",
+      "town": "porthole",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Knotty Pine - the open room. Any band with a demo can grab a late slot."
+    },
+    "port_hall": {
+      "name": "The Aladdinn",
+      "town": "porthole",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_porthole_booker",
+        "name": "Wren",
+        "role": "The Aladdinn's booker"
+      },
+      "blurb": "The Aladdinn - Wren books touring-grade acts. Bring a record, a crowd, and buzz."
+    },
+    "port_groove": {
+      "name": "The Foghorn",
+      "town": "porthole",
+      "open": false,
+      "genre": "country",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Foghorn on The Riverfront. Country acts only."
+    },
+    "sanf_pocket": {
+      "name": "The Fillmost",
+      "town": "san_flamenco",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Fillmost - the open room. Any band with a demo can grab a late slot."
+    },
+    "sanf_hall": {
+      "name": "Golden Gate Hall",
+      "town": "san_flamenco",
+      "open": false,
+      "drawMult": 2.4,
+      "payMult": 1.3,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 300,
+        "minBuzz": 30
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_san_flamenco_booker",
+        "name": "Marisol",
+        "role": "Golden Gate Hall's booker"
+      },
+      "blurb": "Golden Gate Hall - Marisol books touring-grade acts. Bring a record, a crowd, and buzz."
+    },
+    "sanf_groove": {
+      "name": "The Foglab",
+      "town": "san_flamenco",
+      "open": false,
+      "genre": "electronic",
+      "genreLock": true,
+      "drawMult": 1.8,
+      "payMult": 1.2,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Foglab on The Bay Lights. Electronic acts only."
+    },
+    "lon_pocket": {
+      "name": "The Crown & Anchor",
+      "town": "londrum",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "pop",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "The Crown & Anchor - the open room. Any band with a demo can grab a late slot."
+    },
+    "lon_hall": {
+      "name": "Brixton Hall",
+      "town": "londrum",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_londrum_booker",
+        "name": "Nigel",
+        "role": "Brixton Hall's booker"
+      },
+      "blurb": "Brixton Hall - Nigel books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "lon_groove": {
+      "name": "The Underworld",
+      "town": "londrum",
+      "open": false,
+      "genre": "rock",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Underworld on Camden Crawl. Rock acts only."
+    },
+    "ber_pocket": {
+      "name": "Klub 36",
+      "town": "berlinn",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Klub 36 - the open room. Any band with a demo can grab a late slot."
+    },
+    "ber_hall": {
+      "name": "Funkhall",
+      "town": "berlinn",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_berlinn_booker",
+        "name": "Heike",
+        "role": "Funkhall's booker"
+      },
+      "blurb": "Funkhall - Heike books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "ber_groove": {
+      "name": "The Vault",
+      "town": "berlinn",
+      "open": false,
+      "genre": "electronic",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Vault on Bunker Block. Electronic acts only."
+    },
+    "ams_pocket": {
+      "name": "Cafe Bruin",
+      "town": "amsterjam",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Cafe Bruin - the open room. Any band with a demo can grab a late slot."
+    },
+    "ams_hall": {
+      "name": "The Melkhuis",
+      "town": "amsterjam",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_amsterjam_booker",
+        "name": "Joost",
+        "role": "The Melkhuis's booker"
+      },
+      "blurb": "The Melkhuis - Joost books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "ams_groove": {
+      "name": "The Houseboat",
+      "town": "amsterjam",
+      "open": false,
+      "genre": "jazz",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Houseboat on Canal Sessions. Jazz acts only."
+    },
+    "tok_pocket": {
+      "name": "Club Neon",
+      "town": "tokyolo",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "pop",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Club Neon - the open room. Any band with a demo can grab a late slot."
+    },
+    "tok_hall": {
+      "name": "Liquid Hall",
+      "town": "tokyolo",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_tokyolo_booker",
+        "name": "Aiko",
+        "role": "Liquid Hall's booker"
+      },
+      "blurb": "Liquid Hall - Aiko books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "tok_groove": {
+      "name": "The Noise Floor",
+      "town": "tokyolo",
+      "open": false,
+      "genre": "electronic",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Noise Floor on Static Alley. Electronic acts only."
+    },
+    "osa_pocket": {
+      "name": "Namba Rocks",
+      "town": "osanka",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "rock",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Namba Rocks - the open room. Any band with a demo can grab a late slot."
+    },
+    "osa_hall": {
+      "name": "Namba Dome",
+      "town": "osanka",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_osanka_booker",
+        "name": "Goro",
+        "role": "Namba Dome's booker"
+      },
+      "blurb": "Namba Dome - Goro books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "osa_groove": {
+      "name": "The Pit",
+      "town": "osanka",
+      "open": false,
+      "genre": "metal",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Pit on Dotonbori Din. Metal acts only."
+    },
+    "kyo_pocket": {
+      "name": "Kissa Blue",
+      "town": "kyodo",
+      "open": true,
+      "drawMult": 1.5,
+      "req": {},
+      "genre": "jazz",
+      "days": [
+        "WE",
+        "TH",
+        "FR"
+      ],
+      "slot": "late",
+      "blurb": "Kissa Blue - the open room. Any band with a demo can grab a late slot."
+    },
+    "kyo_hall": {
+      "name": "Gion Hall",
+      "town": "kyodo",
+      "open": false,
+      "drawMult": 2.6,
+      "payMult": 1.4,
+      "days": [
+        "TH",
+        "FR",
+        "SA"
+      ],
+      "slot": "evening",
+      "req": {
+        "minReleases": 1,
+        "minFans": 400,
+        "minBuzz": 40
+      },
+      "billSlots": 3,
+      "booker": {
+        "id": "npc_kyodo_booker",
+        "name": "Emi",
+        "role": "Gion Hall's booker"
+      },
+      "blurb": "Gion Hall - Emi books touring-grade acts overseas. Bring a record, a crowd, and buzz."
+    },
+    "kyo_groove": {
+      "name": "The Teahouse",
+      "town": "kyodo",
+      "open": false,
+      "genre": "country",
+      "genreLock": true,
+      "drawMult": 2.0,
+      "payMult": 1.3,
+      "days": [
+        "FR",
+        "SA"
+      ],
+      "slot": "late",
+      "req": {
+        "minReleases": 1
+      },
+      "blurb": "The Teahouse on Old Town Strings. Country acts only."
     }
   }
 }

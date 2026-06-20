@@ -1,0 +1,84 @@
+{
+  "_comment": "The Bando \u2014 jamlanta's district. Genre-locked hiphop room (jam_groove).",
+  "id": "jam_block",
+  "name": "The Bando",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "jam_wa",
+      "build": "store",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Boarded-up duplex"
+    },
+    {
+      "id": "jam_wb",
+      "build": "general",
+      "tile": {
+        "x": 10,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Corner store"
+    },
+    {
+      "id": "jam_wstack",
+      "build": "general",
+      "tile": {
+        "x": 8,
+        "y": 2
+      },
+      "solid": true,
+      "name": "Stacked subs"
+    }
+  ],
+  "exits": [
+    {
+      "id": "stage",
+      "name": "The 808 Room",
+      "interact": "stage",
+      "venueId": "jam_groove",
+      "tile": {
+        "x": 5,
+        "y": 2
+      },
+      "solid": true
+    },
+    {
+      "id": "out",
+      "name": "Back to The Peach",
+      "interact": "enter",
+      "to": "jamlanta",
+      "spawn": {
+        "x": 3,
+        "y": 3
+      },
+      "tile": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  ],
+  "world": {
+    "ambient": {
+      "boats": 2,
+      "pedestrians": 3,
+      "cars": 0
+    }
+  },
+  "palette": {
+    "floorA": "#2a1f26",
+    "floorB": "#22191f",
+    "floorEdge": "#473440",
+    "bldgL": "#3d2c44",
+    "bldgR": "#34263a",
+    "bldgTop": "#251b29"
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "_comment": "San Flamenco \u2014 foggy West-Coast psych/electronic city (cluster west_coast). Hills, fog, neon, and money. Open psych-rock bar, Golden Gate Hall step-up, and an electronic Bay-Lights district.",
+  "id": "san_flamenco",
+  "name": "San Flamenco \u2014 The Bay",
+  "size": {
+    "w": 12,
+    "h": 9
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "facade_a",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Brownstone"
+    },
+    {
+      "id": "facade_b",
+      "build": "store",
+      "tile": {
+        "x": 11,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Shuttered storefront"
+    },
+    {
+      "id": "facade_c",
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 7
+      },
+      "solid": true,
+      "name": "Walk-up flats"
+    },
+    {
+      "id": "busker_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "sanf_busker",
+      "name": "Hill-street busker",
+      "tile": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "id": "local_flam",
+      "flavorNpc": true,
+      "interact": "flavor",
+      "npcId": "sanf_local",
+      "name": "Foghead regular",
+      "tile": {
+        "x": 7,
+        "y": 6
+      }
+    }
+  ],
+  "exits": [
+    {
+      "id": "venue",
+      "name": "Golden Gate Hall",
+      "interact": "enter",
+      "to": "sanf_venue",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "venue",
+      "tile": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "id": "bar",
+      "name": "The Fillmost",
+      "interact": "enter",
+      "to": "sanf_bar",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "bar",
+      "tile": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "id": "musicstore",
+      "name": "Haight St. Music",
+      "interact": "enter",
+      "to": "musicstore",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "music",
+      "tile": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "id": "records",
+      "name": "Fog City Records",
+      "interact": "enter",
+      "to": "records",
+      "spawn": {
+        "x": 4,
+        "y": 5
+      },
+      "build": "records",
+      "tile": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "id": "arcade",
+      "name": "The Pinball Museum-ish",
+      "interact": "enter",
+      "to": "sanf_arcade",
+      "spawn": {
+        "x": 5,
+        "y": 6
+      },
+      "build": "arcade",
+      "tile": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "id": "diner",
+      "name": "The Fog Cutter Cafe",
+      "interact": "diner",
+      "build": "diner",
+      "tile": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "id": "hotel",
+      "name": "The Phelan-ish",
+      "interact": "hotel",
+      "build": "hotel",
+      "tile": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "id": "apt",
+      "name": "Mission Walk-up",
+      "interact": "property",
+      "to": "sanf_apt",
+      "spawn": {
+        "x": 4,
+        "y": 6
+      },
+      "build": "apartment",
+      "tile": {
+        "x": 7,
+        "y": 7
+      },
+      "propertyId": "apt_san_flamenco"
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop",
+      "interact": "bus",
+      "to": "town",
+      "tile": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "id": "district",
+      "name": "The Bay \u25b8",
+      "interact": "enter",
+      "to": "sanf_block",
+      "spawn": {
+        "x": 2,
+        "y": 3
+      },
+      "build": "general",
+      "tile": {
+        "x": 0,
+        "y": 5
+      }
+    }
+  ],
+  "world": {
+    "roads": [
+      {
+        "id": "main",
+        "from": {
+          "x": 0,
+          "y": 4
+        },
+        "to": {
+          "x": 11,
+          "y": 4
+        }
+      },
+      {
+        "id": "cross",
+        "from": {
+          "x": 6,
+          "y": 0
+        },
+        "to": {
+          "x": 6,
+          "y": 8
+        }
+      }
+    ],
+    "ambient": {
+      "cars": 3,
+      "dog": false,
+      "pedestrians": 4
+    }
+  },
+  "palette": {
+    "floorA": "#182a2e",
+    "floorB": "#132225",
+    "floorEdge": "#28474e",
+    "bldgL": "#214244",
+    "bldgR": "#1c383a",
+    "bldgTop": "#142829"
+  }
+}
