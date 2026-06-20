@@ -751,6 +751,7 @@ export function payPayroll(cover) {
 export function regionDef(id) { return ((DATA.regions && DATA.regions.regions) || {})[id] || null; }
 export function cityDef(id) { return ((DATA.regions && DATA.regions.cities) || {})[id] || null; }
 export function cityCluster(id) { const c = ((DATA.regions && DATA.regions.cities) || {})[id] || {}; return c.cluster || "home"; }
+export function cityRegion(id) { const c = ((DATA.regions && DATA.regions.cities) || {})[id] || {}; return c.region || "midwest"; }
 export function clusterDef(cid) { return ((DATA.regions && DATA.regions.clusters) || {})[cid] || { dayCost: 0 }; }
 export function cityDayCost(id) { return clusterDef(cityCluster(id)).dayCost || 0; }
 export function inHomeCircuit(id) { return cityDayCost(id) === 0; }

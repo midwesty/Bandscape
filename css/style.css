@@ -1289,6 +1289,7 @@ body:has(.modal-scrim) #log { display: none; }
 /* ---- Step 47: Drive menu (HIT THE ROAD) ---- */
 .drive-row{border:2px solid #3a3346;border-radius:5px;padding:8px 10px;margin:7px 0;cursor:pointer;background:rgba(255,255,255,.02);transition:border-color .12s,background .12s;}
 .drive-row:hover{border-color:#6a6080;}
+.drive-row, .drive-row *{cursor:pointer;}
 .drive-row.sel{border-color:#8a7fb0;background:rgba(138,127,176,.10);}
 .drive-row.mine{border-left:5px solid #4caf72;}
 .drive-row.mgr{border-left:5px solid #6a6478;}
@@ -1304,3 +1305,34 @@ body:has(.modal-scrim) #log { display: none; }
 .drive-ok{font-size:12px;color:#9fe9bc;opacity:.9;margin-bottom:8px;}
 .drive-modes{display:flex;flex-direction:column;gap:7px;}
 .drive-modes .cal-slot-btn{width:100%;text-align:left;}
+
+/* ---- Step 51: Tour Planner (route board) ---- */
+.tp-link{background:#2c2838;border:1px solid #6a6080;color:#cdbff0;font-size:11px;font-weight:700;padding:4px 9px;border-radius:12px;cursor:pointer;margin-left:auto;}
+.tp-node{border:2px solid #3a3346;border-radius:6px;padding:9px 11px;margin:5px 0;}
+.tp-home{background:rgba(120,150,255,.08);border-color:#46506e;font-size:14px;}
+.tp-anchor{background:rgba(255,255,255,.02);}
+.tp-anchor.mine{border-left:5px solid #4caf72;}
+.tp-anchor.mgr{border-left:5px solid #6a6478;}
+.tp-anchor small{opacity:.82;}
+.tp-leg{font-size:12px;opacity:.65;text-align:center;margin:1px 0;letter-spacing:.03em;}
+.tp-gap{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;background:rgba(255,200,80,.06);border:1px dashed #7a6a3a;border-radius:6px;padding:7px 10px;margin:5px 0;}
+.tp-fill{font-size:11px;font-weight:700;padding:5px 10px;border-radius:12px;border:1px solid #7a6a3a;background:#2c2820;color:#ffd07a;cursor:pointer;white-space:nowrap;}
+.tp-fill.on{background:#1f5134;border-color:#4caf72;color:#9fe9bc;}
+.tp-tag{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.tp-tag.mine{background:#1f5134;color:#9fe9bc;border:1px solid #4caf72;}
+.tp-tag.mgr{background:#2c2836;color:#b9b2c8;border:1px solid #6a6478;}
+.tp-foot{margin-top:10px;padding-top:9px;border-top:2px solid #3a3346;font-weight:700;font-size:13px;text-align:center;}
+
+/* ---- Step 52: Tour Planner anchor booking + Band-app redirect ---- */
+.tp-add-h{margin:14px 0 6px;font-weight:700;font-size:13px;letter-spacing:.03em;text-transform:uppercase;opacity:.9;border-top:2px solid #3a3346;padding-top:11px;}
+.tp-city{margin:7px 0;}
+.tp-city-h{font-size:12px;font-weight:700;opacity:.85;text-transform:capitalize;margin-bottom:4px;}
+.tp-venue{display:inline-block;margin:3px 4px 3px 0;padding:6px 11px;border-radius:14px;border:1px solid #6a6080;background:#2c2838;color:#e8e0f4;font-size:12px;font-weight:600;cursor:pointer;}
+.tp-venue:hover{border-color:#8a7fb0;background:rgba(138,127,176,.14);}
+.tp-redirect{margin-top:10px;border-top:1px dashed #3a3346;padding-top:9px;opacity:.92;}
+
+/* ---- Step 53: roadside nowhere-town pickup gigs ---- */
+.rs-gig{margin:8px 0;padding:9px 11px;border-radius:10px;background:#241f30;border:1px solid #3a3346;}
+.rs-gig-h{font-size:13px;}
+.rs-flavor{font-size:11px;opacity:.72;font-style:italic;margin:3px 0 5px;}
+.rs-take{font-size:12px;font-weight:700;color:#8fe388;}

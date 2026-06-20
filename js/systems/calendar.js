@@ -21,7 +21,7 @@ import { toast } from "../ui/toast.js";
 import { autoResolveShow, showAutoReport } from "./shows.js";
 import { billOpenSlots, billLineup, addPlayerAct, removePlayerAct, billContext, wouldHeadline, currentHeadlinerName } from "./bills.js";
 
-let overlay = null, schedVenue = null;
+let overlay = null, schedVenue = null, schedReturn = null;
 
 const cfg = () => DATA.config.calendar;
 const slots = () => cfg().slots;
@@ -123,6 +123,7 @@ function showNightCard(o) {
     <button class="cal-slot-btn" data-day="${day}" data-slot="${esc(o.slot)}">Book ${esc((schedBand && schedBand.name) || "band")} here</button>
   </div>`;
 }
+export function setSchedulerReturn(fn) { schedReturn = fn; }
 export function openScheduler(type, venueId) {
   schedType = type;
   schedVenue = venueId || (type === "show" ? "thedive" : null);
@@ -164,6 +165,7 @@ function closeScheduler() {
   overlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   setTimeout(() => overlay.classList.add("hidden"), 200);
+  const r = schedReturn; schedReturn = null; if (r) setTimeout(r, 215);   // hand back to the Tour Planner if it opened us
 }
 function book(type, day, slot) {
   const band = type === "show" ? (schedBand || activeBand() || {}) : (activeBand() || {});

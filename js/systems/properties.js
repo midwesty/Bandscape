@@ -9,14 +9,16 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, cityDayCost } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, cityDayCost, inHomeCircuit, cityRegion, isDiscovered } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
 import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
 import { advanceMinutes, sleep, travelAwake } from "./time.js";
-import { currentDay, nextCommitment, bookedCommitments } from "./calendar.js";
+import { roadsideStop, playRoadsideGig } from "./roadside.js";
+import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn } from "./calendar.js";
+import { venueList } from "./shows.js";
 import { payForBand } from "./bank.js";
 
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -136,7 +138,7 @@ function driveAssess(c, today) {
   return { v, town, cd, days, arrivalDay, reachable, alreadyHere, missed };
 }
 function openDriveMenu(vehId) { _driveVeh = vehId || null; _driveSel = null; renderDriveMenu(); }
-function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) return; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
+function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
 function renderDriveMenu() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const today = currentDay();
@@ -166,12 +168,24 @@ function renderDriveMenu() {
       `<div class="drive-row-sub">${esc(vnm)} \u00b7 ${esc(cityNm)} \u2014 Day ${c.day} \u00b7 <span class="drive-dist">${esc(dist)}</span></div>` +
       expand + `</div>`;
   }).join("");
-  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD</span><button class="phone-nav" id="drive-close">\u2715</button></div>` +
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD</span><button class="tp-link" id="drive-plan">Plan a tour \u25B8</button><button class="phone-nav" id="drive-close">\u2715</button></div>` +
     `<div class="cal-body"><p class="shop-note">Pick a show to drive to. <span class="drive-tag mine">be there</span> = your band \u2014 show up. <span class="drive-tag mgr">auto-plays</span> = a band that plays itself; drive over to catch it for a boost.</p>${body}</div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
-  ov.querySelector("#drive-close").addEventListener("click", closeDriveMenu);
-  ov.querySelectorAll("[data-pick]").forEach((el) => el.addEventListener("click", (e) => { if (e.target.closest("[data-drive]")) return; _driveSel = (_driveSel === el.dataset.pick) ? null : el.dataset.pick; renderDriveMenu(); }));
-  ov.querySelectorAll("[data-drive]").forEach((bn) => bn.addEventListener("click", (e) => { e.stopPropagation(); execDrive(bn.dataset.cid, bn.dataset.drive); }));
+  // One delegated handler on the stable overlay. Robust across re-renders AND reliable on iOS, where a
+  // tap on a non-pointer child div otherwise fails to fire a click that bubbles up to the row.
+  ov.onclick = (e) => {
+    if (e.target.closest("#drive-close")) { closeDriveMenu(); return; }
+    if (e.target.closest("#drive-plan")) { openTourPlanner(); return; }
+    const driveBtn = e.target.closest("[data-drive]");
+    if (driveBtn) { execDrive(driveBtn.dataset.cid, driveBtn.dataset.drive); return; }
+    const row = e.target.closest("[data-pick]");
+    if (row) {
+      const c = bookedCommitments().find((x) => x.id === row.dataset.pick);
+      // Out-of-REGION shows hand off to the Tour Planner (plan a multi-stop run); in-region shows drive directly.
+      if (c && _showRegion(c) !== _currentRegion()) { openTourPlanner(); return; }
+      _driveSel = (_driveSel === row.dataset.pick) ? null : row.dataset.pick; renderDriveMenu();
+    }
+  };
 }
 function execDrive(cid, mode) {
   const c = bookedCommitments().find((x) => x.id === cid); if (!c) { closeDriveMenu(); return; }
@@ -179,8 +193,99 @@ function execDrive(cid, mode) {
   if (!es) { toast("Can't find the road there yet.", "warn"); return; }
   closeDriveMenu(); closePhone(); travelTo(es.scene, es.spawn);
   if (a.days <= 0) { advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45); toast(`Over to ${a.cd.name} \u2014 quick hop.`, "good"); return; }
-  if (mode === "ride") { travelAwake(a.days); toast(`Rode along ${a.days} day${a.days > 1 ? "s" : ""} to ${a.cd.name} \u2014 wiped, but awake.`, "good"); }
-  else { const veh = _driveVeh ? vehicleById(_driveVeh) : null; const poor = !veh || veh.type === "veh_van"; for (let i = 0; i < a.days; i++) sleep({ poor }); toast(`Slept the drive \u2014 ${a.days} day${a.days > 1 ? "s" : ""} to ${a.cd.name}.`, "good"); }
+  // Day-by-day drive: each night you marked in the Tour Planner (s.tour.fills) auto-resolves into a
+  // roadside pickup gig as you pass through; unmarked nights just pass. Plan-then-execute, no skipped nights.
+  const st = getState(); st.tour = st.tour || { fills: {} };
+  const veh = _driveVeh ? vehicleById(_driveVeh) : null; const poor = !veh || veh.type === "veh_van";
+  const gigs = [];
+  for (let i = 0; i < a.days; i++) {
+    if (mode === "ride") travelAwake(1); else sleep({ poor });
+    const d = currentDay();
+    if (st.tour.fills[d]) { const stop = roadsideStop(d); gigs.push({ stop, res: playRoadsideGig(stop) }); delete st.tour.fills[d]; }
+  }
+  persist();
+  roadsideArrive(a.cd.name, a.days, mode, gigs);
+}
+
+// Recap after a multi-day drive. If you played roadside gigs along the way, show the haul; otherwise
+// just confirm the arrival. Reuses the #cal overlay.
+function roadsideArrive(destName, days, mode, gigs) {
+  const dayTxt = `${days} day${days > 1 ? "s" : ""}`;
+  if (!gigs.length) {
+    toast(mode === "ride" ? `Rode along ${dayTxt} to ${destName} \u2014 wiped, but awake.` : `Slept the drive \u2014 ${dayTxt} to ${destName}.`, "good");
+    return;
+  }
+  const ov = document.getElementById("cal");
+  const totPay = gigs.reduce((s, g) => s + g.res.pay, 0);
+  const totFans = gigs.reduce((s, g) => s + g.res.fans, 0);
+  if (!ov) { toast(`Played ${gigs.length} roadside gig${gigs.length > 1 ? "s" : ""} en route \u2014 +$${totPay}, +${totFans} fans.`, "good"); return; }
+  const rows = gigs.map((g) => `<div class="rs-gig"><div class="rs-gig-h"><strong>${esc(g.stop.town)}</strong> \u2014 ${esc(g.stop.venue.name)}</div><div class="rs-flavor">${esc(g.stop.flavor)}</div><div class="rs-take">+$${g.res.pay} \u00b7 +${g.res.fans} fans</div></div>`).join("");
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">ON THE ROAD</span><button class="phone-nav" id="rs-x">\u2715</button></div>` +
+    `<div class="cal-body"><p class="shop-note">Pickup gigs in the middle of nowhere, on the way to ${esc(destName)}:</p>${rows}` +
+    `<div class="tp-foot">${gigs.length} roadside gig${gigs.length > 1 ? "s" : ""} \u00b7 +$${totPay} \u00b7 +${totFans} fans</div>` +
+    `<button class="cal-slot-btn" id="rs-roll" style="margin-top:11px">Roll on into ${esc(destName)} \u25b8</button></div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
+  ov.onclick = (e) => { if (e.target.closest("#rs-x") || e.target.closest("#rs-roll")) close(); };
+}
+
+// ---- The Tour Planner (Step 51): plan-then-execute. Lay out the road route (anchors + the nights
+// between them) and choose which in-between nights to fill with pickup gigs UP FRONT, so driving later
+// executes the plan instead of skipping those nights. Anchors are your booked out-of-circuit shows. ----
+function _cityRegionOf(town) { const cd = town && cityDef(town); return (cd && cd.region) || "midwest"; }
+function _showRegion(c) { return _cityRegionOf(_venueOf(c.venue).town); }
+function _currentRegion() { return _cityRegionOf(currentCity ? currentCity() : null); }
+function openTourPlanner() { renderTourPlanner(); }
+function closeTourPlanner() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
+function renderTourPlanner() {
+  const ov = document.getElementById("cal"); if (!ov) return;
+  const s = getState(); s.tour = s.tour || { fills: {} }; const fills = s.tour.fills;
+  const today = currentDay();
+  const anchors = bookedCommitments().filter((c) => c.type === "show" && !inHomeCircuit(_venueOf(c.venue).town)).sort((a, b) => a.day - b.day);
+  let body;
+  if (!anchors.length) {
+    body = `<p class="shop-note">No road shows booked yet. Book a show in a distant city from the BAND app, then plan your route here \u2014 set your anchor shows first, then choose the nights in between to fill.</p>`;
+  } else {
+    let rows = `<div class="tp-node tp-home">\uD83C\uDFE0 <strong>Home base</strong> \u2014 Day ${today}</div>`;
+    let prevDay = today, totalDrive = 0;
+    anchors.forEach((c) => {
+      const town = _venueOf(c.venue).town; const cd = cityDef(town); const dc = cityDayCost(town); totalDrive += dc;
+      const gap = c.day - prevDay - 1;
+      if (gap > 0) {
+        const days = []; for (let d = prevDay + 1; d <= c.day - 1; d++) days.push(d);
+        const allFilled = days.every((d) => fills[d]);
+        rows += `<div class="tp-gap"><span>${gap} open night${gap > 1 ? "s" : ""} on the road</span>` +
+          `<button class="tp-fill ${allFilled ? "on" : ""}" data-gap="${days.join(",")}">${allFilled ? "\u2713 pickup gigs planned" : "+ plan pickup gigs"}</button></div>`;
+      }
+      const b = bandById(c.bandId) || {}; const mine = _isMine(c.bandId);
+      rows += `<div class="tp-leg">\u2193 drive ${dc} day${dc !== 1 ? "s" : ""}</div>` +
+        `<div class="tp-node tp-anchor ${mine ? "mine" : "mgr"}"><strong>${esc(b.name || "Your band")}</strong> <span class="tp-tag ${mine ? "mine" : "mgr"}">${mine ? "be there" : "auto-plays"}</span><br><small>${esc(_venueOf(c.venue).name || "venue")} \u00b7 ${esc((cd && cd.name) || town)} \u2014 Day ${c.day}</small></div>`;
+      prevDay = c.day;
+    });
+    const daysOut = anchors[anchors.length - 1].day - today;
+    const planned = Object.keys(fills).filter((d) => fills[d]).length;
+    body = rows +
+      `<div class="tp-foot">${anchors.length} road show${anchors.length > 1 ? "s" : ""} \u00b7 ${daysOut} days out \u00b7 ${totalDrive} day${totalDrive !== 1 ? "s" : ""} driving${planned ? ` \u00b7 ${planned} pickup night${planned > 1 ? "s" : ""} planned` : ""}</div>` +
+      `<p class="shop-note" style="margin-top:8px">Tap the open stretches to plan pickup gigs there. When roadside gigs land, those nights fill with shows instead of empty driving \u2014 and \u201cdrive to next show\u201d will stop for them instead of skipping ahead. Add more anchors by booking distant shows in the BAND app.</p>`;
+  }
+  // Book out-of-region anchors right here. Newcomer doors (open bars) are always bookable; gated rooms need discovery/fame.
+  const curR = _currentRegion();
+  const roadVs = venueList().filter((v) => v.town && cityDef(v.town) && _cityRegionOf(v.town) !== curR && (v.open || isDiscovered(v.id)));
+  const byCity = {}; roadVs.forEach((v) => { (byCity[v.town] = byCity[v.town] || []).push(v); });
+  const cityIds = Object.keys(byCity).sort((a, b) => (((cityDef(a) || {}).name) || a).localeCompare(((cityDef(b) || {}).name) || b));
+  let addHTML = `<div class="tp-add-h">+ Add an anchor (book a road show)</div>`;
+  if (!cityIds.length) addHTML += `<p class="shop-note">No out-of-region rooms open to you yet \u2014 tour somewhere new or build fame to unlock them.</p>`;
+  else addHTML += cityIds.map((town) => { const cd = cityDef(town); return `<div class="tp-city"><div class="tp-city-h">${esc((cd && cd.name) || town)} \u00b7 ${esc(_cityRegionOf(town))}</div>` + byCity[town].map((v) => `<button class="tp-venue" data-book="${v.id}">${esc(v.name)}${v.open ? "" : " \uD83D\uDD12"}</button>`).join("") + `</div>`; }).join("");
+  body += addHTML;
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">TOUR PLANNER</span><button class="phone-nav" id="tp-close">\u2715</button></div><div class="cal-body">${body}</div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  ov.onclick = (e) => {
+    if (e.target.closest("#tp-close")) { closeTourPlanner(); return; }
+    const bk = e.target.closest("[data-book]");
+    if (bk) { setSchedulerReturn(() => openTourPlanner()); openScheduler("show", bk.dataset.book); return; }
+    const fb = e.target.closest(".tp-fill");
+    if (fb) { const days = fb.dataset.gap.split(",").map(Number); const allFilled = days.every((d) => fills[d]); days.forEach((d) => { if (allFilled) delete fills[d]; else fills[d] = true; }); persist(); renderTourPlanner(); }
+  };
 }
 function handleVehicleAct(b, act) {
   if (b.dataset.veh) {

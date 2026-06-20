@@ -37,7 +37,8 @@ const FILES = {
   genres:      "data/genres.json",
   properties:  "data/properties.json",
   worldaudio:  "data/audio/world.json",
-  decor:       "data/decor.json"
+  decor:       "data/decor.json",
+  roadside:    "data/roadside.json"
 };
 
 const INSTRUMENTS = ["guitar", "bass", "piano", "drums", "microphone"];

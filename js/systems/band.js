@@ -19,6 +19,7 @@ import {
   ensureContracts, payBand, bandPayroll, walletBalance, expectedLiveSplit, effectiveLiveSplit, isDiscovered,
   careerStanding, mainGenre, mainGenreName, genreList, subgenresOf,
   cityUnlocked, cityDef, currentCity, inHomeCircuit, cityDayCost, bandHasVehicle
+, cityRegion,
 } from "../engine/state.js";
 import { emit, on } from "../engine/bus.js";
 import { saveToSlot } from "../engine/storage.js";
@@ -88,7 +89,8 @@ function conditionsMet(npc) {
 function bookShowFlow() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const s = getState();
-  const accessible = (t) => cityUnlocked(t);
+  const curRegion = cityRegion(currentCity());
+  const accessible = (t) => cityUnlocked(t) && cityRegion(t) === curRegion;   // Band app books your CURRENT region only
   const vs = venueList().filter((v) => accessible(v.town) && isDiscovered(v.id));
   const ab = activeBand();
   const hasVeh = !!(ab && bandHasVehicle(ab.id));
@@ -120,7 +122,8 @@ function bookShowFlow() {
     const note = hasVeh ? "" : ` <span class="muted">\u2014 ${esc((ab && ab.name) || "your band")} needs a vehicle</span>`;
     rows += `<div class="mp-cluster road"><div class="mp-cluster-h">${lab}${note}</div>${byCost[c].sort(byName).map(townBlock).join("")}</div>`;
   });
-  const body = rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`;
+  const redirect = `<p class="shop-note tp-redirect">Playing out of region? Book those anchors in the <strong>Tour Planner</strong> \u2014 Properties \u25b8 your vehicle \u25b8 Hit the Road \u25b8 Plan a tour.</p>`;
+  const body = (rows || `<p class="shop-note">You haven't found anywhere to play yet. Open <strong>Maps</strong> and head over to a spot to introduce yourself.</p>`) + redirect;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">PICK A VENUE</span><button class="phone-nav" id="vp-close">✕</button></div>
     <div class="cal-body"><p class="shop-note">Where do you want to play? Locked rooms show what they still need.</p>${body}</div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");

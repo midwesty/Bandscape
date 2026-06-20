@@ -1,0 +1,28 @@
+{
+  "_comment": "Roadside nowhere-town pickup gigs (Step 53). Procedural middle-of-nowhere stops that fill the in-between nights you mark in the Tour Planner. Town names = an 'a' word + a 'b' word; venues are one-bar archetypes with a draw multiplier; reward scales off fame + venue draw. All data-driven so the builder can expand the pools and tune payout without code.",
+  "townNames": {
+    "a": ["Muddy", "Dry", "Lone", "Flat", "Burnt", "Cold", "Last", "Dusty", "Broke", "Rusty", "Gravel", "Pine", "Mosquito", "Forgotten", "Hollow", "Tumble", "Bent", "Stony", "Crooked", "Lower"],
+    "b": ["Forks", "Gulch", "Holler", "Junction", "Flats", "Creek", "Bend", "Springs", "Crossing", "Ridge", "Bottom", "Station", "Pass", "Mills", "Corners", "Switch", "Hollow", "Ferry", "Bluff", "Notch"]
+  },
+  "venues": [
+    { "name": "The Last Call Saloon", "drawMult": 0.75, "tier": "dive" },
+    { "name": "the only bar in town", "drawMult": 0.6, "tier": "dive" },
+    { "name": "the VFW hall", "drawMult": 0.85, "tier": "hall" },
+    { "name": "a truck-stop diner", "drawMult": 0.5, "tier": "stop" },
+    { "name": "the roadhouse off Route 9", "drawMult": 0.95, "tier": "roadhouse" },
+    { "name": "a backyard keg party", "drawMult": 0.65, "tier": "party" },
+    { "name": "the bowling-alley lounge", "drawMult": 0.7, "tier": "lounge" },
+    { "name": "the county fairgrounds", "drawMult": 1.0, "tier": "fair" }
+  ],
+  "flavor": [
+    "Population: not many. The bar's open, though.",
+    "No Walgreens, no signal, one stage. One shot.",
+    "The whole town turns out \u2014 all eleven of them.",
+    "Cheap beer, sticky floor, loud crowd. Perfect.",
+    "You're competing with the jukebox and the jukebox is winning. At first.",
+    "A wedding let out next door and wandered in.",
+    "Half the crowd is here for the wings. They stay for you.",
+    "The bartender's also the sound guy, the door guy, and the mayor."
+  ],
+  "reward": { "basePay": 60, "payPerFame": 1.4, "fansBase": 4, "fansPerFame": 0.15, "fameUp": 1, "energyCost": 12 }
+}
