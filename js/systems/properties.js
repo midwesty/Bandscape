@@ -17,8 +17,8 @@ import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
 import { advanceMinutes, sleep, travelAwake } from "./time.js";
 import { roadsideStop, playRoadsideGig } from "./roadside.js";
-import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn, setSchedBand, cancelShow } from "./calendar.js";
-import { venueList, venueEligible, venueReqText } from "./shows.js";
+import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn, setSchedBand, cancelShow, findReady, currentSlot } from "./calendar.js";
+import { venueList, venueEligible, venueReqText, openPerform, venueById } from "./shows.js";
 import { payForBand } from "./bank.js";
 
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -130,8 +130,10 @@ function vehiclesSection() {
 function _venueOf(id) { return (DATA.venues && DATA.venues.venues && DATA.venues.venues[id]) || {}; }
 function driveAssess(c, today) {
   const v = _venueOf(c.venue); const town = v.town; const cd = town ? cityDef(town) : null;
-  const here = currentCity ? currentCity() : null;
-  const days = town ? dayCostFrom(here, town) : 0;
+  const _j = getState().journey;
+  let days;
+  if (_j && _j.active && _j.anchorCmt === c.id) { days = Math.max(0, _j.totalLegs - _j.leg); }  // mid-journey: only the legs left
+  else { const here = currentCity ? currentCity() : null; days = town ? dayCostFrom(here, town) : 0; }
   const arrivalDay = today + days;
   const alreadyHere = !!(town && here === town && days === 0);
   const reachable = c.day >= arrivalDay;                 // you land on or before its day
@@ -139,7 +141,8 @@ function driveAssess(c, today) {
   return { v, town, cd, days, arrivalDay, reachable, alreadyHere, missed };
 }
 function openDriveMenu(vehId) { _driveVeh = vehId || null; _driveSel = null; renderDriveMenu(); }
-function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); }
+function closeDriveMenu() { const ov = document.getElementById("cal"); if (!ov) return; ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); ov._hideT = setTimeout(() => ov.classList.add("hidden"), 200); }
+function _clearCalHide() { const ov = document.getElementById("cal"); if (ov && ov._hideT) { clearTimeout(ov._hideT); ov._hideT = null; } }
 function renderDriveMenu() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const today = currentDay();
@@ -200,6 +203,8 @@ function chargeLeg(bid, veh) {
 // day-by-day journey: multi-leg trips drop you in a walkable nowhere-town each morning, and the final
 // leg lands you at the anchor city.
 function execDrive(cid, mode) {
+  const _s = getState();
+  if (_s.journey && _s.journey.active && _s.journey.anchorCmt === cid) { closeDriveMenu(); closePhone(); driveLeg(mode); return; }  // already on this road -> drive the next leg
   const c = bookedCommitments().find((x) => x.id === cid); if (!c) { closeDriveMenu(); return; }
   const v = _venueOf(c.venue); const town = v.town; const cd = town ? cityDef(town) : null;
   const es = cd && cd.entryScene;
@@ -262,33 +267,39 @@ on("day:advanced", onDayAdvanced);
 
 // Wake-up pop-up: you're parked on the main drag of a town you've never heard of. Opt into tonight's gig.
 function wakeInTown(stop, j, spent) {
+  _clearCalHide();
   const ov = document.getElementById("cal");
+  const vn = (stop.venue && stop.venue.name) || "the local bar";
   if (!ov) { toast(`You wake up in ${stop.town}. (\u2212$${spent} road)`, "good"); return; }
   const left = j.totalLegs - j.leg;
   ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">${esc(stop.town)}</span></div>` +
     `<div class="cal-body"><p class="shop-note">Morning. You're parked on the main drag \u2014 ${left} day${left > 1 ? "s" : ""} still to the show. (\u2212$${spent} road)</p>` +
     `<div class="rs-flavor" style="margin:8px 0">${esc(stop.flavor)}</div>` +
-    `<p class="shop-note"><strong>${esc(stop.venue)}</strong> could put you on tonight.</p>` +
-    `<button class="cal-slot-btn" data-wake="play" style="margin:9px 0">\uD83C\uDFB8 Play the pickup gig \u25b8</button>` +
+    `<p class="shop-note"><strong>${esc(vn)}</strong> has an open slot tonight \u2014 book it and play at showtime.</p>` +
+    `<button class="cal-slot-btn" data-wake="book" style="margin:9px 0">\uD83C\uDFB8 Book tonight's set \u25b8</button>` +
     `<button class="cal-slot-btn" data-wake="skip">Just explore / pass through</button></div></div>`;
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
-  const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
-  ov.onclick = (e) => { const w = e.target.closest("[data-wake]"); if (!w) return; close(); if (w.dataset.wake === "play") setTimeout(openRoadGig, 210); };
+  const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); ov._hideT = setTimeout(() => ov.classList.add("hidden"), 200); };
+  ov.onclick = (e) => { const w = e.target.closest("[data-wake]"); if (!w) return; if (w.dataset.wake === "book") { ov.onclick = null; bookRoadShow(); } else { close(); } };
 }
 
-// The bar in a nowhere-town: play that stop's pickup gig (reuses the roadside payout).
-function openRoadGig() {
-  const s = getState(); const j = s.journey;
-  if (!j || !j.stop) { toast("No pickup gig here.", "warn"); return; }
-  if (j.stopPlayed) { toast("You already played here tonight.", "warn"); return; }
-  const res = playRoadsideGig(j.stop, j.bandId); j.stopPlayed = true; persist();
-  const ov = document.getElementById("cal");
-  if (!ov) { toast(`Played ${res.venue} \u2014 +$${res.pay}, +${res.fans} fans.`, "good"); return; }
-  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">${esc(j.stop.town)}</span><button class="phone-nav" id="rg-x">\u2715</button></div>` +
-    `<div class="cal-body"><div class="rs-gig"><div class="rs-gig-h"><strong>${esc(res.venue)}</strong></div><div class="rs-flavor">${esc(j.stop.flavor)}</div><div class="rs-take">+$${res.pay} \u00b7 +${res.fans} fans</div></div>` +
-    `<p class="shop-note">Played the local room \u2014 money's in the band account. When you're ready, head to your bus to drive on.</p></div></div>`;
-  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
-  ov.onclick = (e) => { if (e.target.closest("#rg-x")) { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); } };
+// The bar in a nowhere-town is a REAL bookable room: book tonight's slot in the normal scheduler, then
+// play it at showtime via the normal performance flow (set list + crowd + band-account pay). No auto-play.
+function _roadVid() { const j = getState().journey; return (j && j.stop) ? "rtv_" + j.leg : null; }
+function bookRoadShow() {
+  const j = getState().journey; const vid = _roadVid();
+  if (!vid || !venueById(vid)) { toast("No room to book here.", "warn"); return; }
+  setSchedBand(j.bandId, true);
+  setSchedulerReturn(() => {});
+  _clearCalHide();
+  openScheduler("show", vid);
+}
+function openRoadStage() {
+  const vid = _roadVid();
+  if (!vid || !venueById(vid)) { toast("Quiet here tonight.", "info"); return; }
+  const booked = bookedCommitments().some((c) => c.venue === vid);
+  if (booked) { openPerform(vid); return; }   // plays if it's showtime; otherwise tells you which slot
+  bookRoadShow();                             // not booked yet -> the normal booking menu, scoped to this room
 }
 
 // The parked bus in a nowhere-town: drive on toward the anchor (awake or asleep).
@@ -305,7 +316,8 @@ function openRoadBus() {
   const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
   ov.onclick = (e) => { if (e.target.closest("#rb-x")) { close(); return; } const lg = e.target.closest("[data-leg]"); if (lg) { close(); setTimeout(() => driveLeg(lg.dataset.leg), 210); } };
 }
-on("road:gig", openRoadGig);
+on("road:stage", openRoadStage);
+on("road:gig", openRoadStage);
 on("road:bus", openRoadBus);
 
 // Recap after a multi-day drive. If you played roadside gigs along the way, show the haul; otherwise

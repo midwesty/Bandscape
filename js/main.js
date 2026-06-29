@@ -32,6 +32,7 @@ const $ = (id) => document.getElementById(id);
 boot();
 
 async function boot() {
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}  // ask the browser not to evict our save (Chrome mobile)
   const bootEl = $("boot");
   const status = $("boot-status");
 
@@ -161,7 +162,12 @@ function enterGame(isNew) {
     on("save:imported", ({ data }) => {
       if (!data || !data.player) return toast("That didn't look like a Bandscape save.", "warn");
       setState(data);
-      ensureLibraryMeta();
+      // Re-init scenes/instances to parity with boot, so imported vehicle interiors + dressed rooms resolve
+      // correctly instead of rendering against stale scene defs (fixes items bleeding between locations).
+      ensureLibraryMeta(); ensureContracts(); ensureProperties();
+      registerVehicleScenes();
+      { const j = getState().journey; if (j && j.active && j.stop && j.leg < j.totalLegs) ensureRoadtownScene(j.leg, j.stop); }
+      ensureBankAccounts(); ensureScene(); ensureDecorDefaults();
       saveToSlot(data.meta?.slot || 1, data);
       renderHUD(); renderStage();
       toast(`Loaded ${data.player.name}.`, "good");

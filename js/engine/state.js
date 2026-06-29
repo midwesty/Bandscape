@@ -562,7 +562,7 @@ export function vehicleScene(veh) {
   if (!veh) return null;
   const def = propDef(veh.type); const base = def && def.location; if (!base) return null;
   const key = `${base}__${veh.id}`;                                   // each vehicle gets its OWN interior instance
-  if (DATA.locations && DATA.locations[base] && !DATA.locations[key]) DATA.locations[key] = DATA.locations[base]; // share the read-only template def; placed items live per-instance in placedObjects[key]
+  if (DATA.locations && DATA.locations[base] && !DATA.locations[key]) DATA.locations[key] = JSON.parse(JSON.stringify(DATA.locations[base])); // each instance gets its OWN def copy (no shared ref); placed items live per-instance in placedObjects[key]
   return key;
 }
 export function registerVehicleScenes() { for (const v of ownedVehicles()) vehicleScene(v); }   // boot hook so saved interiors resolve before first render
@@ -571,14 +571,24 @@ export function registerVehicleScenes() { for (const v of ownedVehicles()) vehic
 export function ensureRoadtownScene(leg, stop) {
   const base = DATA.locations && DATA.locations.roadtown; if (!base) return null;
   const key = "roadtown__" + leg;
+  const vid = "rtv_" + leg;
+  // Register a transient venue for this stop so the bar books + plays like any real room.
+  if (stop && DATA.venues && DATA.venues.venues && !DATA.venues.venues[vid]) {
+    const vn = (stop.venue && stop.venue.name) || "the only bar in town";
+    const draw = (stop.venue && stop.venue.drawMult) || 0.6;
+    DATA.venues.venues[vid] = {
+      name: vn, town: key, open: true, discover: true,
+      drawMult: draw, payMult: 0.55, slot: "evening",
+      booker: { id: "locals_" + leg, name: "the locals", role: "Whoever runs the place" },
+      blurb: (stop.flavor || "") + " One night only.", road: true
+    };
+  }
   if (!DATA.locations[key]) {
     const clone = JSON.parse(JSON.stringify(base));
     clone.id = key;
-    if (stop) {
-      clone.name = stop.town || clone.name;
-      const bar = (clone.exits || []).find((e) => e.id === "rt_bar");
-      if (bar && stop.venue) bar.name = stop.venue;
-    }
+    if (stop) clone.name = stop.town || clone.name;
+    const bar = (clone.exits || []).find((e) => e.id === "rt_bar");
+    if (bar) { bar.interact = "roadstage"; bar.venueId = vid; bar.name = (stop && stop.venue && stop.venue.name) || bar.name; }
     DATA.locations[key] = clone;
   }
   return key;

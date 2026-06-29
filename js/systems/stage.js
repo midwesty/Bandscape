@@ -455,6 +455,14 @@ function dinerEat(obj) {
 }
 
 // ---- interactions ----
+// A vehicle interior keeps its OWN groceries + leftovers, separate from home. Cooking and the fridge in
+// the same vehicle share this key, so what you cook shows up in that vehicle's fridge (and you must
+// stock that vehicle to cook in it). Home + fixed rooms keep their existing container key.
+function kitchenKey(obj, fallback) {
+  const loc = (getState().location) || "";
+  if (/__/.test(loc) && !/^roadtown__/.test(loc)) return "veh_kitchen_" + loc;
+  return fallback;
+}
 function interact(obj) {
   const kind = obj.interact || decorUse(obj) || (obj.to ? "exit" : null);
   switch (kind) {
@@ -468,10 +476,10 @@ function interact(obj) {
       openContainerView(obj.containerId || "storage");
       break;
     case "fridge":
-      useFridge(obj.containerId || "fridge");
+      useFridge(kitchenKey(obj, obj.containerId || "fridge"));
       break;
     case "cook":
-      cookMeal(obj.fridgeId || "fridge");
+      cookMeal(kitchenKey(obj, obj.fridgeId || "fridge"));
       break;
     case "coffee":
       makeCoffee();
@@ -537,6 +545,9 @@ function interact(obj) {
       break;
     case "bus":
       handleBus(obj);
+      break;
+    case "roadstage":
+      emit("road:stage");
       break;
     case "roadgig":
       emit("road:gig");
