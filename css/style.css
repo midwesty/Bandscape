@@ -1355,3 +1355,7 @@ body:has(.modal-scrim) #log { display: none; }
 .of-buy:hover:not([disabled]),.of-rm:hover{border-color:#8a7fb0;background:rgba(138,127,176,.15);}
 .of-buy[disabled]{opacity:.4;cursor:default;}
 .of-rm{border-color:#5a4a4a;color:#caa;}
+
+/* ---- Step 57: cancel-show button ---- */
+.tp-cancel{margin-top:6px;padding:4px 10px;border-radius:12px;border:1px solid #6a4a4a;background:#2a1c1c;color:#d9a9a9;font-size:11px;font-weight:600;cursor:pointer;}
+.tp-cancel:hover{border-color:#a05a5a;background:rgba(160,90,90,.18);}

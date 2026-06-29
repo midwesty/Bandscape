@@ -5,7 +5,7 @@
 // ============================================================
 
 import { loadAllData, DATA } from "./engine/data.js";
-import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts, ensureProperties, ensureBankAccounts, ensureScene, ensureDecorDefaults, registerVehicleScenes } from "./engine/state.js";
+import { newGameState, setState, getState, ensureLibraryMeta, ensureContracts, ensureProperties, ensureBankAccounts, ensureScene, ensureDecorDefaults, registerVehicleScenes, ensureRoadtownScene } from "./engine/state.js";
 import { saveToSlot, loadFromSlot, slotSummary } from "./engine/storage.js";
 import { putAudio } from "./engine/audiostore.js";
 import { ensureGear } from "./systems/gear.js";
@@ -130,6 +130,7 @@ function enterGame(isNew) {
   ensureContracts();     // Step 17.1: default contracts + owed balances
   ensureGear(); ensureProperties();          // Step 19.0: default instrument tiers
   registerVehicleScenes(); // Step 56: each vehicle gets its own interior instance
+  { const j = getState().journey; if (j && j.active && j.stop && j.leg < j.totalLegs) ensureRoadtownScene(j.leg, j.stop); }  // Step 58: rebuild the town you're parked in after a reload
   ensureBankAccounts();  // Step 20.1: band accounts + ledger
   ensureScene();         // Step 23.1: buzz, venue discovery, contacts (seeds Ralph)
   ensureDecorDefaults(); // Step 26.1: pre-dressed decor reaches existing saves

@@ -128,8 +128,8 @@ export function materializeWorldSong(ref) {
 // ---------- population ----------
 const _songIndex = new Map(); // songId -> ref (transient; rebuilt from state)
 
-const ADJ = ["Velvet", "Rusty", "Neon", "Wet", "Broken", "Holy", "Plastic", "Midnight", "Concrete", "Paper", "Electric", "Dead", "Golden", "Lonesome", "Screaming", "Quiet", "Crystal", "Burning", "Hollow", "Static"];
-const NOUN = ["Lawnmowers", "Tenants", "Cathedrals", "Hounds", "Comets", "Casseroles", "Dial Tones", "Landlords", "Saints", "Mondays", "Engines", "Ghosts", "Pilots", "Vandals", "Sirens", "Cassettes", "Foxes", "Pylons", "Embers", "Drifters", "Sons", "Daughters", "Machines", "Pioneers"];
+const ADJ = ["Velvet", "Rusty", "Neon", "Wet", "Broken", "Holy", "Plastic", "Midnight", "Concrete", "Paper", "Electric", "Dead", "Golden", "Lonesome", "Screaming", "Quiet", "Crystal", "Burning", "Hollow", "Static", "Rotten", "Sacred", "Distant", "Feral", "Tender", "Borrowed", "Vacant", "Sunburnt", "Threadbare", "Restless", "Tidal", "Cardboard", "Synthetic", "Damp", "Reluctant", "Spare"];
+const NOUN = ["Lawnmowers", "Tenants", "Cathedrals", "Hounds", "Comets", "Casseroles", "Dial Tones", "Landlords", "Saints", "Mondays", "Engines", "Ghosts", "Pilots", "Vandals", "Sirens", "Cassettes", "Foxes", "Pylons", "Embers", "Drifters", "Sons", "Daughters", "Machines", "Pioneers", "Mechanics", "Optimists", "Pallbearers", "Tourists", "Wolves", "Janitors", "Apricots", "Receipts", "Suburbs", "Antennas", "Heretics", "Mules", "Lighthouses", "Custodians", "Pilgrims", "Sparrows"];
 const FIRST = ["Jules", "Marco", "Dev", "Nina", "Sasha", "Cole", "Remy", "Theo", "Iris", "Gus", "Mara", "Kai", "Lena", "Vince", "Otis", "Pax", "Reese", "Wren", "Zane", "Dot", "Hugo", "Sly", "Bex", "Ned"];
 const LAST = ["Vega", "Mercer", "Stone", "Cobb", "Frey", "Nakamura", "Diaz", "Holloway", "Pike", "Ruiz", "Banks", "Okafor", "Sato", "Lindqvist", "Vance", "Cruz", "Bell", "Reyes", "Quinn", "Marsh"];
 const ROLES = ["vocals", "guitar", "bass", "drums", "keys"];

@@ -566,13 +566,30 @@ export function vehicleScene(veh) {
   return key;
 }
 export function registerVehicleScenes() { for (const v of ownedVehicles()) vehicleScene(v); }   // boot hook so saved interiors resolve before first render
+// In-between town instancing: clone the roadtown template into its own scene per leg, renamed from the
+// roadside engine (town name + bar name). Each stop is a distinct, walkable place.
+export function ensureRoadtownScene(leg, stop) {
+  const base = DATA.locations && DATA.locations.roadtown; if (!base) return null;
+  const key = "roadtown__" + leg;
+  if (!DATA.locations[key]) {
+    const clone = JSON.parse(JSON.stringify(base));
+    clone.id = key;
+    if (stop) {
+      clone.name = stop.town || clone.name;
+      const bar = (clone.exits || []).find((e) => e.id === "rt_bar");
+      if (bar && stop.venue) bar.name = stop.venue;
+    }
+    DATA.locations[key] = clone;
+  }
+  return key;
+}
 export function vehicleSleeps(veh) {
   const scene = vehicleScene(veh); if (!scene) return 0;
   const st = getState();
   const objs = (st.placedObjects && st.placedObjects[scene]) || (DATA.locations[scene] && DATA.locations[scene].objects) || [];
   const items = (DATA.decor && DATA.decor.items) || {};
   let beds = 0;
-  for (const o of objs) { const d = items[o.id] || {}; if (d.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(o.id || "")) beds += (d.sleeps || o.sleeps || 1); }
+  for (const o of objs) { const did = o.decorId || o.id; const d = items[did] || {}; if (d.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(did || "")) beds += (d.sleeps || o.sleeps || 1); }
   return beds;
 }
 export function vehicleHasKitchen(veh) {
@@ -580,7 +597,7 @@ export function vehicleHasKitchen(veh) {
   const st = getState();
   const objs = (st.placedObjects && st.placedObjects[scene]) || (DATA.locations[scene] && DATA.locations[scene].objects) || [];
   const items = (DATA.decor && DATA.decor.items) || {};
-  return objs.some((o) => { const d = items[o.id] || {}; return d.shape === "stove" || d.use === "cook" || o.interact === "cook" || /stove|range|kitchen/i.test(o.id || ""); });
+  return objs.some((o) => { const did = o.decorId || o.id; const d = items[did] || {}; return d.shape === "stove" || d.use === "cook" || o.interact === "cook" || /stove|range|kitchen/i.test(did || ""); });
 }
 export function addVehicle(type, status, bandId, extra) { const s = getState(); ownedVehicles(); const inst = Object.assign({ id: nextVehId(s), type, status, bandId: bandId || null }, extra || {}); s.vehicles.push(inst); return inst; }
 export function removeVehicle(id) { const s = getState(); ownedVehicles(); s.vehicles = s.vehicles.filter((v) => v.id !== id); }
@@ -781,6 +798,12 @@ export function cityRegion(id) { const c = ((DATA.regions && DATA.regions.cities
 export function clusterDef(cid) { return ((DATA.regions && DATA.regions.clusters) || {})[cid] || { dayCost: 0 }; }
 export function cityDayCost(id) { return clusterDef(cityCluster(id)).dayCost || 0; }
 export function inHomeCircuit(id) { return cityDayCost(id) === 0; }
+export function dayCostFrom(from, to) {
+  if (!to || from === to) return 0;
+  if (cityCluster(from) === cityCluster(to)) return 0;
+  if (cityRegion(from) === cityRegion(to)) return 1;
+  return clusterDef(cityCluster(to)).dayCost || 0;
+}
 export function currentCity() { const s = getState(); return (s && s.currentCity) || "yourtown"; }
 export function regionOfCity(cityId) { const c = cityDef(cityId); return c ? c.region : null; }
 

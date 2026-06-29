@@ -538,6 +538,12 @@ function interact(obj) {
     case "bus":
       handleBus(obj);
       break;
+    case "roadgig":
+      emit("road:gig");
+      break;
+    case "roadbus":
+      emit("road:bus");
+      break;
     case "hotel":
       hotelStay(obj);
       break;

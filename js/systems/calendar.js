@@ -78,6 +78,17 @@ export function nextCommitment(type, bandId) {
 export function bookedCommitments() { return list().filter((c) => c.status === "booked").sort((a, b) => cmtIndex(a) - cmtIndex(b)); }
 export function currentDay() { return today(); }
 export function complete(id) { const c = list().find((x) => x.id === id); if (c) { c.status = "done"; persist(); emit("calendar:updated"); } }
+// Cancel a booked show. Reputation (fame) ding scales with how little notice you give; weeks out is free.
+export function cancelShow(id) {
+  const c = list().find((x) => x.id === id); if (!c) return null;
+  const notice = (c.day || 0) - today();
+  let famePenalty = 0;
+  if (notice <= 0) famePenalty = 10; else if (notice <= 6) famePenalty = 5; else if (notice <= 13) famePenalty = 2;
+  if (famePenalty) addStat("fame", -famePenalty);
+  const i = list().indexOf(c); if (i >= 0) list().splice(i, 1);
+  persist(); emit("calendar:updated");
+  return { famePenalty, notice };
+}
 
 function availableSlots(type) {
   const out = []; const horizon = type === "show" ? (cfg().showHorizonDays || 14) : (cfg().horizonDays || 7); const ni = nowIndex();

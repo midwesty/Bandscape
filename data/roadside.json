@@ -1,18 +1,200 @@
 {
   "_comment": "Roadside nowhere-town pickup gigs (Step 53). Procedural middle-of-nowhere stops that fill the in-between nights you mark in the Tour Planner. Town names = an 'a' word + a 'b' word; venues are one-bar archetypes with a draw multiplier; reward scales off fame + venue draw. All data-driven so the builder can expand the pools and tune payout without code.",
   "townNames": {
-    "a": ["Muddy", "Dry", "Lone", "Flat", "Burnt", "Cold", "Last", "Dusty", "Broke", "Rusty", "Gravel", "Pine", "Mosquito", "Forgotten", "Hollow", "Tumble", "Bent", "Stony", "Crooked", "Lower"],
-    "b": ["Forks", "Gulch", "Holler", "Junction", "Flats", "Creek", "Bend", "Springs", "Crossing", "Ridge", "Bottom", "Station", "Pass", "Mills", "Corners", "Switch", "Hollow", "Ferry", "Bluff", "Notch"]
+    "a": [
+      "Muddy",
+      "Dry",
+      "Lone",
+      "Flat",
+      "Burnt",
+      "Cold",
+      "Last",
+      "Dusty",
+      "Broke",
+      "Rusty",
+      "Gravel",
+      "Pine",
+      "Mosquito",
+      "Forgotten",
+      "Hollow",
+      "Tumble",
+      "Bent",
+      "Stony",
+      "Crooked",
+      "Lower",
+      "Coyote",
+      "Sulphur",
+      "Buzzard",
+      "Rattlesnake",
+      "Possum",
+      "Hardpan",
+      "Granite",
+      "Cinder",
+      "Whiskey",
+      "Lonesome",
+      "Widow",
+      "Drowned",
+      "Sourwood",
+      "Hangdog",
+      "Buckshot",
+      "Thornapple",
+      "Pitch",
+      "Scratch",
+      "Gopher",
+      "Sawtooth",
+      "Brackish",
+      "Windy",
+      "Frostbite",
+      "Hungry"
+    ],
+    "b": [
+      "Forks",
+      "Gulch",
+      "Holler",
+      "Junction",
+      "Flats",
+      "Creek",
+      "Bend",
+      "Springs",
+      "Crossing",
+      "Ridge",
+      "Bottom",
+      "Station",
+      "Pass",
+      "Mills",
+      "Corners",
+      "Switch",
+      "Hollow",
+      "Ferry",
+      "Bluff",
+      "Notch",
+      "Run",
+      "Branch",
+      "Cut",
+      "Landing",
+      "Prairie",
+      "Mesa",
+      "Draw",
+      "Coulee",
+      "Spur",
+      "Camp",
+      "Diggings",
+      "Crossroads",
+      "Pike",
+      "Trace",
+      "Bottoms",
+      "Reach",
+      "Furnace",
+      "Forge",
+      "Quarry",
+      "Wash",
+      "Hole",
+      "Stand",
+      "Wallow",
+      "Roost"
+    ]
   },
   "venues": [
-    { "name": "The Last Call Saloon", "drawMult": 0.75, "tier": "dive" },
-    { "name": "the only bar in town", "drawMult": 0.6, "tier": "dive" },
-    { "name": "the VFW hall", "drawMult": 0.85, "tier": "hall" },
-    { "name": "a truck-stop diner", "drawMult": 0.5, "tier": "stop" },
-    { "name": "the roadhouse off Route 9", "drawMult": 0.95, "tier": "roadhouse" },
-    { "name": "a backyard keg party", "drawMult": 0.65, "tier": "party" },
-    { "name": "the bowling-alley lounge", "drawMult": 0.7, "tier": "lounge" },
-    { "name": "the county fairgrounds", "drawMult": 1.0, "tier": "fair" }
+    {
+      "name": "The Last Call Saloon",
+      "drawMult": 0.75,
+      "tier": "dive"
+    },
+    {
+      "name": "the only bar in town",
+      "drawMult": 0.6,
+      "tier": "dive"
+    },
+    {
+      "name": "the VFW hall",
+      "drawMult": 0.85,
+      "tier": "hall"
+    },
+    {
+      "name": "a truck-stop diner",
+      "drawMult": 0.5,
+      "tier": "stop"
+    },
+    {
+      "name": "the roadhouse off Route 9",
+      "drawMult": 0.95,
+      "tier": "roadhouse"
+    },
+    {
+      "name": "a backyard keg party",
+      "drawMult": 0.65,
+      "tier": "party"
+    },
+    {
+      "name": "the bowling-alley lounge",
+      "drawMult": 0.7,
+      "tier": "lounge"
+    },
+    {
+      "name": "the county fairgrounds",
+      "drawMult": 1.0,
+      "tier": "fair"
+    },
+    {
+      "name": "the American Legion post",
+      "drawMult": 0.85,
+      "tier": "hall"
+    },
+    {
+      "name": "a flatbed trailer in the Tractor Supply lot",
+      "drawMult": 0.7,
+      "tier": "lot"
+    },
+    {
+      "name": "the church basement",
+      "drawMult": 0.6,
+      "tier": "basement"
+    },
+    {
+      "name": "the laundromat open mic",
+      "drawMult": 0.45,
+      "tier": "stop"
+    },
+    {
+      "name": "a biker bar with one working outlet",
+      "drawMult": 0.9,
+      "tier": "dive"
+    },
+    {
+      "name": "the Grange hall potluck",
+      "drawMult": 0.8,
+      "tier": "hall"
+    },
+    {
+      "name": "the Elks lodge",
+      "drawMult": 0.85,
+      "tier": "hall"
+    },
+    {
+      "name": "a pizza place with a PA",
+      "drawMult": 0.55,
+      "tier": "stop"
+    },
+    {
+      "name": "the marina tiki bar",
+      "drawMult": 0.75,
+      "tier": "lounge"
+    },
+    {
+      "name": "the interstate casino lounge",
+      "drawMult": 1.0,
+      "tier": "lounge"
+    },
+    {
+      "name": "somebody's barn",
+      "drawMult": 0.7,
+      "tier": "party"
+    },
+    {
+      "name": "the Friday-night dirt track",
+      "drawMult": 0.95,
+      "tier": "fair"
+    }
   ],
   "flavor": [
     "Population: not many. The bar's open, though.",
@@ -22,7 +204,26 @@
     "You're competing with the jukebox and the jukebox is winning. At first.",
     "A wedding let out next door and wandered in.",
     "Half the crowd is here for the wings. They stay for you.",
-    "The bartender's also the sound guy, the door guy, and the mayor."
+    "The bartender's also the sound guy, the door guy, and the mayor.",
+    "There's one stoplight and it's been stuck on yellow since 1994.",
+    "The crowd is three generations of one family and they brought a casserole.",
+    "Somebody's uncle keeps requesting Free Bird. He will not be ignored.",
+    "The PA cuts out every time the ice machine kicks on.",
+    "Two bars in town and you're playing the worse one. It's better tonight.",
+    "A dog wandered onstage during soundcheck and now it's the headliner.",
+    "Cash only. The cash is mostly singles. You'll take it.",
+    "The sign out front spelled the band's name wrong. It's funnier this way.",
+    "Last band through here was in '09. They still talk about it.",
+    "Half the room came in from the rain, the other half already likes you.",
+    "The owner pays in tips, a tank of gas, and a story about his glory days.",
+    "Nobody here's heard of you yet. By last call, that changes."
   ],
-  "reward": { "basePay": 60, "payPerFame": 1.4, "fansBase": 4, "fansPerFame": 0.15, "fameUp": 1, "energyCost": 12 }
+  "reward": {
+    "basePay": 60,
+    "payPerFame": 1.4,
+    "fansBase": 4,
+    "fansPerFame": 0.15,
+    "fameUp": 1,
+    "energyCost": 12
+  }
 }

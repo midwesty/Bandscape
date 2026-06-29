@@ -1,0 +1,101 @@
+{
+  "_comment": "Reusable in-between nowhere-town (Step 58 / journey rework). ONE template, instanced + renamed per tour stop (DATA.locations['roadtown__<leg>']) with the town name + bar name pulled from the roadside engine. A short main drag: the bar (plays that stop's pickup gig via 'roadgig'), a general store to replenish ('shop'), and your parked bus to drive on ('roadbus'). Not authored per-town \u2014 populated procedurally each morning you wake up here.",
+  "id": "roadtown",
+  "name": "A Town",
+  "size": {
+    "w": 11,
+    "h": 6
+  },
+  "ambient": "street_night",
+  "objects": [
+    {
+      "id": "rt_silo",
+      "build": "general",
+      "tile": {
+        "x": 1,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Grain silo"
+    },
+    {
+      "id": "rt_gas",
+      "build": "general",
+      "tile": {
+        "x": 9,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Closed gas station"
+    },
+    {
+      "id": "rt_water",
+      "build": "general",
+      "tile": {
+        "x": 6,
+        "y": 1
+      },
+      "solid": true,
+      "name": "Water tower"
+    },
+    {
+      "id": "rt_sign",
+      "build": "general",
+      "tile": {
+        "x": 5,
+        "y": 4
+      },
+      "solid": false,
+      "name": "Welcome sign"
+    }
+  ],
+  "exits": [
+    {
+      "id": "rt_bar",
+      "name": "The bar",
+      "interact": "roadgig",
+      "tile": {
+        "x": 3,
+        "y": 2
+      },
+      "solid": true,
+      "build": "store"
+    },
+    {
+      "id": "rt_store",
+      "name": "General store",
+      "interact": "shop",
+      "shopId": "grocery",
+      "tile": {
+        "x": 7,
+        "y": 2
+      },
+      "solid": true,
+      "build": "general"
+    },
+    {
+      "id": "rt_bus",
+      "name": "Your bus",
+      "interact": "roadbus",
+      "tile": {
+        "x": 5,
+        "y": 3
+      },
+      "solid": true,
+      "build": "general"
+    }
+  ],
+  "world": {
+    "ambient": {
+      "boats": 0,
+      "pedestrians": 2,
+      "cars": 1
+    }
+  },
+  "palette": {
+    "floorA": "#2a2620",
+    "floorB": "#241f1a",
+    "wall": "#3a342c",
+    "accent": "#8a7a55"
+  }
+}

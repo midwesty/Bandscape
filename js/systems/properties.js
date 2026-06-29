@@ -9,7 +9,7 @@
 // ============================================================
 
 import { DATA } from "../engine/data.js";
-import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, bandEarn, bandMembers, vehicleSleeps, vehicleScene, cityDayCost, inHomeCircuit, cityRegion, isDiscovered } from "../engine/state.js";
+import { getState, propDefs, propDef, propertyStatus, setPropertyStatus, spendable, addStat, currentCity, cityDef, cityUnlocked, activeBand, bandById, ownedVehicles, addVehicle, removeVehicle, setVehicleBand, vehicleById, bandSpend, bandEarn, bandMembers, vehicleSleeps, vehicleScene, ensureRoadtownScene, cityDayCost, dayCostFrom, inHomeCircuit, cityRegion, isDiscovered } from "../engine/state.js";
 import { saveToSlot } from "../engine/storage.js";
 import { on } from "../engine/bus.js";
 import { toast } from "../ui/toast.js";
@@ -17,7 +17,7 @@ import { travelTo } from "./stage.js";
 import { closePhone } from "./phone.js";
 import { advanceMinutes, sleep, travelAwake } from "./time.js";
 import { roadsideStop, playRoadsideGig } from "./roadside.js";
-import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn, setSchedBand } from "./calendar.js";
+import { currentDay, nextCommitment, bookedCommitments, openScheduler, setSchedulerReturn, setSchedBand, cancelShow } from "./calendar.js";
 import { venueList, venueEligible, venueReqText } from "./shows.js";
 import { payForBand } from "./bank.js";
 
@@ -130,9 +130,9 @@ function vehiclesSection() {
 function _venueOf(id) { return (DATA.venues && DATA.venues.venues && DATA.venues.venues[id]) || {}; }
 function driveAssess(c, today) {
   const v = _venueOf(c.venue); const town = v.town; const cd = town ? cityDef(town) : null;
-  const days = town ? cityDayCost(town) : 0;
-  const arrivalDay = today + days;
   const here = currentCity ? currentCity() : null;
+  const days = town ? dayCostFrom(here, town) : 0;
+  const arrivalDay = today + days;
   const alreadyHere = !!(town && here === town && days === 0);
   const reachable = c.day >= arrivalDay;                 // you land on or before its day
   const missed = bookedCommitments().filter((o) => o.type === "show" && o.id !== c.id && _isMine(o.bandId) && o.day >= today && o.day <= arrivalDay);
@@ -184,38 +184,129 @@ function renderDriveMenu() {
     if (row) { _driveSel = (_driveSel === row.dataset.pick) ? null : row.dataset.pick; renderDriveMenu(); }   // every booked show expands -> Fast-travel / Ride-along, in or out of region
   };
 }
-function execDrive(cid, mode) {
-  const c = bookedCommitments().find((x) => x.id === cid); if (!c) { closeDriveMenu(); return; }
-  const a = driveAssess(c, currentDay()); const es = a.cd && a.cd.entryScene;
-  if (!es) { toast("Can't find the road there yet.", "warn"); return; }
-  closeDriveMenu(); closePhone(); travelTo(es.scene, es.spawn);
-  if (a.days <= 0) { advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45); toast(`Over to ${a.cd.name} \u2014 quick hop.`, "good"); return; }
-  // Day-by-day drive: each night you marked in the Tour Planner (s.tour.fills) auto-resolves into a
-  // roadside pickup gig as you pass through; unmarked nights just pass. Plan-then-execute, no skipped nights.
-  const fills = _tourFills();
-  const bid = _tourBandId();
-  const veh = _driveVeh ? vehicleById(_driveVeh) : null; const poor = !veh || veh.type === "veh_van";
-  const gigs = [];
-  for (let i = 0; i < a.days; i++) {
-    if (mode === "ride") travelAwake(1); else sleep({ poor });
-    const d = currentDay();
-    if (fills[d]) { const stop = roadsideStop(d); gigs.push({ stop, res: playRoadsideGig(stop, bid) }); delete fills[d]; }
-  }
-  // Road costs \u2014 hybrid model: gas + lodging bill NOW (food + idle upkeep settle monthly, next step).
-  // Lodging is charged per band member with no bed installed in the vehicle, per night. Paid by the band;
-  // if the band + your wallet can't cover it, the band account goes into the red (limp home broke).
+function chargeLeg(bid, veh) {
   const members = bandMembers(bid).length || 1;
   const sleeps = vehicleSleeps(veh);
   const cfgT = DATA.config.tour || {}; const gasRate = cfgT.gasPerDay || 45;
   const hotel = (DATA.config.lodging && DATA.config.lodging.hotelPrice) || 60;
-  const gas = Math.round(gasRate * a.days);
   const bedShort = Math.max(0, members - sleeps);
-  const lodging = bedShort * hotel * a.days;
-  const roadCost = gas + lodging;
-  if (roadCost > 0) { const r = bandSpend(bid, roadCost, "tour", "Gas & lodging on the road"); if (!r || !r.ok) { const b = bandById(bid); if (b) b.account = (b.account || 0) - roadCost; } }
-  persist();
-  roadsideArrive(a.cd.name, a.days, mode, gigs, { gas, lodging, total: roadCost, members, sleeps, bedShort });
+  const lodging = bedShort * hotel;
+  const total = gasRate + lodging;
+  if (total > 0) { const r = bandSpend(bid, total, "tour", "Gas & lodging on the road"); if (!r || !r.ok) { const b = bandById(bid); if (b) b.account = (b.account || 0) - total; } }
+  return { gas: gasRate, lodging, total };
 }
+
+// "Drive to next show" no longer teleports. It begins (or, from a roadtown bus, continues) a real
+// day-by-day journey: multi-leg trips drop you in a walkable nowhere-town each morning, and the final
+// leg lands you at the anchor city.
+function execDrive(cid, mode) {
+  const c = bookedCommitments().find((x) => x.id === cid); if (!c) { closeDriveMenu(); return; }
+  const v = _venueOf(c.venue); const town = v.town; const cd = town ? cityDef(town) : null;
+  const es = cd && cd.entryScene;
+  if (!es) { toast("Can't find the road there yet.", "warn"); return; }
+  const here = currentCity ? currentCity() : null;
+  const totalLegs = town ? dayCostFrom(here, town) : 0;
+  closeDriveMenu(); closePhone();
+  if (totalLegs <= 0) { travelTo(es.scene, es.spawn); advanceMinutes((DATA.config.travel && DATA.config.travel.vehicleDriveMinutes) || 45); toast(`Over to ${cd.name} \u2014 quick hop.`, "good"); return; }
+  const s = getState();
+  s.journey = { active: true, anchorCmt: cid, anchorCity: town, totalLegs, leg: 0, bandId: _tourBandId(), vehId: _driveVeh };
+  driveLeg(mode);
+}
+
+// Advance the active journey. ASLEEP = fast-forward straight to the next morning. AWAKE = you're dropped
+// into your moving RV with the clock running in real time; turning in (the bed) is what rolls you into the
+// next town. Either way you wake up in the next stop the following morning.
+function driveLeg(mode) {
+  const s = getState(); const j = s.journey; if (!j || !j.active) return;
+  const veh = j.vehId ? vehicleById(j.vehId) : null;
+  if (mode === "ride") {
+    j.transit = true; persist();
+    const vs = veh ? vehicleScene(veh) : null;
+    if (vs) travelTo(vs, null);
+    toast("On the road \u2014 work in the RV while the miles roll by. Turn in (the bed) when you're ready to wake up in the next town.", "good");
+  } else {
+    const poor = !veh || veh.type === "veh_van";
+    sleep({ poor });        // advances the day; arrival is handled below (transit is off here)
+    arriveAtLeg();
+  }
+}
+
+// Resolve one leg: bill the day's gas + lodging to the band, then wake in the next nowhere-town (with the
+// pickup-gig pop-up) or roll into the anchor city on the final day.
+function arriveAtLeg() {
+  const s = getState(); const j = s.journey; if (!j || !j.active) return;
+  const veh = j.vehId ? vehicleById(j.vehId) : null;
+  const cost = chargeLeg(j.bandId, veh);
+  j.leg += 1;
+  if (j.leg >= j.totalLegs) {
+    const cd2 = cityDef(j.anchorCity); const es2 = cd2 && cd2.entryScene;
+    j.active = false; j.transit = false; persist();
+    if (es2) travelTo(es2.scene, es2.spawn);
+    toast(`You roll into ${cd2 ? cd2.name : "town"} \u2014 show day. (\u2212$${cost.total} road)`, "good");
+  } else {
+    const stop = roadsideStop(currentDay());
+    j.stop = stop; j.stopPlayed = false; j.transit = false;
+    const key = ensureRoadtownScene(j.leg, stop);
+    persist();
+    if (key) travelTo(key, { x: 5, y: 4 });
+    wakeInTown(stop, j, cost.total);
+  }
+}
+
+// Turning in inside the RV (real-time ride) advances the day -> arrive in the next town.
+function onDayAdvanced() {
+  const s = getState(); const j = s.journey;
+  if (j && j.active && j.transit) { j.transit = false; arriveAtLeg(); }
+}
+on("day:advanced", onDayAdvanced);
+
+// Wake-up pop-up: you're parked on the main drag of a town you've never heard of. Opt into tonight's gig.
+function wakeInTown(stop, j, spent) {
+  const ov = document.getElementById("cal");
+  if (!ov) { toast(`You wake up in ${stop.town}. (\u2212$${spent} road)`, "good"); return; }
+  const left = j.totalLegs - j.leg;
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">${esc(stop.town)}</span></div>` +
+    `<div class="cal-body"><p class="shop-note">Morning. You're parked on the main drag \u2014 ${left} day${left > 1 ? "s" : ""} still to the show. (\u2212$${spent} road)</p>` +
+    `<div class="rs-flavor" style="margin:8px 0">${esc(stop.flavor)}</div>` +
+    `<p class="shop-note"><strong>${esc(stop.venue)}</strong> could put you on tonight.</p>` +
+    `<button class="cal-slot-btn" data-wake="play" style="margin:9px 0">\uD83C\uDFB8 Play the pickup gig \u25b8</button>` +
+    `<button class="cal-slot-btn" data-wake="skip">Just explore / pass through</button></div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
+  ov.onclick = (e) => { const w = e.target.closest("[data-wake]"); if (!w) return; close(); if (w.dataset.wake === "play") setTimeout(openRoadGig, 210); };
+}
+
+// The bar in a nowhere-town: play that stop's pickup gig (reuses the roadside payout).
+function openRoadGig() {
+  const s = getState(); const j = s.journey;
+  if (!j || !j.stop) { toast("No pickup gig here.", "warn"); return; }
+  if (j.stopPlayed) { toast("You already played here tonight.", "warn"); return; }
+  const res = playRoadsideGig(j.stop, j.bandId); j.stopPlayed = true; persist();
+  const ov = document.getElementById("cal");
+  if (!ov) { toast(`Played ${res.venue} \u2014 +$${res.pay}, +${res.fans} fans.`, "good"); return; }
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">${esc(j.stop.town)}</span><button class="phone-nav" id="rg-x">\u2715</button></div>` +
+    `<div class="cal-body"><div class="rs-gig"><div class="rs-gig-h"><strong>${esc(res.venue)}</strong></div><div class="rs-flavor">${esc(j.stop.flavor)}</div><div class="rs-take">+$${res.pay} \u00b7 +${res.fans} fans</div></div>` +
+    `<p class="shop-note">Played the local room \u2014 money's in the band account. When you're ready, head to your bus to drive on.</p></div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  ov.onclick = (e) => { if (e.target.closest("#rg-x")) { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); } };
+}
+
+// The parked bus in a nowhere-town: drive on toward the anchor (awake or asleep).
+function openRoadBus() {
+  const s = getState(); const j = s.journey;
+  if (!j || !j.active) { toast("Nowhere to be right now.", "warn"); return; }
+  const left = j.totalLegs - j.leg;
+  const ov = document.getElementById("cal"); if (!ov) { driveLeg("fast"); return; }
+  ov.innerHTML = `<div class="cal-modal"><div class="shop-head"><span class="shop-title">HIT THE ROAD</span><button class="phone-nav" id="rb-x">\u2715</button></div>` +
+    `<div class="cal-body"><p class="shop-note">${left} day${left > 1 ? "s" : ""} to ${esc((cityDef(j.anchorCity) || {}).name || "the show")}. How do you cover today's drive?</p>` +
+    `<button class="cal-slot-btn" data-leg="ride" style="margin-bottom:9px">\u2615 Ride awake \u2014 work in the RV \u25b8</button>` +
+    `<button class="cal-slot-btn" data-leg="fast">\uD83D\uDECC Sleep through \u2014 wake up there \u25b8</button></div></div>`;
+  ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
+  const close = () => { ov.onclick = null; ov.classList.remove("open"); document.body.classList.remove("modal-open"); setTimeout(() => ov.classList.add("hidden"), 200); };
+  ov.onclick = (e) => { if (e.target.closest("#rb-x")) { close(); return; } const lg = e.target.closest("[data-leg]"); if (lg) { close(); setTimeout(() => driveLeg(lg.dataset.leg), 210); } };
+}
+on("road:gig", openRoadGig);
+on("road:bus", openRoadBus);
 
 // Recap after a multi-day drive. If you played roadside gigs along the way, show the haul; otherwise
 // just confirm the arrival. Reuses the #cal overlay.
@@ -272,12 +363,12 @@ function renderOutfitter() {
   const cap = def.slots || 10; const used = placed.length;
   const ob = bandById(v.bandId); const acct = (ob && ob.account) || 0; const wallet = spendable();
   const items = (DATA.decor && DATA.decor.items) || {};
-  const instRows = placed.map((o, i) => { const di = items[o.id] || {}; const nm = o.name || di.name || o.id; const isBed = di.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(o.id || ""); return `<div class="of-row"><span>${esc(nm)}${isBed ? ` <small class="muted">sleeps ${di.sleeps || 1}</small>` : ""}</span><button class="of-rm" data-rm="${i}">Remove</button></div>`; }).join("") || `<p class="shop-note">Empty inside.</p>`;
-  const labels = { sleep: "Sleeping", kitchen: "Kitchen", comfort: "Comfort", vibe: "Vibe", audio: "Audio / Screens" };
+  const instRows = placed.map((o, i) => { const did = o.decorId || o.id; const di = items[did] || {}; const nm = o.name || di.name || did; const isBed = di.shape === "bed" || o.interact === "sleep" || /bed|futon|bunk/i.test(did || ""); return `<div class="of-row"><span>${esc(nm)}${isBed ? ` <small class="muted">sleeps ${di.sleeps || 1}</small>` : ""}</span><button class="of-rm" data-rm="${i}">Remove</button></div>`; }).join("") || `<p class="shop-note">Empty inside.</p>`;
+  const labels = { sleep: "Sleeping", kitchen: "Kitchen", bath: "Bathroom", comfort: "Comfort", vibe: "Vibe", audio: "Audio / Screens" };
   const groups = {};
   for (const [id, it] of Object.entries(items)) { if (!it.vehicleOk) continue; const c = it.vcat || "other"; (groups[c] = groups[c] || []).push({ id, it }); }
   let cat = "";
-  for (const c of ["sleep", "kitchen", "comfort", "vibe", "audio"]) {
+  for (const c of ["sleep", "kitchen", "bath", "comfort", "vibe", "audio"]) {
     if (!groups[c]) continue;
     cat += `<div class="of-cat">${esc(labels[c] || c)}</div>` + groups[c].map(({ id, it }) => {
       const price = it.price || 0; const full = used >= cap; const broke = (acct + wallet) < price; const dis = full || broke;
@@ -307,14 +398,14 @@ function outfitInstall(itemId) {
   const tile = outfitFreeTile(scene, base); if (!tile) { toast("No open spot inside.", "warn"); return; }
   const price = it.price || 0;
   if (price > 0) { const r = bandSpend(v.bandId, price, "vehicle", `Outfit \u2014 ${it.name || itemId}`); if (!r || !r.ok) { toast("Can't afford that.", "warn"); return; } }
-  placed.push({ id: itemId, name: it.name || itemId, sprite: it.sprite, tile });
+  placed.push({ id: "decor_" + itemId + "_" + Date.now().toString(36), name: it.name || itemId, tile, decorId: itemId, sprite: it.sprite });
   persist(); toast(`Installed ${it.name || itemId}.`, "good"); renderOutfitter();
 }
 function outfitRemove(idx) {
   const v = vehicleById(_outfitVeh); if (!v) return;
   const scene = vehicleScene(v); const placed = getState().placedObjects[scene] || [];
   const o = placed[idx]; if (!o) return;
-  const it = ((DATA.decor && DATA.decor.items) || {})[o.id];
+  const it = ((DATA.decor && DATA.decor.items) || {})[o.decorId || o.id];
   placed.splice(idx, 1);
   if (it && it.price && v.bandId) { const refund = Math.floor(it.price * 0.5); bandEarn(v.bandId, refund, "vehicle", `Removed ${it.name || o.id}`); toast(`Removed ${it.name || o.id} (+${money(refund)}).`, "good"); }
   else toast(`Removed ${o.name || o.id}.`, "good");
@@ -338,12 +429,11 @@ function closeTourPlanner() { const ov = document.getElementById("cal"); if (!ov
 function renderTourPlanner() {
   const ov = document.getElementById("cal"); if (!ov) return;
   const bid = _tourBandId(); const bandNm = _tourBandName();
-  const fills = _tourFills();
   const today = currentDay();
   const anchors = bookedCommitments().filter((c) => c.type === "show" && c.bandId === bid && !inHomeCircuit(_venueOf(c.venue).town)).sort((a, b) => a.day - b.day);
   let body;
   if (!anchors.length) {
-    body = `<p class="shop-note">No road shows on <strong>${esc(bandNm)}</strong>\u2019s tour yet. Book your anchor cities below \u2014 then plan the nights in between to fill with pickup gigs.</p>`;
+    body = `<p class="shop-note">No road shows on <strong>${esc(bandNm)}</strong>\u2019s tour yet. Book your anchor cities below \u2014 you\u2019ll roll through a real town each day on the way to each one.</p>`;
   } else {
     let rows = `<div class="tp-node tp-home">\uD83C\uDFE0 <strong>Home base</strong> \u2014 Day ${today}</div>`;
     let prevDay = today, totalDrive = 0;
@@ -352,20 +442,17 @@ function renderTourPlanner() {
       const gap = c.day - prevDay - 1;
       if (gap > 0) {
         const days = []; for (let d = prevDay + 1; d <= c.day - 1; d++) days.push(d);
-        const allFilled = days.every((d) => fills[d]);
-        rows += `<div class="tp-gap"><span>${gap} open night${gap > 1 ? "s" : ""} on the road</span>` +
-          `<button class="tp-fill ${allFilled ? "on" : ""}" data-gap="${days.join(",")}">${allFilled ? "\u2713 pickup gigs planned" : "+ plan pickup gigs"}</button></div>`;
+        rows += `<div class="tp-gap"><span>${gap} town${gap > 1 ? "s" : ""} to pass through on the way</span></div>`;
       }
       const b = bandById(c.bandId) || {}; const mine = _isMine(c.bandId);
       rows += `<div class="tp-leg">\u2193 drive ${dc} day${dc !== 1 ? "s" : ""}</div>` +
-        `<div class="tp-node tp-anchor ${mine ? "mine" : "mgr"}"><strong>${esc(b.name || "Your band")}</strong> <span class="tp-tag ${mine ? "mine" : "mgr"}">${mine ? "be there" : "auto-plays"}</span><br><small>${esc(_venueOf(c.venue).name || "venue")} \u00b7 ${esc((cd && cd.name) || town)} \u2014 Day ${c.day}</small></div>`;
+        `<div class="tp-node tp-anchor ${mine ? "mine" : "mgr"}"><strong>${esc(b.name || "Your band")}</strong> <span class="tp-tag ${mine ? "mine" : "mgr"}">${mine ? "be there" : "auto-plays"}</span><br><small>${esc(_venueOf(c.venue).name || "venue")} \u00b7 ${esc((cd && cd.name) || town)} \u2014 Day ${c.day}</small> <button class="tp-cancel" data-cancel="${c.id}">Cancel show</button></div>`;
       prevDay = c.day;
     });
     const daysOut = anchors[anchors.length - 1].day - today;
-    const planned = Object.keys(fills).filter((d) => fills[d]).length;
     body = rows +
-      `<div class="tp-foot">${anchors.length} road show${anchors.length > 1 ? "s" : ""} \u00b7 ${daysOut} days out \u00b7 ${totalDrive} day${totalDrive !== 1 ? "s" : ""} driving${planned ? ` \u00b7 ${planned} pickup night${planned > 1 ? "s" : ""} planned` : ""}</div>` +
-      `<p class="shop-note" style="margin-top:8px">Tap the open stretches to plan pickup gigs there. When roadside gigs land, those nights fill with shows instead of empty driving \u2014 and \u201cdrive to next show\u201d will stop for them instead of skipping ahead. Add more anchors by booking distant shows in the BAND app.</p>`;
+      `<div class="tp-foot">${anchors.length} road show${anchors.length > 1 ? "s" : ""} \u00b7 ${daysOut} days out \u00b7 ${totalDrive} town${totalDrive !== 1 ? "s" : ""} en route</div>` +
+      `<p class="shop-note" style="margin-top:8px">Each day on the road you wake up in a real town \u2014 explore it, play the local pickup gig if you want, restock, then drive on from your bus. Add more anchors by booking distant shows in the BAND app.</p>`;
   }
   // Book out-of-region anchors right here. Newcomer doors (open bars) are always bookable; gated rooms need discovery/fame.
   const curR = _currentRegion();
@@ -384,12 +471,12 @@ function renderTourPlanner() {
   ov.classList.remove("hidden"); requestAnimationFrame(() => ov.classList.add("open")); document.body.classList.add("modal-open");
   ov.onclick = (e) => {
     if (e.target.closest("#tp-close")) { closeTourPlanner(); return; }
+    const cn = e.target.closest("[data-cancel]");
+    if (cn) { const r = cancelShow(cn.dataset.cancel); if (r) toast(r.famePenalty ? `Show canceled \u2014 \u2212${r.famePenalty} fame for short notice.` : "Show canceled \u2014 plenty of notice, no harm done.", r.famePenalty ? "warn" : "good"); renderTourPlanner(); return; }
     const lk = e.target.closest("[data-locked]");
     if (lk) { toast(venueReqText(lk.dataset.locked) || "That room isn\u2019t open to you yet.", "warn"); return; }
     const bk = e.target.closest("[data-book]");
     if (bk) { setSchedBand(bid, true); setSchedulerReturn(() => openTourPlanner()); openScheduler("show", bk.dataset.book); return; }
-    const fb = e.target.closest(".tp-fill");
-    if (fb) { const days = fb.dataset.gap.split(",").map(Number); const allFilled = days.every((d) => fills[d]); days.forEach((d) => { if (allFilled) delete fills[d]; else fills[d] = true; }); persist(); renderTourPlanner(); }
   };
 }
 function handleVehicleAct(b, act) {

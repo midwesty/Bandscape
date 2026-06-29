@@ -298,15 +298,17 @@
     "espresso_machine": {
       "name": "Espresso Machine",
       "category": "kitchen",
-      "price": 240,
-      "vibe": 4,
+      "price": 160,
+      "vibe": 5,
       "tier": 2,
-      "sprite": "assets/img/objects/decor/espresso_machine.png",
-      "desc": "Caffeine on tap. Songwriting fuel.",
+      "sprite": "assets/img/objects/decor/espresso.png",
+      "desc": "Caffeine is a touring necessity.",
       "room": "kitchen",
       "shape": "appliance",
-      "color": "#2b2533",
-      "use": "coffee"
+      "color": "#3a2f2a",
+      "use": "coffee",
+      "vehicleOk": true,
+      "vcat": "kitchen"
     },
     "full_range": {
       "name": "Full Range Stove",
@@ -974,6 +976,236 @@
       "sleeps": 2,
       "vehicleOk": true,
       "vcat": "sleep"
+    },
+    "van_sink": {
+      "name": "Sink + Water",
+      "category": "bath",
+      "price": 120,
+      "vibe": 3,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/sink.png",
+      "desc": "Fresh water, fewer gas-station stops.",
+      "room": "bathroom",
+      "shape": "sink",
+      "color": "#b9c2cc",
+      "use": "drink",
+      "vehicleOk": true,
+      "vcat": "bath"
+    },
+    "van_shower": {
+      "name": "Shower Stall",
+      "category": "bath",
+      "price": 320,
+      "vibe": 6,
+      "tier": 3,
+      "sprite": "assets/img/objects/decor/shower.png",
+      "desc": "Roll into town not smelling like the van.",
+      "room": "bathroom",
+      "shape": "shower",
+      "color": "#9fb4c2",
+      "use": "shower",
+      "vehicleOk": true,
+      "vcat": "bath"
+    },
+    "van_toilet": {
+      "name": "Compact Toilet",
+      "category": "bath",
+      "price": 200,
+      "vibe": 2,
+      "tier": 2,
+      "sprite": "assets/img/objects/decor/toilet.png",
+      "desc": "No more 3am rest-stop runs.",
+      "room": "bathroom",
+      "shape": "toilet",
+      "color": "#dfe4e9",
+      "use": "toilet",
+      "vehicleOk": true,
+      "vcat": "bath"
+    },
+    "camp_chair": {
+      "name": "Camp Chair",
+      "category": "seating",
+      "price": 25,
+      "vibe": 1,
+      "tier": 1,
+      "shape": "chair",
+      "color": "#5a7a4a",
+      "use": "rest",
+      "vehicleOk": true,
+      "vcat": "comfort",
+      "desc": "Folds flat, smells faintly of campfire."
+    },
+    "director_chair": {
+      "name": "Director's Chair",
+      "category": "seating",
+      "price": 40,
+      "vibe": 2,
+      "tier": 1,
+      "shape": "chair",
+      "color": "#3a3a3a",
+      "use": "rest",
+      "vehicleOk": true,
+      "vcat": "comfort",
+      "desc": "Makes any soundcheck feel official."
+    },
+    "floor_cushion": {
+      "name": "Floor Cushion Pile",
+      "category": "seating",
+      "price": 60,
+      "vibe": 3,
+      "tier": 1,
+      "shape": "chair",
+      "color": "#b06a8a",
+      "use": "rest",
+      "ambient": {
+        "tag": "rest",
+        "amount": 1
+      },
+      "vehicleOk": true,
+      "vcat": "comfort",
+      "desc": "A heap of cushions. The whole band fits, sort of."
+    },
+    "thrift_loveseat": {
+      "name": "Thrift Loveseat",
+      "category": "seating",
+      "price": 180,
+      "vibe": 3,
+      "tier": 2,
+      "shape": "couch",
+      "color": "#6a5a7a",
+      "use": "rest",
+      "ambient": {
+        "tag": "social",
+        "amount": 1
+      },
+      "footprint": [
+        2,
+        1
+      ],
+      "vehicleOk": true,
+      "vcat": "comfort",
+      "desc": "Two cup-holders, one mystery stain."
+    },
+    "diner_booth": {
+      "name": "Salvaged Diner Booth",
+      "category": "seating",
+      "price": 260,
+      "vibe": 4,
+      "tier": 2,
+      "shape": "booth",
+      "color": "#7a3a3a",
+      "use": "rest",
+      "ambient": {
+        "tag": "social",
+        "amount": 2
+      },
+      "footprint": [
+        2,
+        1
+      ],
+      "vehicleOk": true,
+      "vcat": "comfort",
+      "desc": "Rescued from a closed truck stop. Best seat on the road."
+    },
+    "mini_disco_ball": {
+      "name": "Mini Disco Ball",
+      "category": "lighting",
+      "price": 50,
+      "vibe": 3,
+      "tier": 1,
+      "shape": "orb",
+      "color": "#cfd6e6",
+      "ambient": {
+        "tag": "mood",
+        "amount": 1
+      },
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "Turns a gas-station parking lot into a venue."
+    },
+    "neon_bar_sign": {
+      "name": "Neon Bar Sign",
+      "category": "wall",
+      "price": 130,
+      "vibe": 5,
+      "tier": 2,
+      "shape": "sign",
+      "color": "#ff4d7a",
+      "ambient": {
+        "tag": "mood",
+        "amount": 2
+      },
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "It just says OPEN. You're always open."
+    },
+    "fake_monstera": {
+      "name": "Fake Monstera",
+      "category": "plants",
+      "price": 35,
+      "vibe": 2,
+      "tier": 1,
+      "shape": "plant",
+      "color": "#3a7a4a",
+      "ambient": {
+        "tag": "wellness",
+        "amount": 1
+      },
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "Unkillable. Possibly immortal."
+    },
+    "tour_poster_wall": {
+      "name": "Tour Poster Wall",
+      "category": "wall",
+      "price": 20,
+      "vibe": 3,
+      "tier": 1,
+      "shape": "art",
+      "color": "#c8a24a",
+      "ambient": {
+        "tag": "creativity",
+        "amount": 1
+      },
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "Every show you've played, taped up crooked."
+    },
+    "desk_cactus": {
+      "name": "Desk Cactus",
+      "category": "plants",
+      "price": 18,
+      "vibe": 1,
+      "tier": 1,
+      "shape": "cactus",
+      "color": "#4a8a5a",
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "Low maintenance, mild attitude."
+    },
+    "road_wall_clock": {
+      "name": "Vintage Wall Clock",
+      "category": "wall",
+      "price": 45,
+      "vibe": 2,
+      "tier": 1,
+      "shape": "clock",
+      "color": "#8a6a4a",
+      "vehicleOk": true,
+      "vcat": "vibe",
+      "desc": "Stopped at 4:20. Nobody minds."
+    },
+    "practice_amp": {
+      "name": "Practice Amp",
+      "category": "electronics",
+      "price": 180,
+      "vibe": 4,
+      "tier": 2,
+      "shape": "case",
+      "color": "#15131a",
+      "vehicleOk": true,
+      "vcat": "audio",
+      "desc": "Small, loud enough, road-dented."
     }
   }
 }
